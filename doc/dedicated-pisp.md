@@ -1,6 +1,5 @@
 # N26 - PSD2 Dedicated Interface - PISP Access documentation
 
-
 ## General information
 
 Berlin Group Conformity : [Implementation Guidelines version 1.3.6](https://www.berlin-group.org/nextgenpsd2-downloads "https://www.berlin-group.org/nextgenpsd2-downloads")
@@ -178,7 +177,7 @@ HTTP/1.1 400 Bad Request
 
 ## Payment endpoints
 
-Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access token retrieved as per the [oauth](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1895696821/PSD2+Dedicated+Interface+-+AISP+Access+documentation##Validity-of-access-&-refresh-tokens "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1895696821/PSD2+Dedicated+Interface+-+AISP+Access+documentation##Validity-of-access-&-refresh-tokens") session.
+Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access token retrieved as per the "Oauth" paragraph.
 
 ### Create payment
 

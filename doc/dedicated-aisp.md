@@ -442,9 +442,9 @@ Content-Type: application/json
 
 ## AIS endpoints
 
-Please use your QWAC certificate when calling for any Accounts request on `xs2a.tech26.de`, along with a valid access token retrieved as per the [Oauth](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1895696821/PSD2+Dedicated+Interface+-+AISP+Access+documentation#Validity-of-access-&-refresh-tokens "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1895696821/PSD2+Dedicated+Interface+-+AISP+Access+documentation#Validity-of-access-&-refresh-tokens") session.
 
 ### Read Account List
+Please use your QWAC certificate when calling for any Accounts request on `xs2a.tech26.de`, along with a valid access token retrieved during Oauth session.
 
 #### Request
 

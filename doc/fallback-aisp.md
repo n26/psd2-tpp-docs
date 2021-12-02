@@ -1,4 +1,4 @@
-# PSD2 Fallback API - AISP access documentatio
+# PSD2 Fallback API - AISP access documentation
 
 ## Access & Identification of TPP
 
@@ -572,9 +572,9 @@ HTTP/1.1 401 Unauthorized
 }
 ```
 
-> :warning: On a `401` response the TPP has to refresh tokens.
-> **Note:**
-> Receiving a `401` indicates that the usage of access and refresh tokens is not as defined in [Validity of access &amp; refresh tokens](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1601736293/PSD2+Fallback+API+-+AISP+access+documentation##Validity-of-access-%26-refresh-tokens "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1601736293/PSD2+Fallback+API+-+AISP+access+documentation##Validity-of-access-%26-refresh-tokens").
+> :warning: On a `401` response the TPP has to refresh tokens.    
+**Note:**     
+Receiving a `401` indicates that the usage of access and refresh tokens is not as defined in "Validity of access &amp; refresh tokens" paragraph.
 
 ## Account & User information
 
@@ -881,4 +881,5 @@ device-token: {{device_token}}
     "hasMore": true
 }
 ```
+
 [View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-AISP-access-documentation.pdf)
