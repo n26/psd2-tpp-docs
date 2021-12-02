@@ -32,10 +32,10 @@ Additionally, Third parties are obliged to send following data in every request 
   * only when the request is initiated by the user
   * when from the TPP (background refresh), this is not needed
 
-> ⚠ TPPs should only pass the user ip when the call is initiated by the user.
+> :warning: TPPs should only pass the user ip when the call is initiated by the user.
 > The TPP should not provide any IP that is not triggered by the user.
 
-> ⚠ TPP should provide a unique `device_token` per client/device connection.   `device_token` must be a valid UUID v4 as per RFC 4122.
+> :warning: TPP should provide a unique `device_token` per client/device connection.   `device_token` must be a valid UUID v4 as per RFC 4122.
 
 ##### Importance of `x-tpp-userip`
 
@@ -43,9 +43,9 @@ All calls initiated by the user (manual refresh or initial generation of access 
 
 Since our Fallback API is based on our original API for our mobile and web apps, there are a lot of security measures built-in. Many of these security measures track the end-user IP addresses and prevent frequent calls from different IP addresses for the same user (amongst other features, that we do not disclose for security reasons). If a TPP doesn't provide an end-user’s IP address with API requests requiring IP specification, or tries to manipulate or obfuscate IP addresses, such cases will be treated in accordance to our established security policies applied to the original API.
 
-> ⚠ According to PSD2 (Level1) Art. 94 (1) we require the end-user IP to be specified with every end-user generated request. Monitoring end-user IPs on the N26 side is necessary to safeguard the prevention, investigation and detection of payment fraud. In case N26 security measures applied to the API detect unusual user-related activity, such cases will be processed in accordance with the established security policies, including (but not limited to) rate limiting, blocking request by IP and reporting such cases to the regulatory authorities.
+> :warning: According to PSD2 (Level1) Art. 94 (1) we require the end-user IP to be specified with every end-user generated request. Monitoring end-user IPs on the N26 side is necessary to safeguard the prevention, investigation and detection of payment fraud. In case N26 security measures applied to the API detect unusual user-related activity, such cases will be processed in accordance with the established security policies, including (but not limited to) rate limiting, blocking request by IP and reporting such cases to the regulatory authorities.
 
-#### Data which should not be stored  ⚠
+#### Data which should not be stored  :warning:
 
 As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the European Parliament and of the Council with regard to regulatory technical standards for strong customer authentication and common and secure open standards of communication](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.L_.2018.069.01.0023.01.ENG&toc=OJ:L:2018:069:TOC##d1e1565-23-1 "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.L_.2018.069.01.0023.01.ENG&toc=OJ:L:2018:069:TOC##d1e1565-23-1") TPP should **NOT store the password** of users!
 
@@ -77,7 +77,7 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 >
 > a) take the necessary measures to ensure that they do not access, store or process data for purposes other than for the provision of the service as requested by the payment service user;
 
-> ⚠ If we identify the TPP is doing this, we reserve the right to block those accesses.
+> :warning: If we identify the TPP is doing this, we reserve the right to block those accesses.
 
 #### Validity of access & refresh tokens
 
@@ -89,23 +89,23 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 | **Validity**   | 15 min                                                                     | **One time usable** , but chain of refresh tokens is**valid for 90 days**  |
 | **Storage**    | NEVER                                                                      | Yes, for 89 days (expiry needs to be stored on TPP)                        |
 
-> ⓘ **Refreshing refresh tokens**
+> :information_source: **Refreshing refresh tokens**
 > The first refresh token has validity of 90 days, but is  **one-time usable** .
 > With this refresh token, an access and a new refresh token can be requested.
 > This new refresh token maintain the initial 90 days validity.
 > So in summary the chain of refresh tokens has a validity of 90 days.
 
-> ⓘ **Refresh getting close to expiry**
+> :information_source: **Refresh getting close to expiry**
 > On day 89 the TPP should discard the refresh token and ask the user re-authentication.
 > As highlighted above the TPP should never store the password of the user.
 
-> ⚠ Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
+> :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
 > If a user requests a manual refresh a new access token has to be requested **EVEN** if the original access token is still valid.
 > For this reason the TPP should **NEVER** store the access token.
 
-> ⚠ The TPP should not use those access and refresh tokens on other base URLs than `aisp.tech26.de`.
+> :warning: The TPP should not use those access and refresh tokens on other base URLs than `aisp.tech26.de`.
 
-> ⓧ If those policies above are not respected, there is no guarantee you will not be rate-limited.
+> :x: If those policies above are not respected, there is no guarantee you will not be rate-limited.
 
 ## User Authentication
 
@@ -134,7 +134,7 @@ For syncs from the backend, this has to be unique and persisted per user.
 
 `userip` has be populated with the real user ip.
 
-> ⓘ Only the headers mentioned here are necessary
+> :information_source: Only the headers mentioned here are necessary
 
 #### Responses
 
@@ -395,7 +395,7 @@ x-tpp-userip: {{userip}}
 mfaToken={{mfaToken}}&grant_type=mfa_oob
 ```
 
-> ⓘ The TPP should poll this endpoint not more than every 2 seconds.
+> :information_source: The TPP should poll this endpoint not more than every 2 seconds.
 > After a successful, expired or unauthorized response the polling should stop.
 
 #### Responses for `OOB`
@@ -572,7 +572,7 @@ HTTP/1.1 401 Unauthorized
 }
 ```
 
-> ⚠ On a `401` response the TPP has to refresh tokens.
+> :warning: On a `401` response the TPP has to refresh tokens.
 > **Note:**
 > Receiving a `401` indicates that the usage of access and refresh tokens is not as defined in [Validity of access &amp; refresh tokens](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1601736293/PSD2+Fallback+API+-+AISP+access+documentation##Validity-of-access-%26-refresh-tokens "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1601736293/PSD2+Fallback+API+-+AISP+access+documentation##Validity-of-access-%26-refresh-tokens").
 
@@ -767,7 +767,7 @@ For instance:
 GET /api/smrt/transactions?limit=20&lastId=c690c24d-9a19-4400-0001-6db5542c82d5&from=1570312800000&to=1570312800001
 ```
 
-> ⚠ The TPP should not request request more than 90 days of transactions if the **access token** was generated from a  **refresh token** , **only** if generated **through the SCA** flow with email + password  & OOB/OTP.
+> :warning: The TPP should not request request more than 90 days of transactions if the **access token** was generated from a  **refresh token** , **only** if generated **through the SCA** flow with email + password  & OOB/OTP.
 
 #### Response
 
@@ -881,3 +881,4 @@ device-token: {{device_token}}
     "hasMore": true
 }
 ```
+[View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-AISP-access-documentation.pdf)

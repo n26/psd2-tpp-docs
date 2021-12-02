@@ -29,7 +29,7 @@ Additionally, Third parties are obliged to send following data in every request 
 * device token : `device-token: {{device_token}}`
 * real user ip: `x-tpp-userip<span id="1973177c-3174-44a7-bc31-8d826f00a77a" data-renderer-mark="true" data-mark-type="annotation" data-mark-annotation-type="inlineComment" data-id="1973177c-3174-44a7-bc31-8d826f00a77a">: {{userip}}</span>`
 
-> ⚠ TPP should provide a unique `device_token` per client/device connection. `device_token` must be a valid UUID v4 as per RFC 4122.
+> :warning: TPP should provide a unique `device_token` per client/device connection. `device_token` must be a valid UUID v4 as per RFC 4122.
 
 ##### Importance of `x-tpp-userip`
 
@@ -37,9 +37,9 @@ All payment initiation-related API calls must include the IP address of the end-
 
 Since our Fallback API is based on our original API for our mobile and web apps, there are a lot of security measures built-in. Many of these security measures track the end-user IP addresses and prevent frequent calls from different IP addresses for the same user (amongst other features, that we do not disclose for security reasons). If a TPP doesn't provide an end-user’s IP address with API requests requiring IP specification, or tries to manipulate or obfuscate IP addresses, such cases will be treated in accordance to our established security policies applied to the original API.
 
-> ⚠ According to PSD2 (Level1) Art. 94 (1) we require the end-user IP to be specified with every end-user generated request. Monitoring end-user IPs on the N26 side is necessary to safeguard the prevention, investigation and detection of payment fraud. In case N26 security measures applied to the API detect unusual user-related activity, such cases will be processed in accordance with the established security policies, including (but not limited to) rate limiting, blocking request by IP and reporting such cases to the regulatory authorities.
+> :warning: According to PSD2 (Level1) Art. 94 (1) we require the end-user IP to be specified with every end-user generated request. Monitoring end-user IPs on the N26 side is necessary to safeguard the prevention, investigation and detection of payment fraud. In case N26 security measures applied to the API detect unusual user-related activity, such cases will be processed in accordance with the established security policies, including (but not limited to) rate limiting, blocking request by IP and reporting such cases to the regulatory authorities.
 
-#### Data which should not be stored ⚠
+#### Data which should not be stored :warning:
 
 As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the European Parliament and of the Council with regard to regulatory technical standards for strong customer authentication and common and secure open standards of communication](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.L_.2018.069.01.0023.01.ENG&toc=OJ:L:2018:069:TOC##d1e1565-23-1 "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.L_.2018.069.01.0023.01.ENG&toc=OJ:L:2018:069:TOC##d1e1565-23-1") TPPs should **NOT store passwords (incl. PINs)** of users!
 
@@ -71,7 +71,7 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 >
 > a) take the necessary measures to ensure that they do not access, store or process data for purposes other than for the provision of the service as requested by the payment service user;
 
-> ⚠ If we identify the TPP is doing this, we reserve the right to block those accesses.
+> :warning: If we identify the TPP is doing this, we reserve the right to block those accesses.
 
 #### Validity of access tokens
 
@@ -83,13 +83,13 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 | **Validity**   | 15 min                                          |
 | **Storage**    | NEVER                                           |
 
-> ⚠ Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
+> :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
 > If a user requests initiation of a new payment a new access token has to be requested **EVEN** if the original access token is still valid.
 > For this reason the TPP should **NEVER** store the access token.
 
-> ⚠ The TPP should not use these access tokens on other base URLs than `pisp.tech26.de`.
+> :warning: The TPP should not use these access tokens on other base URLs than `pisp.tech26.de`.
 
-> ⓧ If those policies above are not respected, there is no guarantee you will not be rate-limited.
+> :x: If those policies above are not respected, there is no guarantee you will not be rate-limited.
 
 ## User Authentication
 
@@ -118,7 +118,7 @@ For syncs from the backend, this has to be unique and persisted per user.
 
 `userip` has be populated with the real user ip.
 
-> ⓘ Only the headers mentioned here are necessary
+> :information_source: Only the headers mentioned here are necessary
 
 #### Responses
 
@@ -261,7 +261,7 @@ In this case, please proceed to the OTP flow.
 
 ### Step 2b - Not Recommended - Continue authentication with Two-Step SMS (OTP)
 
-> ⚠ Use this step only as a fallback to Step 2a
+> :warning: Use this step only as a fallback to Step 2a
 
 Reasons why SMS is not recommended:
 
@@ -372,7 +372,7 @@ HTTP/1.1 429 Too Many Requests
 
 ### Step 3 - Get access token
 
-> ⓘ The TPP should poll endpoints in this section not more than every 2 seconds.
+> :information_source: The TPP should poll endpoints in this section not more than every 2 seconds.
 After a successful, expired or unauthorised response the polling should stop.
 
 #### Request for `OOB`
@@ -502,7 +502,7 @@ HTTP/1.1 429 Too Many Requests
 
 In order to make requests to the payment initiation endpoints such as SEPA DT or Standing Orders it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
 
-> ⚠ A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. Please refer to the [Data which should not be stored](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Data-which-needs-to-be-stored-%26-provided "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Data-which-needs-to-be-stored-%26-provided") section for more details.
+> :warning: A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. Please refer to the [Data which should not be stored](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Data-which-needs-to-be-stored-%26-provided "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Data-which-needs-to-be-stored-%26-provided") section for more details.
 
 We provide an additional endpoint `/api/encryption/key` which should be used to obtain an encryption key which in turn is used to encrypt the user PIN.
 
@@ -599,7 +599,7 @@ At this step you should have everything necessary to make a call to one of the p
 
 Please make sure you’ve completed the steps from the [User PIN encryption](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##User-PIN-Encryption "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##User-PIN-Encryption") section before proceeding with the request.
 
-> ⚠ SEPA transfers are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the [Get Main Account information endpoint](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information")
+> :warning: SEPA transfers are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the [Get Main Account information endpoint](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information")
 
 ```
 POST    /api/transactions HTTP/1.1
@@ -690,7 +690,7 @@ HTTP/1.1 500 Internal Server Error
 
 Please make sure you’ve completed the steps from the [User PIN encryption](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##User-PIN-Encryption "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##User-PIN-Encryption") section before proceeding with the request.
 
-> ⚠ SEPA standing orders are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the [Get Main Account information endpoint](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information")
+> :warning: SEPA standing orders are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the [Get Main Account information endpoint](https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information "https://number26-jira.atlassian.net/wiki/spaces/ProdTech/pages/1718328471/PSD2+Fallback+API+-+PISP+access+documentation##Get-(Main)-Account-Information")
 
 #### Request
 
@@ -770,7 +770,7 @@ If a transaction is present on a list of transactions, it means that a user has 
 * To check the **SEPA DT** transaction statuses, please use  **Main Account Transaction List** : Each N26 user has only one payment account, which is the Main Account. All transactions successfully initiated and certified by a user appear on the Main Account Transaction List. Transaction list of the main account is provided via `/api/smrt/transactions`
 * To check the **Standing Order** transaction status, please use  **Standing Order Transaction List** : Approved Standing Orders don’t appear on the list of Main Account Transaction List, but on the separate list of Standing orders provided via `/api/transactions/so` with a not null `"userCertified”`field.
 
-> ⓘ For  **Standing Orders** , don’t forget to check the `"userCertified"`field
+> :information_source: For  **Standing Orders** , don’t forget to check the `"userCertified"`field
 Not yet confirmed Standing Orders have `"userCertified": null`
 Confirmed Standing Orders have not null `"userCertified"`
 
@@ -890,7 +890,7 @@ device-token: {{device_token}}
 
 #### Response
 
-> ⓘ Not yet confirmed Standing Orders have `"userCertified": null`
+> :information_source: Not yet confirmed Standing Orders have `"userCertified": null`
 Confirmed Standing Orders have not null `"userCertified"`
 
 ```
@@ -1097,3 +1097,4 @@ echo "Encrypted PIN: $encrypted_pin"
 curl -X POST -H "encrypted-secret: $encrypted_secret" -H "encrypted-pin: $encrypted_pin" -H "Authorization: Bearer ${access_token}" -H "Content-Type: application/json" --data '{"standingOrder":{"amount":"12.0","partnerIban":"ES2015632626323268851568","partnerName":"Pancho Villa","nextExecutingTS":"1583452800000","executionFrequency":"WEEKLY"}}' -k --key $CLIENT_KEY_FILE --cert $CLIENT_CERT_FILE https://${PISP_HOST}/api/transactions/so
 
 ```
+[View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-PISP-access-documentation.pdf)

@@ -141,3 +141,4 @@ External IPs used
 Requests per application per second or per hour etc
 </details>
 
+[View as PDF](./doc/assets/pdf/N26-PSD2-FAQs.pdf)

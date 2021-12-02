@@ -10,7 +10,7 @@ Security layer: A valid QWAC Certificate for PSD2 is required to access the Berl
 QTSP is available on the [European Comission eIDAS Trusted List](https://webgate.ec.europa.eu/tl-browser/#/). For the N26 PSD2 Dedicated Interface API, the QWAC
 Certificate must be issued from a production certificate authority.
 
-> ⓘ Certificates can be renewed by making an API call **using the new certificate**, which will then be onboarded automatically.
+> :information_source: Certificates can be renewed by making an API call **using the new certificate**, which will then be onboarded automatically.
 
 ## Access & Identification of TPP
 
@@ -66,13 +66,13 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 
 |                | **Access Token**                                                                                                                                                                                                                                                                                                                                                | **Refresh Token**                                                                                                                                                                                                                                                                                                                                               |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Purpose**    | Access for API calls in**one session**                                                                                                                                                                                                                                                                                                                          | Generate new access tokens                                                                                                                                                                                                                                                                                                                                      |
+| **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                                          | Generate new access tokens                                                                                                                                                                                                                                                                                                                                      |
 | **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token |
 | **Validity**   | 15 min                                                                                                                                                                                                                                                                                                                                                          | **One time usable** , but chain of refresh tokens is**valid for 90 days**                                                                                                                                                                                                                                                                                       |
 | **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                                           | Yes, for 89 days (expiry needs to be stored on TPP)                                                                                                                                                                                                                                                                                                             |
 
-> ⓘ **Refreshing refresh tokens**
-> The first refresh token has validity of 90 days, but is  **one-time usable** .
+> :information_source: **Refreshing refresh tokens**
+> The first refresh token has validity of 90 days, but is  **one-time usable**.
 > With this refresh token, an access and a new refresh token can be requested.
 > This new refresh token will maintain the initial 90 days validity.
 > So, in summary, the chain of refresh tokens has a validity of 90 days.
@@ -80,11 +80,11 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 > On day 89 the TPP should discard the refresh token and ask users for re-authentication.
 > As highlighted above, the TPP should never store users' passwords.
 
-> ⚠ Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
+> :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
 > If users request a manual refresh, a new access token has to be requested **EVEN** if the original access token is still valid.
 > For this reason the TPP should **NEVER** store the access token.
 
-> ⚠ The TPP should not use those access and refresh tokens on base URLs other than `xs2a.tech26.de`.
+> :warning: The TPP should not use those access and refresh tokens on base URLs other than `xs2a.tech26.de`.
 
 ## Authentication endpoints
 
@@ -754,3 +754,4 @@ X-Request-ID: UUID
     }
 }
 ```
+[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-AISP-access-documentation.pdf)

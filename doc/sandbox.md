@@ -196,3 +196,4 @@ Content-Type: application/json
     "transactionStatus": "RCVD"
 }
 ```
+[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-Sandbox-access-documentation.pdf)

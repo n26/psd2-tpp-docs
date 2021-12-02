@@ -55,9 +55,9 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 | **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                               |
 | **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                |
 
-> ⓘ **PISP flow does not provide refresh tokens for security purposes**
+> :information_source: **PISP flow does not provide refresh tokens for security purposes**
 
-> ⚠ The TPP should not use those access tokens on base URLs other than `xs2a.tech26.de`.
+> :warning: The TPP should not use those access tokens on base URLs other than `xs2a.tech26.de`.
 Access tokens issued for PISP cannot be used for AISP flows.
 
 ## Authentication endpoints
@@ -205,7 +205,7 @@ Content-Type: application/json
 }
 ```
 
-> ⚠ Allowed special characters in creditorName for N26 SEPA CT -  ( **:,.+?/** )
+> :warning: Allowed special characters in creditorName for N26 SEPA CT -  ( **:,.+?/** )
 
 #### Response
 
@@ -330,3 +330,4 @@ Content-Type: application/json
     "scaStatus": "finalised"
 }
 ```
+[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-PISP-access-documentation.pdf)
