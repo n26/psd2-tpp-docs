@@ -1,5 +1,15 @@
 # N26 - PSD2 Dedicated Interface - AISP Access documentation
 
+## Table of Contents
+1. [General information](./dedicated-aisp.md#general-information)
+2. [Access & Identification of TPP](./dedicated-aisp.md#access--identification-of-tpp)
+3. [Support for this implementation on the Berlin Group API](./dedicated-aisp.md#support-for-this-implementation-on-the-berlin-group-api)
+4. [OAuth as a Pre-step](./dedicated-aisp.md#oauth-as-a-pre-step)
+5. [Validity of access & refresh tokens](./dedicated-aisp.md#validity-of-access--refresh-tokens)
+6. [Authentication endpoints](./dedicated-aisp.md#authentication-endpoints)
+7. [Consent endpoints](./dedicated-aisp.md#consent-endpoints)
+8. [AIS endpoints](./dedicated-aisp.md#ais-endpoints)
+
 ## General information
 
 Berlin Group Conformity : [Implementation Guidelines version 1.3.6](https://www.berlin-group.org/nextgenpsd2-downloads)
