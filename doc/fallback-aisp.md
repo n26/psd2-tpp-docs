@@ -338,7 +338,7 @@ An SMS was sent to the user with the request to authorise this connection.
 
 `remainingResendCodeCount` (int) - amount of remaining resend attempts
 
-`waitingTimeInSeconds` ** ** (int) - amount of time the client needs to wait before the next SMS send request
+`waitingTimeInSeconds` (int) - amount of time the client needs to wait before the next SMS send request
 
 `obfuscatedPhoneNumber` - the phone number where the SMS has been sent to, e.g. "+49******0285"
 
@@ -360,7 +360,7 @@ An SMS was resent to the user with the request to authorise this connection.
 
 `remainingResendCodeCount` (int) - amount of remaining resend attempts
 
-`waitingTimeInSeconds` ** ** (int) - amount of time the client needs to wait before the next SMS send request
+`waitingTimeInSeconds` (int) - amount of time the client needs to wait before the next SMS send request
 
 `obfuscatedPhoneNumber` - the phone number where the SMS has been sent to, e.g. "+49******0285"
 
@@ -881,7 +881,7 @@ device-token: {{device_token}}
 
 ##### Parameters
 
-`size`(mandatory) int. Number of transactions.
+`size` (mandatory) int. Number of transactions.
 
 `beforeId` (optional). UUID of last transactions fetched. Show transaction from this ID to the past.
 

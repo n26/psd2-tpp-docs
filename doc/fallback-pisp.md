@@ -526,7 +526,7 @@ HTTP/1.1 429 Too Many Requests
 In order to make requests to the payment initiation endpoints such as SEPA DT or Standing Orders it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
 
 > :warning: A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. 
-> Please refer to the [Data which should not be stored](./fallback-pisp.md#data-which-should-not-be-stored-warning) paragraph section for more details.
+> Please refer to the [Data which should not be stored](./fallback-pisp.md#data-which-should-not-be-stored-warning) section for more details.
 
 We provide an additional endpoint `/api/encryption/key` which should be used to obtain an encryption key which in turn is used to encrypt the user PIN.
 
@@ -1045,7 +1045,4 @@ Notice that for these users currency is also set as GBP and the IBAN is british.
 
 #### [Bash Script for User PIN Encryption and Initiating Transaction](./assets/bash/pin_encryption_and_initiating_transaction.sh)
 
-```bash
-
-```
 [View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-PISP-access-documentation.pdf)
