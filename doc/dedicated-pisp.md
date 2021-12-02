@@ -1,5 +1,12 @@
 # N26 - PSD2 Dedicated Interface - PISP Access documentation
 
+1. [General information](./dedicated-pisp.md#general-information)
+2. [Access & Identification of TPP](./dedicated-pisp.md#access--identification-of-tpp)
+3. [Support for this implementation on the Berlin Group API](./dedicated-pisp.md#support-for-this-implementation-on-the-berlin-group-api)
+4. [OAuth as a Pre-step](./dedicated-pisp.md#oauth-as-a-pre-step)
+5. [Authentication endpoints](./dedicated-pisp.md#authentication-endpoints)
+6. [Payment endpoints](./dedicated-pisp.md#payment-endpoints)
+
 ## General information
 
 Berlin Group Conformity : [Implementation Guidelines version 1.3.6](https://www.berlin-group.org/nextgenpsd2-downloads "https://www.berlin-group.org/nextgenpsd2-downloads")
@@ -177,7 +184,8 @@ HTTP/1.1 400 Bad Request
 
 ## Payment endpoints
 
-Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access token retrieved as per the "Oauth" paragraph.
+Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access 
+token retrieved as per the [Oauth](./dedicated-pisp.md#validity-of-access-token).
 
 ### Create payment
 

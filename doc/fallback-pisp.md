@@ -1,5 +1,28 @@
 # PSD2 Fallback API - PISP access documentation
 
+1. [Access & Identification of TPP](./fallback-pisp.md#access--identification-of-tpp)
+    1. [Base URL](./fallback-pisp.md#base-url)
+    2. [Characteristics of this solution](./fallback-pisp.md#characteristics-of-this-solution)
+2. [User Authentication](./fallback-pisp.md#user-authentication)
+    1. [Overview](./fallback-pisp.md#overview)
+    2. [Step 1 - Start authentication with username & password](./fallback-pisp.md#step-1---start-authentication-with-username--password)
+    3. [Step 2a - Recommended - Continue authentication with Two-Step Certification (OOB)](./fallback-pisp.md#step-2a---recommended---continue-authentication-with-two-step-certification-oob)
+    4. [Step 2b - Not Recommended - Continue authentication with Two-Step SMS (OTP)](./fallback-pisp.md#step-2b---not-recommended---continue-authentication-with-two-step-sms-otp)
+    5. [Step 3 - Get access token](./fallback-pisp.md#step-3---get-access-token)
+3. [Payment Initiation](./fallback-pisp.md#payment-initiation)
+    1. [Overview](./fallback-pisp.md#overview-1)
+    2. [User PIN Encryption](./fallback-pisp.md#user-pin-encryption)
+    3. [Initiate SEPA (Debit Transfer) DT Transactions](./fallback-pisp.md#initiate-sepa-debit-transfer-dt-transactions)
+    4. [Initiate SEPA Standing Order (Recurring/Future Payments)](./fallback-pisp.md#initiate-sepa-standing-order-recurringfuture-payments)
+4. [Get Status of Initiated Transactions](./fallback-pisp.md#get-status-of-initiated-transactions)
+    1. [Overview](./fallback-pisp.md#overview-2)
+    2. [Get (Main) Account Transactions List](./fallback-pisp.md#get-main-account-transactions-list)
+    3. [Get (Main) Account Transactions Details](./fallback-pisp.md#get-main-account-transactions-details)
+    4. [Get  Standing Order Transactions List](./fallback-pisp.md#get--standing-order-transactions-list)
+    5. [Get (Main) Account Information](./fallback-pisp.md#get-main-account-information)
+5. [Appendix A](./fallback-pisp.md#appendix-a)
+
+
 ## Access & Identification of TPP
 
 ### Base URL
@@ -503,7 +526,7 @@ HTTP/1.1 429 Too Many Requests
 In order to make requests to the payment initiation endpoints such as SEPA DT or Standing Orders it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
 
 > :warning: A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. 
-> Please refer to the "Data which should not be stored" paragraph section for more details.
+> Please refer to the [Data which should not be stored](./fallback-pisp.md#data-which-should-not-be-stored-warning) paragraph section for more details.
 
 We provide an additional endpoint `/api/encryption/key` which should be used to obtain an encryption key which in turn is used to encrypt the user PIN.
 
@@ -599,9 +622,12 @@ At this step you should have everything necessary to make a call to one of the p
 
 ### Initiate SEPA (Debit Transfer) DT Transactions
 
-Please make sure you’ve completed the steps from the "User PIN encryption" section before proceeding with the request.
+Please make sure you’ve completed the steps from the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) section before 
+proceeding with the 
+request.
 
-> :warning: SEPA transfers are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the "Get Main Account information endpoint" paragraph.
+> :warning: SEPA transfers are available only for EU users. In order to identify if a user’s legal entity is EU or 
+> UK, please refer to the [Get Main Account information](./fallback-pisp.md#get-main-account-information) paragraph.
 
 ```
 POST    /api/transactions HTTP/1.1
@@ -690,9 +716,10 @@ HTTP/1.1 500 Internal Server Error
 
 ### Initiate SEPA Standing Order (Recurring/Future Payments)
 
-Please make sure you’ve completed the steps from the "User PIN encryption" section before proceeding with the request.
+Please make sure you’ve completed the steps from the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) section before proceeding with the request.
 
-> :warning: SEPA standing orders are available only for EU users. In order to identify if a user’s legal entity is EU or UK, please refer to the "Get Main Account information endpoint" section.
+> :warning: SEPA standing orders are available only for EU users. In order to identify if a user’s legal entity is 
+> EU or UK, please refer to the [Get Main Account information](./fallback-pisp.md#get-main-account-information) section.
 
 #### Request
 

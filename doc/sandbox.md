@@ -1,5 +1,12 @@
 # N26 - PSD2 Dedicated Interface - Sandbox Access documentation
 
+1. [General information](./sandbox.md#general-information)
+2. [Access & Identification of TPP](./sandbox.md#access--identification-of-tpp)
+3. [On-boarding of new TPPs](./sandbox.md#on-boarding-of-new-tpps)
+4. [OAuth as a Pre-step](./sandbox.md#oauth-as-a-pre-step)
+5. [Consent endpoints](./sandbox.md#consent-endpoints)
+6. [AIS endpoints](./sandbox.md#ais-endpoints)
+7. [PIS endpoints](./sandbox.md#pis-endpoints)
 
 ## General information
 

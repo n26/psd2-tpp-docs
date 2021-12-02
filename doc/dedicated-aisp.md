@@ -1,6 +1,5 @@
 # N26 - PSD2 Dedicated Interface - AISP Access documentation
 
-## Table of Contents
 1. [General information](./dedicated-aisp.md#general-information)
 2. [Access & Identification of TPP](./dedicated-aisp.md#access--identification-of-tpp)
 3. [Support for this implementation on the Berlin Group API](./dedicated-aisp.md#support-for-this-implementation-on-the-berlin-group-api)
@@ -454,7 +453,8 @@ Content-Type: application/json
 
 
 ### Read Account List
-Please use your QWAC certificate when calling for any Accounts request on `xs2a.tech26.de`, along with a valid access token retrieved during Oauth session.
+Please use your QWAC certificate when calling for any Accounts request on `xs2a.tech26.de`, along with a valid 
+access token retrieved during [Oauth](./dedicated-aisp.md#validity-of-access--refresh-tokens) session.
 
 #### Request
 
