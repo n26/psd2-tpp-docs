@@ -34,6 +34,8 @@
 1. A TPP shall connect to the N26 PSD2 API by using an eIDAS valid certificate (QWAC) issued
 2. N26 shall check the QWAC certificate in an automated way and allow the TPP to identify themselves  with the subsequent API calls
 3. As the result of the steps above, the TPP should be able to continue using the API without manual involvement from the N26 side
+> :information_source: Certificates can be renewed by making an API call **using the new certificate**, which will then
+> be onboarded automatically.
 
 ### Characteristics of this solution
 

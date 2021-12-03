@@ -15,7 +15,8 @@ Authorisation protocol: [oAuth 2.0](https://oauth.net/2/ "https://oauth.net/2/")
 
 Security layer: A valid QWAC Certificate for PSD2 is required to access the Berlin Group API. The official list of QTSP is available on the [European Comission eIDAS Trusted List](https://webgate.ec.europa.eu/tl-browser/##/ "https://webgate.ec.europa.eu/tl-browser/##/"). For the N26 PSD2 Dedicated Interface API, the QWAC Certificate must be issued from a production certificate authority.
 
-TPPs can renew their certificate by making an API call  **using the new certificate** , which will then be onboarded automatically.
+> :information_source: Certificates can be renewed by making an API call **using the new certificate**, which will then 
+> be onboarded automatically.  
 
 ## Access & Identification of TPP
 
