@@ -10,9 +10,11 @@
 
 ## [PSD2 Sandbox Access documentation](./doc/sandbox.md)
 
-## Frequently asked questions
+# Open API file
+[Open API file for dediacted interface](./doc/assets/openapi/XS2A_Open_API.yml)
 
-### General FAQs
+# Frequently asked questions
+## General FAQs
 <details>
   <summary>Which markets are covered by the PSD2 APIs?</summary>
 
@@ -86,7 +88,7 @@
 
 </details>
 
-### Technical FAQs
+## Technical FAQs
 
 <details>
   <summary>I’m trying to connect to your APIs, but I receive a 401 “Unauthorized“ error</summary>
