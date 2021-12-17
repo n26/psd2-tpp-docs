@@ -1,0 +1,548 @@
+openapi: 3.0.0
+info:
+  title: XS2A_N26
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: 'https://xs2a.tech26.de/v1/berlin-group/v1'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  links: {}
+  callbacks: {}
+  schemas: {}
+paths:
+  /consents:
+    post:
+      tags:
+        - default
+      summary: 1.1 POST /consents (Bank-Offered consent)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                access:
+                  accounts:
+                    - iban: MC4626956939912m8R99LWS9749
+                  transactions:
+                    - iban: MC4626956939912m8R99LWS9749
+                  balances:
+                    - iban: MC4626956939912m8R99LWS9749
+                  additionalInformation:
+                    ownerName:
+                      - iban: MC4626956939912m8R99LWS9749
+                  allPsd2: ALL_ACCOUNTS_WITH_OWNER_NAME
+                recurringIndicator: true
+                validUntil:
+                  year: 2021
+                  month: DECEMBER
+                  chronology:
+                    calendarType: iso8601
+                    id: ISO
+                  leapYear: false
+                  dayOfWeek: MONDAY
+                  dayOfYear: 361
+                  era: CE
+                  monthValue: 12
+                  dayOfMonth: 27
+                frequencyPerDay: 9
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                consentStatus: RECEIVED
+                consentId:
+                  value: 9b8d2906-0a80-4c52-876c-61d04ce8dbe4
+                links: {}
+        '400':
+          description: Incorrectly formatted consent or wrong parameters
+        '500':
+          description: Account not found on our systems or invalid certificate
+  '/consents/{consent_id}/status':
+    get:
+      tags:
+        - default
+      summary: 2.1 GET /consents/status (polling)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: consent_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                consentStatus: received
+  '/consents/{consent_id}':
+    get:
+      tags:
+        - default
+      summary: 2.2 GET /consents/
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: consent_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                access:
+                  accounts:
+                    - iban: ST66797089939462764637664
+                  transactions:
+                    - iban: ST66797089939462764637664
+                  balances:
+                    - iban: ST66797089939462764637664
+                  additionalInformation:
+                    ownerName:
+                      - iban: ST66797089939462764637664
+                  allPsd2: ALL_ACCOUNTS_WITH_OWNER_NAME
+                recurringIndicator: true
+                validUntil:
+                  year: 2021
+                  month: AUGUST
+                  monthValue: 8
+                  dayOfMonth: 2
+                  leapYear: false
+                  dayOfWeek: MONDAY
+                  dayOfYear: 214
+                  era: CE
+                  chronology:
+                    calendarType: iso8601
+                    id: ISO
+                frequencyPerDay: 9
+                lastActionDate:
+                  year: 2021
+                  month: JUNE
+                  monthValue: 6
+                  dayOfMonth: 30
+                  leapYear: false
+                  dayOfWeek: WEDNESDAY
+                  dayOfYear: 181
+                  era: CE
+                  chronology:
+                    calendarType: iso8601
+                    id: ISO
+                consentStatus: VALID
+                links: {}
+    delete:
+      tags:
+        - default
+      summary: 2.3 DELETE /consents/
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: consent_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Successful response
+  /accounts:
+    get:
+      tags:
+        - default
+      summary: 3. GET /accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                accounts:
+                  - resourceId: 00e446bb-9c90-4811-a48f-a288f14d74bf
+                    iban: DEq2Y5AM1lstJtfGgK7Iccrs9pFuNl25sL
+                    currency: EUR
+                    product: Main Account
+                    name: wMOvmbvffu
+                    bic: NTSBDEB1XXX
+                    cashAccountType: CACC
+                    status: enabled
+                    usage: PRIV
+                    _links:
+                      balances:
+                        href: "/v1/berlin-group/v1/accounts/00e446bb-9c90-4811-a48f-a288f14d74bf/balances"
+                      transactions:
+                        href: "/v1/berlin-group/v1/accounts/00e446bb-9c90-4811-a48f-a288f14d74bf/transactions"
+                  - resourceId: f642c68f-5812-4242-b5b9-0fd64eb302df
+                    currency: EUR
+                    product: Space
+                    name: ZPiPMliqFK
+                    cashAccountType: CACC
+                    status: enabled
+                    usage: PRIV
+                    _links:
+                      balances:
+                        href: "/v1/berlin-group/v1/accounts/f642c68f-5812-4242-b5b9-0fd64eb302df/balances"
+                      transactions:
+                        href: "/v1/berlin-group/v1/accounts/f642c68f-5812-4242-b5b9-0fd64eb302df/transactions"
+                  - resourceId: 8565f643-412a-43b2-ab1b-aefd29c03507
+                    currency: EUR
+                    product: Space
+                    cashAccountType: CACC
+                    status: deleted
+                    usage: PRIV
+                    _links:
+                      balances:
+                        href: "/v1/berlin-group/v1/accounts/8565f643-412a-43b2-ab1b-aefd29c03507/balances"
+                      transactions:
+                        href: "/v1/berlin-group/v1/accounts/8565f643-412a-43b2-ab1b-aefd29c03507/transactions"
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+        '500':
+          description: Error getting accounts from database
+          content:
+            application/json:
+              example:
+                title: Could not retrieve accounts
+                code: GENERIC_ERROR
+                detail: ''
+  '/accounts/{bg_account_id}':
+    get:
+      tags:
+        - default
+      summary: 3.1 GET /accounts by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+        - name: bg_account_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                account:
+                  resourceId: 35453846-38d5-4417-8e0c-eab21dee93a7
+                  iban: DE00000000001234000000
+                  currency: EUR
+                  product: Main Account
+                  name: Primary Space
+                  bic: NTSBDEB1XXX
+                  cashAccountType: CACC
+                  status: enabled
+                  usage: PRIV
+                  _links:
+                    balances:
+                      href: "/v1/berlin-group/v1/accounts/35453846-38d5-4417-8e0c-eab21dee93a7/balances"
+                    transactions:
+                      href: "/v1/berlin-group/v1/accounts/35453846-38d5-4417-8e0c-eab21dee93a7/transactions"
+        '404':
+          description: Account does not exist or user does not have access to it
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+        '500':
+          description: Failed to get account details
+          content:
+            application/json:
+              example:
+                title: GENERIC_ERROR
+                code: GENERIC_ERROR
+                detail: ''
+  '/accounts/{bg_account_id}/balances':
+    get:
+      tags:
+        - default
+      summary: 4. GET /balances
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+        - name: bg_account_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                balances:
+                  - balanceType: expected
+                    balanceAmount:
+                      amount: '2000'
+                      currency: EUR
+                    lastChangeDateTime: '1970-01-01T00:00:01Z'
+                    referenceDate: '1970-01-01'
+                account:
+                  iban: DE00000000001234000000
+        '404':
+          description: Account does not exist or user has not access to account
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+        '500':
+          description: Error getting account balances
+          content:
+            application/json:
+              example:
+                title: GENERIC_ERROR
+                code: GENERIC_ERROR
+                detail: ''
+  '/accounts/{space_bg_account_id}/balances':
+    get:
+      tags:
+        - default
+      summary: 4.1 GET /balances for a space
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+        - name: space_bg_account_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                balances:
+                  - balanceType: expected
+                    balanceAmount:
+                      amount: '2000'
+                      currency: EUR
+                    lastChangeDateTime: '1970-01-01T00:00:01Z'
+                    referenceDate: '1970-01-01'
+                account:
+                  iban: DE00000000001234000000
+        '404':
+          description: Account does not exist or user has not access to account
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+        '500':
+          description: Error getting account balances
+          content:
+            application/json:
+              example:
+                title: GENERIC_ERROR
+                code: GENERIC_ERROR
+                detail: ''
+  '/accounts/{bg_account_id}/transactions':
+    get:
+      tags:
+        - default
+      summary: 5. GET /transactions (standing orders)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+        - name: bookingStatus
+          in: query
+          schema:
+            type: string
+          example: information
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+          example: information
+        - name: bg_account_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                account:
+                  iban: DE65100110011234567890
+                transactions:
+                  pending: []
+                  booked:
+                    - transactionId: 26e6eccd-2753-45b8-abc8-050207849edc
+                      creditorName: partner name
+                      creditorAccount:
+                        iban: DE65100110011234567890
+                      transactionAmount:
+                        amount: "-10.0"
+                        currency: EUR
+                      bookingDate: '2021-07-05'
+                      valueDate: '2021-07-05'
+                      remittanceInformationUnstructuredArray:
+                        - Debited transaction
+                      bankTransactionCode: PMNT-RCDT-ESCT
+                    - transactionId: e605c895-d1a7-4db7-bda4-dddc429c0ae1
+                      debtorName: merchant name
+                      transactionAmount:
+                        amount: '3.0'
+                        currency: EUR
+                      bookingDate: '2021-07-05'
+                      valueDate: '2021-07-05'
+                      currencyExchange:
+                        - exchangeRate: '0.2'
+                          unitCurrency: GBP
+                          sourceCurrency: GBP
+                          targetCurrency: EUR
+                          quotationDate: '2021-07-05'
+                      remittanceInformationUnstructuredArray:
+                        - Credited transaction
+                      bankTransactionCode: PMNT-CCRD-CWDL
+                  _links:
+                    account:
+                      href: "/v1/berlin-group/v1/accounts/0a3fa412-0e5a-4437-a5ca-12873166c8f0"
+        '400':
+          description: Invalid search params
+          content:
+            application/json:
+              example:
+                title: Invalid booking status
+                code: FORMAT_ERROR
+                detail: bookingStatus=invalidStatus
+        '404':
+          description: User has not access to its account
+          content:
+            application/json:
+              example:
+                title: Account unknown
+                code: RESOURCE_UNKNOWN
+                detail: Account unknown
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+  '/accounts/{bg_account_id}/transactions/{transaction_id}':
+    get:
+      tags:
+        - default
+      summary: 6. GET /transactions by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Consent-ID
+          in: header
+          schema:
+            type: string
+          example: '{{consent_id}}'
+        - name: bg_account_id
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: transaction_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                transactionDetails:
+                  transactionId: 4289174b-b6c4-4470-b6e8-e5bf5e043723
+                  creditorName: merchant name
+                  transactionAmount:
+                    amount: "-3.0"
+                    currency: EUR
+                  bookingDate: '1970-01-01'
+                  valueDate: '1970-01-01'
+                  remittanceInformationUnstructuredArray:
+                    - reference text
+                  bankTransactionCode: PMNT-CCRD-POSD
+        '404':
+          description: User has not access to transaction
+          content:
+            application/json:
+              example:
+                title: Account unknown
+                code: RESOURCE_UNKNOWN
+                detail: Account unknown
+        '429':
+          description: Rate limit error
+          content:
+            application/json:
+              example:
+                title: Request limit breached
+                code: ACCESS_EXCEEDED
+                detail: Request limit has been breached! Request blocked.
+security: []
