@@ -13,6 +13,9 @@
 # Open API file
 [Open API file for dediacted interface](./doc/assets/openapi/XS2A_Open_API.yml)
 
+# Postman collections
+[Sandbox postman collection and environment](./doc/assets/postman)
+
 # Frequently asked questions
 ## General FAQs
 <details>
