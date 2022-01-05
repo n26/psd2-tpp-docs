@@ -1,0 +1,1571 @@
+{
+	"info": {
+		"_postman_id": "f3f51978-20fb-4bd9-91d9-7cc2a1fd9618",
+		"name": "XS2A_N26 Sandbox",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0.0 README",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"/**",
+							" * Our sandbox environment provides the means by which to perform limited testing of our API calls without requiring real user accounts. (e.g. to test formatting, errors etc)",
+							" * ",
+							" * This is as described for the real interface, and all valid QWAC certificates are accepted. If you are facing issues accessing this interface using a test certificate, please reach out to us with the following:",
+							" * - The certificate used to access the interface,",
+							" * - Details of the request and response received",
+							" * ",
+							" */",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "VIEW",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "0.1 Create authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var location = pm.response.headers.get('Location');",
+							"console.info(\"location:\" + location);",
+							"",
+							"var path = location.split('?')[1];",
+							"console.info(\"path:\" + path);",
+							"",
+							"var searchParams = path.split('&');",
+							"console.info(\"searchParams:\" + searchParams);",
+							"",
+							"for (var i = 0; i < searchParams.length; i++) {",
+							"    var pair = searchParams[i].split('=');",
+							"    if (pair[0] == \"requestId\") {",
+							"        console.info(\"set env variable id:\" + pair[1]);",
+							"        pm.environment.set(\"request_id\", pair[1]);",
+							"        return;",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-authorize-meta",
+						"value": "tpp-name=test-tpp",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic  {{dedicated_aisp_client_id}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "device-token",
+						"value": "{{device_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					},
+					{
+						"key": "x-tpp-userip",
+						"value": "1.1.1.1",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{address}}/sandbox/oauth2/authorize?client_id=PSDDE-BAFIN-000001&scope=DEDICATED_AISP&code_challenge=w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI&redirect_uri=https://google.com&response_type=CODE&state=testState",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"oauth2",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "PSDDE-BAFIN-000001"
+						},
+						{
+							"key": "scope",
+							"value": "DEDICATED_AISP"
+						},
+						{
+							"key": "code_challenge",
+							"value": "w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://google.com"
+						},
+						{
+							"key": "response_type",
+							"value": "CODE"
+						},
+						{
+							"key": "state",
+							"value": "testState"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "0.2 (Fake) Generate auth code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var authCode = pm.response.json().code;",
+							"    pm.environment.set(\"auth_code\", authCode);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-authorize-meta",
+						"type": "text",
+						"value": "tpp-name=test-tpp",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Basic  {{dedicated_aisp_client_id}}",
+						"disabled": true
+					},
+					{
+						"key": "device-token",
+						"type": "text",
+						"value": "{{device_token}}",
+						"disabled": true
+					},
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "x-tpp-userip",
+						"type": "text",
+						"value": "1.1.1.1",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{address}}/sandbox/psu-interaction/generate-auth-code/{{request_id}}?role=DEDICATED_AISP",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"psu-interaction",
+						"generate-auth-code",
+						"{{request_id}}"
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "DEDICATED_AISP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "0.3 Get Access Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var response = pm.response.json();",
+							"    ",
+							"    pm.environment.set(\"access_token\", response.access_token);",
+							"    pm.environment.set(\"refresh_token\", response.refresh_token);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json;charset=UTF-8"
+					},
+					{
+						"key": "device-token",
+						"type": "text",
+						"value": "{{device_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-tpp-userip",
+						"type": "text",
+						"value": "1.1.1.1",
+						"disabled": true
+					},
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "code",
+							"value": "{{auth_code}}",
+							"description": "Auth code received from 0.2 Generate oAuth code",
+							"type": "text"
+						},
+						{
+							"key": "code_verifier",
+							"value": "foobar",
+							"description": "Unhashed version of w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{address}}/sandbox/oauth2/token?role=DEDICATED_AISP",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "DEDICATED_AISP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "0.4 Refresh access token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');",
+							"var requestId = uuid.v4();",
+							"pm.environment.set(\"request_id\", requestId);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var response = pm.response.json();",
+							"    ",
+							"    pm.environment.set(\"access_token\", response.access_token);",
+							"    pm.environment.set(\"refresh_token\", response.refresh_token);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "{{request_id}}"
+					},
+					{
+						"key": "device_token",
+						"value": "{{device_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-tpp-userip",
+						"type": "text",
+						"value": "1.1.1.1"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "refresh_token",
+							"type": "text"
+						},
+						{
+							"key": "refresh_token",
+							"value": "{{refresh_token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{address}}/sandbox/oauth2/token?role=DEDICATED_AISP",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "DEDICATED_AISP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1.1 POST /consents (all accounts)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 201) {",
+							"    var consent = pm.response.json();",
+							"    ",
+							"    pm.environment.set(\"consent_id\", consent.consentId);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					},
+					{
+						"key": "x-tpp-userip",
+						"value": "1.1.1.1",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "X-Request-ID",
+						"value": "{{$randomUUID}}",
+						"type": "text"
+					},
+					{
+						"key": "device-token",
+						"value": "{{device_token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"access\": {\n      \"allPsd2\": \"allAccounts\"\n  },\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2022-12-01\",\n  \"frequencyPerDay\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1.2 POST /consents (account by Iban)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 201) {",
+							"    var consent = pm.response.json();",
+							"    ",
+							"    pm.environment.set(\"consent_id\", consent.consentId);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					},
+					{
+						"key": "x-tpp-userip",
+						"value": "1.1.1.1",
+						"type": "text"
+					},
+					{
+						"key": "X-Request-ID",
+						"value": "{{$randomUUID}}",
+						"type": "text"
+					},
+					{
+						"key": "device-token",
+						"value": "{{device_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"access\": {\n      \"accounts\": [{\n        \"iban\" : \"{{iban}}\"\n      }],\n      \"balances\": [{\n        \"iban\" :  \"{{iban}}\"\n      }],\n      \"transactions\": [{\n        \"iban\" :  \"{{iban}}\"\n      }],\n      \"additionalInformation\": {\n        \"ownerName\" : [{\"iban\":  \"{{iban}}\"}]\n      }\n  },\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2022-12-01\",\n  \"frequencyPerDay\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1.3 POST /consents (Bank-Offered consent)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 201) {",
+							"    var consent = pm.response.json();",
+							"    ",
+							"    pm.environment.set(\"consent_id\", consent.consentId);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					},
+					{
+						"key": "x-tpp-userip",
+						"value": "1.1.1.1",
+						"type": "text"
+					},
+					{
+						"key": "X-Request-ID",
+						"value": "{{$randomUUID}}",
+						"type": "text"
+					},
+					{
+						"key": "device-token",
+						"value": "{{device_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"access\": {\n      \"accounts\": [],\n      \"balances\": [],\n      \"transactions\": []\n  },\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2022-12-01\",\n  \"frequencyPerDay\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2.1 POST /psu-interaction/consents/scas (called by TPP to CERTIFY)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-n26-userid",
+						"type": "text",
+						"value": "{{user_id}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aisp-name",
+						"type": "text",
+						"value": "{{aisp_name}}",
+						"disabled": true
+					},
+					{
+						"key": "x-n26-userlocale",
+						"type": "text",
+						"value": "EN",
+						"disabled": true
+					},
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"result\": \"APPROVED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox/psu-interaction/consents/{{consent_id}}/scas",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"psu-interaction",
+						"consents",
+						"{{consent_id}}",
+						"scas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2.2 POST /psu-interaction/consents/scas (called by TPP to REJECT)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-n26-userid",
+						"type": "text",
+						"value": "{{user_id}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aisp-name",
+						"type": "text",
+						"value": "{{aisp_name}}",
+						"disabled": true
+					},
+					{
+						"key": "x-n26-userlocale",
+						"type": "text",
+						"value": "EN",
+						"disabled": true
+					},
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"result\": \"REJECTED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox/psu-interaction/consents/{{consent_id}}/scas",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox",
+						"psu-interaction",
+						"consents",
+						"{{consent_id}}",
+						"scas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.1 GET /consents/status (polling)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "{{$randomUUID}}",
+						"disabled": true
+					},
+					{
+						"key": "device-token",
+						"type": "text",
+						"value": "{{device_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-tpp-userip",
+						"value": "1.1.1.1",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents/{{consent_id}}/status",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents",
+						"{{consent_id}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.2 GET /consents/",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "device-token",
+						"type": "text",
+						"value": "{{device_token}}",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"access\": {\"availableAccounts\": \"allAccounts\"},\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2019-12-01\",\n  \"frequencyPerDay\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents/{{consent_id}}",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents",
+						"{{consent_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.3 DELETE /consents/",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "device-token",
+						"type": "text",
+						"value": "{{device_token}}",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/consents/{{consent_id}}",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"consents",
+						"{{consent_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.1 GET /accounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var accountsResponse = pm.response.json();",
+							"",
+							"    var bg_account_id = null;",
+							"    var space_bg_account_id = null;",
+							"",
+							"    for (account of accountsResponse.accounts) {",
+							"        if (account.product === \"Main Account\") {",
+							"            bg_account_id = account.resourceId;",
+							"        }",
+							"        else {",
+							"            space_bg_account_id = account.resourceId;",
+							"        }",
+							"    }",
+							"",
+							"    pm.environment.set(\"bg_account_id\", bg_account_id);",
+							"    pm.environment.set(\"space_bg_account_id\", space_bg_account_id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"value": "{{consent_id}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.2 GET /accounts by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var accountsResponse = pm.response.json();",
+							"",
+							"    var bg_account_id = null;",
+							"    var space_bg_account_id = null;",
+							"",
+							"    for (account of accountsResponse.accounts) {",
+							"        if (account.product === \"Main Account\") {",
+							"            bg_account_id = account.resourceId;",
+							"        }",
+							"        else {",
+							"            space_bg_account_id = account.resourceId;",
+							"        }",
+							"    }",
+							"",
+							"    pm.environment.set(\"bg_account_id\", bg_account_id);",
+							"    pm.environment.set(\"space_bg_account_id\", space_bg_account_id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"value": "{{consent_id}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{bg_account_id}}",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{bg_account_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.1 GET /balances",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"value": "{{consent_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{bg_account_id}}/balances",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{bg_account_id}}",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.2 GET /balances for a space",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"type": "text",
+						"value": "{{consent_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{space_bg_account_id}}/balances",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{space_bg_account_id}}",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.1 GET /transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"type": "text",
+						"value": "{{consent_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{bg_account_id}}/transactions?bookingStatus=BOTH",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{bg_account_id}}",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "bookingStatus",
+							"value": "BOTH"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.2 GET /transactions by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"type": "text",
+						"value": "{{consent_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{bg_account_id}}/transactions/f3f51978-20fb-4bd9-91d9-7cc2a1fd9618",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{bg_account_id}}",
+						"transactions",
+						"f3f51978-20fb-4bd9-91d9-7cc2a1fd9618"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.3 GET /transactions for a space",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					},
+					{
+						"key": "Consent-ID",
+						"type": "text",
+						"value": "{{consent_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{space_bg_account_id}}/transactions",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{space_bg_account_id}}",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.4 GET /transactions (standing orders)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Consent-ID",
+						"type": "text",
+						"value": "{{consent_id}}"
+					},
+					{
+						"key": "Host",
+						"type": "text",
+						"value": "{{host}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"access\": {\"availableAccounts\": \"allAccounts\"},\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2019-12-01\",\n  \"frequencyPerDay\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{address}}/sandbox{{api_path}}/accounts/{{bg_account_id}}/transactions?bookingStatus=information",
+					"host": [
+						"{{address}}"
+					],
+					"path": [
+						"sandbox{{api_path}}",
+						"accounts",
+						"{{bg_account_id}}",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "bookingStatus",
+							"value": "information"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
