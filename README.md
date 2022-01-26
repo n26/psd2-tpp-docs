@@ -91,6 +91,14 @@
 
 </details>
 
+<details>
+  <summary>What type of accounts are accessible through the API?</summary>
+
+> N26 customers have a main account and, depending on their membership, up to 10 additional sub-accounts which are called [Spaces](https://n26.com/en-eu/spaces). Furthermore, N26 customers can enable a unique IBAN number for each sub-account, which is different to the IBAN number of the main account.
+> Please note that the main account and sub-accounts each have their own individual balances. More specifically, the main account balance does not include the balance(s) of the sub-account(s).
+> There is currently, unfortunately, no way to retrieve a customer’s single total account balance through our API. To achieve this, we recommend retrieving the balance of the main account and each sub-account individually, and then aggregating them. The balance of Space(s) will be returned even in cases where N26 customers have chosen to “lock“ a Space or “hide“ the Space’s balance in the N26 app.
+</details>
+
 ## Technical FAQs
 
 <details>
