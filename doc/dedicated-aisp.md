@@ -634,7 +634,7 @@ PSU-IP-Address: {{Users'IP if they are present}}
 Content-Type: application/json
 ```
 
-* Query parameter “bookingStatus” is supported with values “booked” and “information” (“pending” and “both“ are not supported)
+* Query parameter “bookingStatus” is supported with values “booked” and “information” (“pending” and “both“ are not supported from 14th March 2022)
 * Query parameters “dateFrom” and “dateTo” are supported when “bookingStatus” is not “information“
 * Query parameter “withBalance”  is currently not supported.
 * Query parameter “deltaList” is currently not supported.
@@ -674,6 +674,8 @@ X-Request-ID: UUID
     }
 }
 ```
+* mandateId and creditorId are supported, for SEPA direct debit transactions only (from 25th April 2022)
+* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable (from 25th April 2022)
 
 ### Read Transaction Details
 
@@ -710,6 +712,8 @@ X-Request-ID: UUID
     }
 }
 ```
+* mandateId and creditorId are supported, for SEPA direct debit transactions only (from 25th April 2022)
+* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable (from 25th April 2022)
 
 ### Read Standing order List
 
