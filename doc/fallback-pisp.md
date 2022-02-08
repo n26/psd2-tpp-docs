@@ -871,7 +871,7 @@ GET /api/smrt/transactions?limit=20&lastId=c690c24d-9a19-4400-0001-6db5542c82d5&
 #### Request
 
 ```
-GET    api/smrt/transactions/{transactionId} HTTP/1.1
+GET    /api/smrt/transactions/{transactionId} HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
