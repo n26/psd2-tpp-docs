@@ -97,6 +97,14 @@
 > N26 customers have a main account and, depending on their membership, up to 10 additional sub-accounts which are called [Spaces](https://n26.com/en-eu/spaces). Furthermore, N26 customers can enable a unique IBAN number for each sub-account, which is different to the IBAN number of the main account.
 > Please note that the main account and sub-accounts each have their own individual balances. More specifically, the main account balance does not include the balance(s) of the sub-account(s).
 > There is currently, unfortunately, no way to retrieve a customer’s single total account balance through our API. To achieve this, we recommend retrieving the balance of the main account and each sub-account individually, and then aggregating them. The balance of Space(s) will be returned even in cases where N26 customers have chosen to “lock“ a Space or “hide“ the Space’s balance in the N26 app.
+
+</details>
+
+<details>
+<summary>Are AIS and PIS certificates interchangeable?</summary>
+
+> Please note that the endpoints that can be accessed are dependent on the role stated in the QWAC certificate. A PIS certificate is required to access the PIS endpoints, and an AIS certificate is required to access AIS endpoints. This is true for all our interfaces; whether you wish to access the dedicated, fallback or sandbox interface. TPPs can possess an AIS certificate, a PIS certificate or both. Access and refresh tokens are also different depending on whether the call to the API is AISP or PISP.
+
 </details>
 
 ## Technical FAQs
@@ -140,6 +148,108 @@
 > It is likely that you have exceeded our rate limiting rules. While we do not publish our rate limiting policy, we have limits and quotas on our APIs, and rate limit according to user IP address, external IP address or certificate. Any changes to the rules may only be considered if we are confident that the activity does not negatively impact N26 or our customers. If this negatively affects your integration with us, please reach out to us and share more details on your needs, such as:
 > External IPs used
 > Requests per application per second or per hour etc
+
+</details>
+
+<details>
+  <summary>I’ve noticed a transaction is “missing“
+</summary>
+
+> In some cases you may notice that a transaction is present in our response up to a certain date, after which it is “missing“. This usually pertains to card transactions, and it is likely that the transaction has been hidden and replaced by another one. Please note that this takes place within the N26 app, and is not unique to our Open Banking implementation.
+> When a card purchase is made, typically:
+> <ol><li>The funds are initially reserved → authorisation transaction (bank code: PMNT-MCRD-UPCT)</li>
+> <ol><li>Balance is impacted, although the funds have not yet left the customer’s account</li></ol>
+> <li>The merchant settles the claim and collects the funds → authorisation transaction is hidden, and replaced by </li>
+> <ol><li>presentment transaction (bank code: PMNT-CCRD-POSD)</li>
+> <li>Merchant has up to ~12 days to settle the claim</li>
+> <li>No further balance impact</li></ol></ol>  
+> In some cases:
+> <ol><li>The authorisation is cancelled by the merchant or it expires → authorisation reversal or authorisation expiry transaction (bank code: PMNT-MCRD-DAJT for both)</li>
+> <ol><li>Balance is impacted, and it appears as a “refund“ in the transaction list</li></ol>
+> <li>The authorisation is higher than the actual purchase amount → authorisation reversal transaction for the excess amount</li></ol>
+> Below are some examples with numbers:
+> <br/><b>Example 1: Customer purchases 12€ book from book store, and merchant settles claim</b>
+> <table>
+<tr>
+    <td><b>What takes place</b></td>
+    <td>1. Funds are reserved</td>
+    <td>2. Merchant settles claim</td>
+</tr>
+<tr>
+    <td><b>Transaction list impact</b></td>
+    <td>-12€ <i>authorisation</i> transaction</td>
+    <td><strike>-12€ <i>authorisation</i> transaction</strike> <i>(hidden)</i><br/>-12€ <i>presentment</i> 
+transaction</td>
+</tr>
+<tr>
+    <td><b>Balance impact</b></td>
+    <td>-12€</td>
+    <td>0€</td>
+</tr>
+</table>
+<br/><b>Example 2: Customer purchases 12€ book from book store, but merchant does NOT settle claim</b>
+ <table>
+<tr>
+    <td><b>What takes place</b></td>
+    <td>1. Funds are reserved</td>
+    <td>2. <i>Authorisation</i> is reversed</td>
+</tr>
+<tr>
+    <td><b>Transaction list impact</b></td>
+    <td>-12€ <i>authorisation</i> transaction</td>
+    <td>+12€ <i>authorisation reversal/expiry</i> transaction</td>
+</tr>
+<tr>
+    <td><b>Balance impact</b></td>
+    <td>-12€</td>
+    <td>+12€</td>
+</tr>
+
+</table>
+<br/><b>Example 3: Customer rents electric scooter for 12€, but in the end the cost is only 8€</b>
+<table>
+<tr>
+    <td><b>What takes place</b></td>
+    <td>1. Funds are reserved</td>
+    <td>2. <i>Authorisation</i> is partially reversed (the excess)</td>
+    <td>3. Merchant settles claim (the actual cost)</td>
+</tr>
+<tr>
+    <td><b>Transaction list impact</b></td>
+    <td>-12€ <i>authorisation</i> transaction</td>
+    <td>+4€ <i>authorisation</i> reversal transaction</td>
+    <td><strike>-12€ <i>authorisation</i> transaction</strike> <i>(hidden)</i><br/><strike>+4€ <i>authorisation 
+reversal</i> transaction</strike> <i>(hidden)</i><br/>-8€ <i>presentment</i> transaction</td>
+</tr>
+<tr>
+    <td><b>Balance impact</b></td>
+    <td>-12€</td>
+    <td>+4€</td>
+    <td>0€</td>
+</tr>
+</table>
+</details>
+
+<details>
+  <summary>I’ve noticed duplicate transactions with different details</summary>
+
+> Since our change to bookingStatus made on 14 March 2022, you may notice duplicate transactions with different 
+> transactionIDs, booking and value dates. This usually pertains to card transactions.
+> <br/>As described in <b>technical FAQ #5</b>, when a card purchase is made, the first transaction is an <i>authorisation</i> 
+> transaction (e.g. which took place on 1st March 2022). This is then hidden and replaced by a <i>presentment</i> transaction which takes place at a later date (e.g. 3rd March 2022). These are treated as two separate transactions, and thus have different transactionIDs as well as bookingDate and valueDates. Thus, if you are seeing duplicate transactions with different details, you are most likely seeing both the <i>authorisation</i> and presentment.
+> <br/>Please note that once the <i>authorisation</i> transaction is hidden, it is no longer included in our API response and 
+> only the <i>presentment</i> transaction is shared.
+
+</details>
+
+<details>
+  <summary>I’ve noticed the date of a transaction provided in the response, is different to the date of the same transaction in the N26 app</summary>
+
+> In some cases you may notice that the date of a particular transaction in our response, appears different to the date of the same transaction in the N26 app. This usually pertains to card transactions.
+> <br/> As described in <b>technical FAQ #5</b> , when a card purchase is made, the first transaction is an <i>authorisation</i> 
+> transaction (e.g. which took place on 1st March 2022). This is then hidden and replaced by a <i>presentment</i> transaction which takes place at a later date (e.g. 3rd March 2022). Although, from 3rd March 2022, the transaction the customer sees in their transaction list is the <i>presentment</i> transaction, the associated date of the transaction does not change from 1st March 2022 to 3rd March 2022. This is to avoid confusing the customer, who is most likely more interested in the date the purchase was made, rather than the date the merchant settled the claim.
+> <br/>Please note that once the <i>authorisation</i> transaction is hidden, it is no longer included in our API response and 
+> only the <i>presentment</i> transaction is shared. Therefore, the transaction you observe in the response our APIs provide, with a different date, is most likely the <i>presentment</i> transaction - this can be confirmed by checking the transaction’s bank code. Additionally, as our implementation provides transaction data as it is stored, our APIs will always return the accurate date of the transaction.
 
 </details>
 
