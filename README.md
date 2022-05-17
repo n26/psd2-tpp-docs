@@ -13,6 +13,9 @@
 # Open API file
 [Open API file for dediacted interface](./doc/assets/openapi/XS2A_Open_API.yml)
 
+# Additional API Specification
+[API Request & Response Parameters](./doc/assets/openapi/additional_api_spec.md)
+
 # Postman collections
 [Sandbox postman collection and environment](./doc/assets/postman)
 
@@ -228,6 +231,13 @@ reversal</i> transaction</strike> <i>(hidden)</i><br/>-8€ <i>presentment</i> t
     <td>0€</td>
 </tr>
 </table>
+</details>
+
+<details>
+  <summary>I'd like to know what are the bankTransactionCode means</summary>
+
+  > We've created [Additional API Specification](./doc/assets/openapi/additional_api_spec.md) page with specific section related to request & response parameters, including [Bank Transaction Code](./doc/assets/openapi/additional_api_spec.md#bank-transaction-code)
+
 </details>
 
 <details>
