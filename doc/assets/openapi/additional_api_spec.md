@@ -3,7 +3,7 @@
 **Transaction Type**              | **Transaction Code** 
 -----------------------------------|----------------------
  Authorization Accepted / Rejected | PMNT-MCRD-UPCT       
- Authorization Expired / Rejected  | PMNT-MCRD-DAJT       
+ Authorization Reversal / Expired  | PMNT-MCRD-DAJT       
  Cash26 Deposit                    | PMNT-CNTR-CDPT       
  Cash26 Withdrawal                 | PMNT-CNTR-CWDL       
  Credit Transfer                   | PMNT-RCDT-ESCT       
