@@ -611,7 +611,9 @@ Receiving a `401` indicates that the usage of access and refresh tokens is not a
 
 `(Primary) Account` - Main user account. Every user has only one main account. This is the checking account. Information is provided via `/api/accounts`.
 
-`(Secondary) Accounts aka Spaces` - A user can have multiple secondary accounts . The primary account is included in this response as well. Information is provided via `/api/spaces` or `/api/v2/spaces` (if shared spaces also might be included).
+`(Secondary) Accounts aka Spaces` - A user can have multiple secondary accounts . The primary account is included in 
+this response as well. Information is provided via `/api/v3/spaces`(if shared spaces also might 
+be included).
 
 ### Get user information
 
@@ -689,7 +691,7 @@ device-token: {{device_token}}
 #### Request
 
 ```
-GET    /api/spaces HTTP/1.1
+GET    /api/v3/spaces HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
@@ -699,61 +701,178 @@ device-token: {{device_token}}
 
 ```
 {
-    "totalBalance": 1044980.0,
-    "visibleBalance": 1044980.0,
+  "overview": {
+    "totalBalance":2080116.09,
+    "visibleBalance":2080116.09,
     "spaces": [
-        {
-            "id": "e7626455-9a7a-4097-94a4-303e5f975dbc",
-            "accountId": "4badce07-0de0-420d-a648-d3ae3e2d54d5",
-            "name": "Main Account",
-            "imageUrl": "https://scdn.number26.de/spaces/default-images/account_cards.jpg?version=1",
-            "backgroundImageUrl": "https://scdn.number26.de/spaces/background-images/account_cards_background.jpg?version=1",
-            "balance": {
-                "availableBalance": 1044970.94,
-                "currency": "EUR"
+      {
+        "accountId":"73e4a661-0761-4e6a-8fb3-605511834421",
+        "userMemberId":"9e46a22f-2128-4b38-b32d-98375c501bb6",
+        "name":"Main Account",
+        "balance":  {
+            "availableBalance":2080070.09,
+            "overdraftAmount":null,
+            "currency":"EUR"
+          },
+        "isPrimary":true,
+        "isHiddenFromBalance":false,
+        "isCardAttached":true,
+        "goal":null,
+        "type":"REGULAR",
+        "members":  [
+            {
+              "id":"9e46a22f-2128-4b38-b32d-98375c501bb6",
+              "name":"Alberto Testt Cuatro",
+              "role":"OWNER",
+              "status":"ACTIVE",
+              "initials":"AC"
+            }
+          ],
+        "externalIds":  [
+            {
+              "value":"DE45100110012624854603",
+              "type":"IBAN","bic":"NTSBDEB1XXX"
+            }
+          ],
+        "isLocked":false,
+        "features": {
+            "add_external_id":  {
+                "state":"disabled",
+                "reason":""
             },
-            "isPrimary": true,
-            "isHiddenFromBalance": false,
-            "isCardAttached": true,
-            "isLocked": false
+            "view_members": {
+                "state":"enabled",
+                "reason":""
+            },
+            "download_statements":  {
+                "state":"enabled",
+                "reason":""
+            },
+            "add_member": {
+            "state":"disabled",
+            "reason":"is_primary_space"
+            }
+          },
+          "hasRoundup":false
+      },
+      {
+        "accountId":"e1c13f48-e11c-43d0-bd07-e99227ae1495",
+        "userMemberId":"cf6aea58-25dd-417b-93de-701f6e8bbfd8",
+        "name":"Testt",
+        "balance":  {
+          "availableBalance":0.00,
+          "overdraftAmount":null,
+          "currency":"EUR"
         },
-        {
-            "id": "a664b9fb-638b-4358-b796-ec4bbec51f5a",
-            "accountId": "11d6b19c-23c9-41a9-b8a7-59a74c5716dc",
-            "name": "1st 🚀 Rules",
-            "imageUrl": "https://scdn.number26.de/spaces/default-images/occasion_christmas.jpg?version=1",
-            "backgroundImageUrl": "https://scdn.number26.de/spaces/background-images/occasion_christmas_background.jpg?version=1",
-            "balance": {
-                "availableBalance": 0.01,
-                "currency": "EUR"
-            },
-            "isPrimary": false,
-            "isHiddenFromBalance": false,
-            "isCardAttached": false,
-            "isLocked": false
+        "isPrimary":false,
+        "isHiddenFromBalance":false,
+        "isCardAttached":false,
+        "goal":null,
+        "type":"REGULAR",
+        "members":  [
+          {
+            "id":"cf6aea58-25dd-417b-93de-701f6e8bbfd8",
+            "name":"Alberto Testt Cuatro",
+            "role":"OWNER",
+            "status":"ACTIVE",
+            "initials":"AC"
+          }
+        ],
+        "externalIds":  [
+        ],
+        "isLocked":false,
+        "features": {
+          "add_external_id":  {
+            "state":"enabled",
+            "reason":""
+          },
+          "view_members": {
+            "state":"enabled",
+            "reason":""
+          },
+          "download_statements":  {
+            "state":"enabled",
+            "reason":""
+          },
+          "add_member": {
+            "state":"enabled",
+            "reason":""
+          }
         },
-        {
-            "id": "6bf72c54-77f0-4935-bf29-5334b1bed855",
-            "accountId": "c48b42f8-fcaf-42a8-a430-08ca93c61e6b",
-            "name": "Review",
-            "imageUrl": "https://scdn.number26.de/spaces/default-images/self_instrument.jpg?version=1",
-            "backgroundImageUrl": "https://scdn.number26.de/spaces/background-images/self_instrument_background.jpg?version=1",
-            "balance": {
-                "availableBalance": 9.05,
-                "currency": "EUR"
-            },
-            "isPrimary": false,
-            "isHiddenFromBalance": false,
-            "isCardAttached": false,
-            "isLocked": false
-        }
-    ],
-    "userFeatures": {
-        "availableSpaces": 0,
-        "canUpgrade": true
-    }
+        "hasRoundup":false
+      }
+    ]
+  }
 }
 ```
+
+### Get (Spaces) Account Information (single Space)
+
+#### Request
+
+```
+GET    /api/v3/spaces/{ID} HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+#### Response
+
+```
+{
+  "accountId":"73e4a661-0761-4e6a-8fb3-605511834421",
+  "userMemberId":"9e46a22f-2128-4b38-b32d-98375c501bb6",
+  "name":"Main Account",
+  "balance":  {
+    "availableBalance":2080070.09,
+    "overdraftAmount":null,
+    "currency":"EUR"
+  },
+  "isPrimary":true,
+  "isHiddenFromBalance":false,
+  "isCardAttached":true,
+  "goal":null,
+  "type":"REGULAR",
+  "members":  [
+    {
+      "id":"9e46a22f-2128-4b38-b32d-98375c501bb6",
+      "name":"Alberto Testt Cuatro",
+      "role":"OWNER",
+      "status":"ACTIVE",
+      "initials":"AC"
+    }
+  ],
+  "externalIds":  [
+    {
+      "value":"DE45100110012624854603",
+      "type":"IBAN",
+      "bic":"NTSBDEB1XXX"
+    }
+  ],
+  "isLocked":false,
+  "features": {
+    "add_external_id":  {
+    "state":"disabled",
+    "reason":""
+    },
+    "view_members": {
+    "state":"enabled",
+    "reason":""
+    },
+    "download_statements":  {
+    "state":"enabled",
+    "reason":""
+    },
+    "add_member": {
+    "state":"disabled",
+    "reason":"is_primary_space"
+    }
+  },
+  "hasRoundup":false
+}
+```
+
 
 ## Account Transactions
 
@@ -763,7 +882,8 @@ device-token: {{device_token}}
 
 `(Primary) Account transactions` - Are all transactions done on the primary account of the user. Information is provided via `/api/smrt/transactions`.
 
-`(Secondary) Accounts aka Spaces transactions` - Are all of the space <> space transactions of one account. For the primary it does not include the Bank transfers and card transactions. Information is provided via `/api/spaces`.
+`(Secondary) Accounts aka Spaces transactions` - Are all of the space <> space transactions of one account. For the 
+primary it does not include the Bank transfers and card transactions. Information is provided via `/api/v3/spaces`.
 
 ### Get (Main) Account Transactions
 
@@ -870,12 +990,12 @@ device-token: {{device_token}}
   }
 ```
 
-### Get (Spaces) Account Transactions
+### Get (Spaces) Account Transactions (without optional parameters)
 
 #### Request
 
 ```
-GET    /api/spaces/{ID}/transactions?size=10&beforeId={transaction_id} HTTP/1.1
+GET    /api/v3/spaces/{ID}/transactions HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
@@ -883,27 +1003,66 @@ device-token: {{device_token}}
 
 ##### Parameters
 
-`size` (mandatory) int. Number of transactions.
+`size` (optional) int. Number of transactions (default and max value is 200)
 
-`beforeId` (optional). UUID of last transactions fetched. Show transaction from this ID to the past.
+`beforeId` (optional) UUID of last transaction fetched (this will show transactions from the past, up to the ID)
 
 #### Response
 
 ```
 {
-    "transactions": [
-        {
-            "id": "bc7170a7-725e-11e9-80f4-0242ac110004",
-            "amount": -0.02,
-            "currency": "EUR",
-            "type": "DT",
-            "displayText": "To Review",
-            "referenceText": "Daily Rule",
-            "time": 1557408682563
-        },
-        {...},
-    ],
-    "hasMore": true
+  "items":  [
+    {
+      "id":"51098d50-573b-11ec-b70c-32d4af35d19a",
+      "title":"From Testerino to Main Account",
+      "amount":5.00,
+      "currency":"EUR",
+      "type":"CT"
+    },
+    {
+      "id":"1610e469-3e34-11ec-8dac-b2ce3daee474",
+      "title":"From Main Account to Testerino",
+      "amount":-1.00,
+      "currency":"EUR",
+      "type":"DT"
+    },
+    {
+      "id":"a72c5f77-3e33-11ec-8dac-b2ce3daee474",
+      "title":"From Main Account to Testerino",
+      "amount":-50.00,
+      "currency":"EUR",
+      "type":"DT"
+    }
+  ]
+}
+```
+
+### Get (Spaces) Account Transactions (with optional parameters)
+
+#### Request
+
+```
+GET    /api/v3/spaces/{ID}/transactions?size=1&beforeId={transaction_id} HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+
+#### Response
+
+```
+{
+  "items":  [
+    {
+      "id":"51098d50-573b-11ec-b70c-32d4af35d19a",
+      "title":"From Testerino to Main Account",
+      "amount":5.00,
+      "currency":"EUR",
+      "type":"CT"
+    }
+  ],
+  "paginationKey":"51098d50-573b-11ec-b70c-32d4af35d19a"
 }
 ```
 
