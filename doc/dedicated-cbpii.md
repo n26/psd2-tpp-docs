@@ -1,11 +1,12 @@
-# N26 - PSD2 Dedicated Interface - PISP Access documentation
+# N26 - PSD2 Dedicated Interface - CBPII Access documentation
 
-1. [General information](./dedicated-pisp.md#general-information)
-2. [Access & Identification of TPP](./dedicated-pisp.md#access--identification-of-tpp)
-3. [Support for this implementation on the Berlin Group API](./dedicated-pisp.md#support-for-this-implementation-on-the-berlin-group-api)
-4. [OAuth as a Pre-step](./dedicated-pisp.md#oauth-as-a-pre-step)
-5. [Authentication endpoints](./dedicated-pisp.md#authentication-endpoints)
-6. [Payment endpoints](./dedicated-pisp.md#payment-endpoints)
+1. [General information](./dedicated-cbpii.md#general-information)
+2. [Access & Identification of TPP](./dedicated-cbpii.md#access--identification-of-tpp)
+3. [Support for this implementation on the Berlin Group API](./dedicated-cbpii.md#support-for-this-implementation-on-the-berlin-group-api)
+4. [OAuth as a Pre-step](./dedicated-cbpii.md#oauth-as-a-pre-step)
+5. [Authentication endpoints](./dedicated-cbpii.md#authentication-endpoints)
+6. [CBPII Consent endpoints](./dedicated-cbpii.md#CBPII-consent-endpoints)
+7. [CBPII endpoints](./dedicated-cbpii.md#CBPII-endpoints)
 
 ## General information
 
@@ -36,15 +37,11 @@ Security layer: A valid QWAC Certificate for PSD2 is required to access the Berl
 ## Support for this implementation on the Berlin Group API
 
 
-| **Service**                  | **Support**                      |
-| ------------------------------ | ---------------------------------- |
-| Supported SCA Approaches     | Decoupled (Oauth2 as a pre-step) |
-| SCA Validity                 | 20 minutes                       |
-| Supported payment schemes    | SEPA Credit Transfers            |
-| Support of Periodic payments | Not Supported                    |
-| Support of Bulk payments     | Not Supported                    |
-| fundsAvailable               | Not Supported                    |
-| App to app redirection       | Not supported                    |
+| **Service**              | **Support**                      |
+|--------------------------|----------------------------------|
+| Supported SCA Approaches | Decoupled (Oauth2 as a pre-step) |
+| SCA Validity             | 20 minutes                       |
+| Confirmations of funds   | Supported                        |
 
 ## OAuth as a Pre-step
 
@@ -62,10 +59,10 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 | **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                               |
 | **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                |
 
-> :information_source: **PISP flow does not provide refresh tokens for security purposes**
+> :information_source: **CBPII flow does not provide refresh tokens for security purposes**
 
 > :warning: The TPP should not use those access tokens on base URLs other than `xs2a.tech26.de`.
-Access tokens issued for PISP cannot be used for AISP flows.
+Access tokens issued for CBPII cannot be used for AISP flows nor PISP flows.
 
 ## Authentication endpoints
 
@@ -81,7 +78,7 @@ This begins the authorization process. Users should be redirected to the URL sup
 
 ```
 GET /oauth2/authorize?client_id=PSDDE-BAFIN-000001&
-                      scope=DEDICATED_PISP&
+                      scope=DEDICATED_CBPII&
                       code_challenge=w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI&
                       redirect_uri=https://tpp.com/redirect&
                       response_type=CODE&
@@ -95,7 +92,7 @@ Supported query parameters:
 | **Name of parameter** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | client_id             | This should match the QWAC certificate’s organization identifier.This field may be obtained by running the following command on the QWAC certificate: `$ openssl x509 -in certificate.pem -noout -text`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| scope                 | Accepted value: “DEDICATED_PISP”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| scope                 | Accepted value: “DEDICATED_CBPII”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | code_challenge        | SHA256 hash of the code_verifier to be provided on POST /oauth2/token. Minimum size 43 characters, maximum 128. Should be Base-64 URL encoded, as per [https://tools.ietf.org/html/rfc7636##section-4.2](https://tools.ietf.org/html/rfc7636##section-4.2): `BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))`. Please refer to [https://tonyxu-io.github.io/pkce-generator/](https://tonyxu-io.github.io/pkce-generator/) for sample values. So as an example, code_verifier should be set as “foobar” while code challenge would be “w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI”. Mandatory field. |
 | redirect_uri          | URI to which users will be redirected back when the authorization process is completed. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | state                 | Random state string which should be returned on the query string when N26 redirects back, so the TPP can link the redirection to the original authorization request. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -124,7 +121,7 @@ Upon receiving this redirect, the TPP can make the following request can be made
 #### Sample Request
 
 ```
-POST    /oauth2/token?role=DEDICATED_PISP HTTP/1.1
+POST    /oauth2/token?role=DEDICATED_CBPII HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code&
@@ -137,8 +134,8 @@ Supported query parameters:
 
 
 | **Name of query parameter** | **Description**                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------------- |
-| role                        | Accepted value: “`DEDICATED_PISP`” to generate a PISP-only token. Mandatory field. |
+| ----------------------------- |--------------------------------------------------------------------------------------|
+| role                        | Accepted value: “`DEDICATED_CBPII`” to generate a CBPII-only token. Mandatory field. |
 
 Supported form parameters:
 
@@ -183,281 +180,143 @@ HTTP/1.1 400 Bad Request
 }
 ```
 
-## Payment endpoints
+## CBPII Consent endpoints
 
-Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access 
-token retrieved as per the [Oauth](./dedicated-pisp.md#validity-of-access-token).
+Please use your QWAC certificate when calling for any Consent request on `xs2a.tech26.de`, along with a valid access 
+token retrieved as per the oauth session.
 
-### Create payment
-#### SEPA Credit Transfers
-##### Request
+> :warning: We use a different endpoint than the one that we use for AIS consent. For AIS we are using
+`/v1/berlin-group/v1/consents` and for CBPII we use `/v1/berlin-group/v1/consents/confirmation-of-funds`.
+
+### Create consent
+
+#### Request (consent by IBAN)
 
 ```
-POST    /v1/berlin-group/v1/payments/sepa-credit-transfers HTTP/1.1
+POST    /v1/berlin-group/v1/consents/confirmation-of-funds HTTP/1.1
 Authorization: bearer {{access_token}}
 Content-Type: application/json
 
 {
-    "instructedAmount": {
-        "currency": "EUR", 
-        "amount": "123.50"
-    },
-    "debtorAccount": {
-        "iban": "DE40100100103307118608"
-    },
-    "creditorName": "Seller",
-    "creditorAccount": {
-        "iban": "DE02100100109307118603"
-    },
-    "remittanceInformationUnstructured": "Reference text"
+  "account": {
+      "iban" : "DE73100110012629586632"
+      }
 }
 ```
 
-> :warning: Allowed special characters in creditorName for N26 SEPA CT -  ( **:,.+?/** )
-> 
-> :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
-
-##### Response
+#### Response
 
 ```
 aspsp-sca-approach: DECOUPLED
 
 {
-    "transactionStatus": "RCVD",
-    "paymentId": "a4e7c6e3-ef2f-440c-ac0f-36dcafe4551c",
+    "consentStatus": "received",
+    "consentId": "55ecfaab-786a-4363-94af-2401f0a4bc65",
     "_links": {
         "status": {
-            "href": "/v1/berlin-group/v1/payments/sepa-credit-transfers/a4e7c6e3-ef2f-440c-ac0f-36dcafe4551c/status"
+            "href": "/v1/berlin-group/v1/consents/confirmation-of-funds/55ecfaab-786a-4363-94af-2401f0a4bc65/status"
+        },
+        "scaStatus": {
+            "href": "/v1/berlin-group/v1/consents/confirmation-of-funds/55ecfaab-786a-4363-94af-2401f0a4bc65/authorisations/985f9d29-10ee-4ab0-90d6-6c2aeda65852"
         }
     }
 }
 ```
 
-#### Instant SEPA Credit Transfers
+### Get consent status
 
-Customers are required to accept Terms and Conditions, specifically for the SEPA Instant feature, prior to performing the transfer. Furthermore, non-premium customers (i.e. customers with an N26 Standard account) are charged a fee for each instant transfer. This fee differs by market, ranging from €0.49-€1.99, and can be found on the N26 website of the relevant market.
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the consent (as we are using the decoupled SCA approach). Please note that users have up to 5 minutes to confirm consent, and thus the time taken for the status to change is dependent on the user.
 
-##### Request
+#### Request
 
 ```
-POST    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers HTTP/1.1
+GET    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 
+```
+
+#### Response
+
+```
 {
-    "instructedAmount": {
-        "currency": "EUR", 
-        "amount": "123.50"
+    "consentStatus": "received"
+}
+```
+
+### Get consent
+
+#### Request
+
+```
+GET    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+Content-Type: application/json
+```
+
+#### Response
+
+```
+{
+    "account": {
+        "iban": "DE73100110012629586632"
     },
-    "debtorAccount": {
-        "iban": "DE40100100103307118608"
-    },
-    "creditorName": "Seller",
-    "creditorAccount": {
-        "iban": "DE02100100109307118603"
-    },
-    "remittanceInformationUnstructured": "Reference text"
+    "consentStatus": "received"
 }
 ```
 
-> :warning: Allowed special characters in creditorName for N26 SEPA CT -  ( **:,.+?/** )
->
-> :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
+### Delete consent
 
-##### Response
+#### Request
 
 ```
-aspsp-sca-approach: DECOUPLED
-
-{
-    "transactionStatus": "RCVD",
-    "paymentId": "a4e7c6e3-ef2f-440c-ac0f-36dcafe4551c",
-    "_links": {
-        "status": {
-            "href": "/v1/berlin-group/v1/payments/instant-sepa-credit-transfers/a4e7c6e3-ef2f-440c-ac0f-36dcafe4551c/status"
-        }
-    }
-}
-```
-
-Customer should accept ___Term And Conditions___ for SEPA Instant feature in the N26 app prior to perform the transfer. In case customer hasn't accepted the contract previously the following response would be sent to the TPP:
-```
-HTTP/1.1 307 Temporary Redirect
-Location: https://n26.com
-```
-
-### Get payment status
-
-This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are using the decoupled SCA approach).
-
-Payment final status will be applied no later then **15 minutes. **
-
-Statuses currently supported:
-
-
-| **Status code** | **Description**                                                                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RCVD            | Received. Initial status for a payment. A cerification has been sent to the user’s app.                                                                              |
-| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this is the final successful status for a payment. |
-| RJCT            | Rejected. Status for payment when an in-app certification expired or was denied by the user.                                                                          |
-| ACFC            | AcceptedFundsChecked.**Currently not supported** , but will be implemented in the future.                                                                             |
-| ACSC            | AcceptedSettlementCompleted.**Currently not supported** , but will be implemented in the future.                                                                      |
-
-#### SEPA Credit Transfer
-##### Request
-
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+DELETE    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 ```
 
-##### Response
+#### Response
 
 ```
-{
-    "transactionStatus": "ACCP"
-}
+HTTP/1.1 204 No Content
 ```
-
-#### Instant SEPA Credit Transfers
-##### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-Content-Type: application/json
-```
-
-##### Response
-
-```
-{
-    "transactionStatus": "ACCP"
-}
-```
-
-### Get payment
-#### SEPA Credit Transfer
-##### Request
-
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentsId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-Content-Type: application/json
-```
-
-##### Response
-
-```
-{
-  "debtorAccount": {
-       "iban": "DE40100100103307118608"
-  },
-  "instructedAmount": {
-       "amount":  0.12,
-       "currency":  "EUR"
-  },
-  "creditorAccount":  {
-       "iban": "DE96100110012627266269"
-  },
-  "creditorName": "Seller",
-  "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
-}
-```
-
-#### Instant SEPA Credit Transfers
-##### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentsId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-Content-Type: application/json
-```
-
-##### Response
-
-```
-{
-  "debtorAccount": {
-       "iban": "DE40100100103307118608"
-  },
-  "instructedAmount": {
-       "amount":  0.12,
-       "currency":  "EUR"
-  },
-  "creditorAccount":  {
-       "iban": "DE96100110012627266269"
-  },
-  "creditorName": "Seller",
-  "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
-}
-```
-
-### Delete payments
-
-This endpoint is not supported.
 
 ### Get authorisations
 
-#### SEPA Credit Transfer
-##### Request
+#### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
+GET    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}}/authorisations HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 ```
 
-##### Response
+#### Response
 
 ```
 {
     "authorisationIds": [
-        "e93bf74e-9444-4a5e-8524-648d80848126"
-    ]
-}
-```
-#### Instant SEPA Credit Transfers
-##### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-Content-Type: application/json
-```
-
-##### Response
-
-```
-{
-    "authorisationIds": [
-        "e93bf74e-9444-4a5e-8524-648d80848126"
+        "e4fe6eb0-e058-438c-9822-6b420a6040df"
     ]
 }
 ```
 
 ### Get authorisation
 
-#### Instant SEPA Credit Transfers
-##### Request
+#### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
+GET    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}}/authorisations/{{authorisationId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 ```
 
-##### Response
+#### Response
 
 ```
 {
@@ -465,4 +324,39 @@ Content-Type: application/json
 }
 ```
 
-[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-PISP-access-documentation.pdf)
+## CBPII endpoints
+
+Please use your QWAC certificate when calling for any Funds request on `xs2a.tech26.de`, along with a valid access
+token retrieved as per the [Oauth](./dedicated-cbpii.md#validity-of-access-token).
+
+
+### Funds confirmation
+
+```
+POST    /v1/berlin-group/v1/funds-confirmations HTTP/1.1
+Authorization: bearer {{access_token}}
+Consent-ID: {{consent_id}}
+X-Request-ID: {{Unique UUID}}
+PSU-IP-Address: {{Users'IP if they are present}}
+Content-Type: application/json
+
+{
+    "account": {
+        "iban": "DE73100110012629586632"
+    },
+    "instructedAmount": {
+        "amount": "10.00",
+        "currency": "EUR"
+    }
+}
+```
+
+#### Response
+
+```
+{
+    "fundsAvailable": true
+}
+```
+
+[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-CBPII-access-documentation.pdf)
