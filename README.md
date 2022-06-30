@@ -4,6 +4,8 @@
 
 ## [PSD2 Dedicated Interface - PISP Access documentation](./doc/dedicated-pisp.md)
 
+## [PSD2 Dedicated Interface - CBPII Access documentation](./doc/dedicated-cbpii.md)
+
 ## [PSD2 Fallback API - AISP access documentation](./doc/fallback-aisp.md)
 
 ## [PSD2 Fallback API - PISP access documentation](./doc/fallback-pisp.md)

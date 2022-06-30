@@ -203,4 +203,13 @@ Content-Type: application/json
     "transactionStatus": "RCVD"
 }
 ```
+
+### SEPA Instant Transfer
+When dealing with SEPA Instant Transfer if you want to test the redirection we perform when the user hasn’t accepted the Term And Conditions for the service you have the option to add an additional parameter called signed to your request in order to be redirected to the provided URI, ie:
+```
+POST    /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers?signed=https://n26.com HTTP/1.1
+HTTP/1.1 307 Temporary Redirect
+Location: https://n26.com
+```
+
 [View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-Sandbox-access-documentation.pdf)
