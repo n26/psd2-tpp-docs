@@ -286,6 +286,8 @@ HTTP/1.1 307 Temporary Redirect
 Location: https://n26.com
 ```
 
+> :info: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, you are required to make a new POST request to initiate the payment again in order for it to be executed.
+
 ### Get payment status
 
 This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are using the decoupled SCA approach).
