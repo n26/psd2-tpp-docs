@@ -50,7 +50,7 @@ Security layer: A valid QWAC Certificate for PSD2 is required to access the Berl
 
 OAuth2 is supported by this API through the authentication of a PSU in a pre-step, as per the diagram below:
 
-![Oauth flow](./assets/oauth-flow.png)
+![Oauth flow](./assets/oauth-pisp-flow.png)
 
 ### Validity of access token
 
