@@ -7,6 +7,7 @@
 5. [Consent endpoints](./sandbox.md#consent-endpoints)
 6. [AIS endpoints](./sandbox.md#ais-endpoints)
 7. [PIS endpoints](./sandbox.md#pis-endpoints)
+7. [CBPII endpoints](./sandbox.md#cbpii-endpoints)
 
 ## General information
 
@@ -121,6 +122,10 @@ All endpoints are prefixed with `/sandbox` compared to the live system, so for e
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/consents`
 
+And the root URL for CBPII consents would be:
+
+`https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/consents/confirmation-of-funds`
+
 ### SCA user interaction
 
 As described in our AISP documentation, we currently use the `DECOUPLED` SCA flow to establish consent, which means that the normal sequence of events from a TPP perspective is:
@@ -169,6 +174,19 @@ All endpoints are prefixed with `/sandbox` compared to the live system, so for e
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/payments`
 
+### SEPA Instant Transfer
+
+As described in our PISP documentation, customers are required to accept specific Terms and Conditions in order to perform instant transfers. Calling the endpoint below assumes the customer has already accepted the Terms and Conditions:
+
+POST /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers
+
+If you would like to test the redirection performed when the customer has not accepted the Terms and Conditions, you can include an additional parameter called signed in your request in order to be redirected to the provided URI:
+```
+POST    /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers?signed=https://n26.com HTTP/1.1
+HTTP/1.1 307 Temporary Redirect
+Location: https://n26.com
+```
+
 ### Get payment status
 
 As described in our PISP documentation, we currently use the `DECOUPLED` SCA flow to confirm payment initiation, which means that the normal sequence of events from a TPP perspective is:
@@ -204,12 +222,11 @@ Content-Type: application/json
 }
 ```
 
-### SEPA Instant Transfer
-When dealing with SEPA Instant Transfer if you want to test the redirection we perform when the user hasn’t accepted the Term And Conditions for the service you have the option to add an additional parameter called signed to your request in order to be redirected to the provided URI, ie:
-```
-POST    /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers?signed=https://n26.com HTTP/1.1
-HTTP/1.1 307 Temporary Redirect
-Location: https://n26.com
-```
+## CBPII endpoint
+These endpoints currently respond with dummy data. You can expect requests to be validated for correct syntax and valid responses to be returned.
+
+All endpoints are prefixed with /sandbox compared to the live system, so for example for the root URL for funds confirmation would be:
+
+`https://xs2a.tech26.de/sandbox//v1/berlin-group/v1/funds-confirmations`
 
 [View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-Sandbox-access-documentation.pdf)
