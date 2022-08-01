@@ -14,6 +14,7 @@
     2. [User PIN Encryption](./fallback-pisp.md#user-pin-encryption)
     3. [Initiate SEPA (Debit Transfer) DT Transactions](./fallback-pisp.md#initiate-sepa-debit-transfer-dt-transactions)
     4. [Initiate SEPA Standing Order (Recurring/Future Payments)](./fallback-pisp.md#initiate-sepa-standing-order-recurringfuture-payments)
+    5. [Initiate SEPA Instant Transfer](./fallback-pisp.md#initiate-sepa-instant-transfer)
 4. [Get Status of Initiated Transactions](./fallback-pisp.md#get-status-of-initiated-transactions)
     1. [Overview](./fallback-pisp.md#overview-2)
     2. [Get (Main) Account Transactions List](./fallback-pisp.md#get-main-account-transactions-list)
@@ -766,6 +767,71 @@ HTTP/1.1 400 Bad Request
 
 ##### All other errors
 
+```
+HTTP/1.1 500 Internal Server Error
+{
+	"title": "Error",
+	"message": "An unexpected error happened"
+}
+```
+
+## Initiate SEPA Instant Transfer
+First you need to complete the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) procedure before initiating a SEPA Instant Transfer.
+
+### Request
+```
+POST    /api/openbanking/fallback/sepa-instant HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+encrypted-secret: {{encrypted-secret}}
+encrypted-pin: {{user-pin}} 
+Content-Type: application/json
+
+{
+   "transaction":{
+      "amount":"12.0",
+      "currency": "EUR",
+      "referenceText":"you get the money pretty fast",
+      "debtor": {
+        "iban": "DE78500105172857262413"
+      }
+      "beneficiary": {
+        "fullName": "John Snow",
+        "iban": "DE12500105172365448575"
+      }
+   }
+}
+```
+
+### Responses
+#### Successful
+```
+{
+  "id": "bc7170a7-725e-11e9-80f4-0242ac110004" # created Transaction id
+}
+```
+
+#### Incorrectly formatted payload (e.g. missing field etc)
+```
+HTTP/1.1 400 Bad Request
+{
+	"timestamp": 1582910546847,
+	"status": 400,
+	"error": "Bad Request",
+	"message": "Bad Request",
+	"detail": "Bad Request"
+}
+```
+#### Error validating PIN
+```
+HTTP/1.1 400 Bad Request
+{
+	"title": "Invalid confirmation PIN",
+	"message": "Invalid confirmation PIN"
+}
+```
+#### All other errors
 ```
 HTTP/1.1 500 Internal Server Error
 {
