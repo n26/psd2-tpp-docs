@@ -718,11 +718,6 @@ HTTP/1.1 500 Internal Server Error
 
 ### Initiate SEPA Standing Order (Recurring/Future Payments)
 
-Please make sure you’ve completed the steps from the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) section before proceeding with the request.
-
-> :warning: SEPA standing orders are available only for EU users. In order to identify if a user’s legal entity is 
-> EU or UK, please refer to the [Get Main Account information](./fallback-pisp.md#get-main-account-information) section.
-
 #### Request
 
 ```
@@ -730,8 +725,6 @@ POST    /api/transactions/so HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
-encrypted-secret: {{encrypted-secret}}
-encrypted-pin: {{user-pin}} 
 Content-Type: application/json
 
 {
@@ -739,9 +732,10 @@ Content-Type: application/json
       "amount":"12.0",
       "partnerIban":"ES2015632626323268851568",
       "partnerName":"Pancho Villa",
-      "referenceText":"standing order for Dio",
+      "debtorIban": "ES4415632626353267173859",
+      "referenceText":"standing order for Dio", # optional
       "nextExecutingTS":"1583452800000", # exact day in epoch millis, should be whole day in UTC
-      "executionFrequency":"WEEKLY", 
+      "executionFrequency":"WEEKLY", # ONCE, WEEKLY, MONTHLY, QUARTERLY, HALFYEARLY, YEARLY
       "stopTS":"1593129600000", # optional, last execution timestamp in epoch millis, should be whole day in UTC
    }
 }
@@ -767,16 +761,6 @@ HTTP/1.1 400 Bad Request
 	"error": "Bad Request",
 	"message": "Bad Request",
 	"detail": "Bad Request"
-}
-```
-
-##### Error validating PIN
-
-```
-HTTP/1.1 400 Bad Request
-{
-	"title": "Invalid confirmation PIN",
-	"message": "Invalid confirmation PIN"
 }
 ```
 
@@ -921,53 +905,53 @@ device-token: {{device_token}}
 
 #### Response
 
-> :information_source: Not yet confirmed Standing Orders have `"userCertified": null`
-Confirmed Standing Orders have not null `"userCertified"`
-
 ```
-{
-  "paging": {
-    "previous": null,
-    "next": null,
-    "totalResults": 2
+[
+  {
+    "id": "ca27ad61-630f-49ea-b763-dc2ee5402c52",
+    "actionConfig": {
+      "sourceSpaceId": "4f6b353d-4931-462a-81f6-a9d153431e22",
+      "destinationSpaceId": "f68c2628-deba-40d2-9f3f-3c93528a0b97",
+      "amount": "1.0000",
+      "currency": "EUR",
+      "referenceText": ""
+    },
+    "actionType": "SPACES_MONEY_TRANSFER",
+    "triggerConfig": {
+      "startDateTime": "2019-12-15T00:00:00Z",
+      "endDateTime": null,
+      "userTimeOffsetInHours": null,
+      "frequency": "MONTHLY"
+    },
+    "triggerType": "DATE_TIME",
+    "created": "2019-11-28T14:43:51.760134Z",
+    "status": "DELETED"
   },
-  "data": [
-    {
-      "id": "172078ba-2c20-5351-bedd-2e40a5ee648d",
-      "created": 1575888863557,
-      "updated": 1577750403118,
-      "amount": 0.99,
-      "currencyCode": {
-        "currencyCode": "EUR"
-      },
-      "partnerIban": "DE31100110012628943987",
-      "partnerBic": "NTSBDEB1XXX",
-      "partnerAccountIsSepa": true,
-      "partnerAccountBan": "2628943987",
-      "partnerBcn": "10011001",
-      "userCertified": 1575888863554, # Check this field. 'null' means SO is not confirmed by user
-      "userCanceled": null,
-      "n26Iban": "DE91100110012625635983",
-      "bankTransferTypeText": null,
-      "firstExecutingTS": 1577750400000,
-      "nextExecutingTS": null,
-      "stopTS": 1577836800000,
-      "referenceText": "Southside Order: NJ4EE",
-      "partnerBankName": "N26 Bank",
-      "partnerName": "Southside",
-      "initialDayOfMonth": 31,
-      "linkId": null,
-      "internal": false,
-      "referenceToOriginalOperation": null,
-      "executionFrequency": "MONTHLY",
-      "executionCounter": 1,
-      "userId": "96baf720-441f-430e-8b7d-2e78b8712d59",
-      "accountId": "d0ef2c77-a81e-443f-8a02-1ff44e88f135",
-      "openBankingId": "cwr4vc2ss1p81di1hb",
-      "tokenSubmissionId": "ss:68782ycyPgUCvY7FHddnkynukZ1dUmRhLMSWRLfYokkV:qXTTjgzAQHgC3Hyrn"
-    }
-  ]
-}
+  {
+    "id": "57c71e0f-e0e1-4f9a-b569-6812c8d3adbe",
+    "actionConfig": {
+      "accountId": "edd2305a-d4e8-4229-8cb4-dae1f3af356e",
+      "amount": "10.00",
+      "currency": "EUR",
+      "partnerName": "PARTNER_IBAN",
+      "partnerBic": null,
+      "partnerIban": "DE43100110012624425996",
+      "partnerBankName": null,
+      "referenceText": "Reference text test"
+    },
+    "actionType": "SEPA_MONEY_TRANSFER",
+    "triggerConfig": {
+      "startDateTime": "2022-08-14T00:00:00Z",
+      "endDateTime": "2032-02-15T00:00:00Z",
+      "userTimeOffsetInHours": null,
+      "frequency": "ONCE"
+    },
+    "triggerType": "DATE_TIME",
+    "created": "2022-07-18T08:15:13.630143Z",
+    "status": "ENABLED",
+    "lastScheduledExecution": "2022-08-14T00:00:00Z"
+  }
+]
 ```
 
 ### Get (Main) Account Information
