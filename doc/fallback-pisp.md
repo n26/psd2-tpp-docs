@@ -776,16 +776,12 @@ HTTP/1.1 500 Internal Server Error
 ```
 
 ## Initiate SEPA Instant Transfer
-First you need to complete the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) procedure before initiating a SEPA Instant Transfer.
-
 ### Request
 ```
 POST    /api/openbanking/fallback/sepa-instant HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
-encrypted-secret: {{encrypted-secret}}
-encrypted-pin: {{user-pin}} 
 Content-Type: application/json
 
 {
