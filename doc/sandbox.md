@@ -228,5 +228,3 @@ These endpoints currently respond with dummy data. You can expect requests to be
 All endpoints are prefixed with /sandbox compared to the live system, so for example for the root URL for funds confirmation would be:
 
 `https://xs2a.tech26.de/sandbox//v1/berlin-group/v1/funds-confirmations`
-
-[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-Sandbox-access-documentation.pdf)

@@ -526,7 +526,7 @@ HTTP/1.1 429 Too Many Requests
 
 ### Overview
 
-In order to make requests to the payment initiation endpoints such as SEPA DT or Standing Orders it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
+In order to make requests to the payment initiation endpoints such as SEPA DT it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
 
 > :warning: A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. 
 > Please refer to the [Data which should not be stored](./fallback-pisp.md#data-which-should-not-be-stored-warning) section for more details.
@@ -628,9 +628,6 @@ At this step you should have everything necessary to make a call to one of the p
 Please make sure you’ve completed the steps from the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) section before 
 proceeding with the 
 request.
-
-> :warning: SEPA transfers are available only for EU users. In order to identify if a user’s legal entity is EU or 
-> UK, please refer to the [Get Main Account information](./fallback-pisp.md#get-main-account-information) paragraph.
 
 ```
 POST    /api/transactions HTTP/1.1
@@ -817,14 +814,6 @@ HTTP/1.1 400 Bad Request
 	"error": "Bad Request",
 	"message": "Bad Request",
 	"detail": "Bad Request"
-}
-```
-#### Error validating PIN
-```
-HTTP/1.1 400 Bad Request
-{
-	"title": "Invalid confirmation PIN",
-	"message": "Invalid confirmation PIN"
 }
 ```
 #### All other errors
@@ -1018,7 +1007,7 @@ device-token: {{device_token}}
 
 ### Get (Main) Account Information
 
-This is the main method for identifying if a user account is based on the EU or UK.
+This is the main method for identifying if a user account is based on the EU.
 
 #### Request
 
@@ -1058,39 +1047,6 @@ EU users include all countries in Europe with the exception of the UK, no matter
 }
 ```
 
-#### Response for UK users
-
-Notice that for these users currency is also set as GBP and the IBAN is british.
-
-```
-{
-    "id":"80ad5484-1d66-4922-96e3-9861405c8c3e",
-    "physicalBalance":null,
-    "availableBalance":99960.00,
-    "usableBalance":99960.00,
-    "bankBalance":99960.00,
-    "iban":"GB56NTSB04002600001392",
-    "bic":"NTSBDEB1XXX",
-    "bankName":"N26 Bank",
-    "seized":false,
-    "currency":"GBP",
-    "legalEntity":"UK", 
-    "users":[
-        {
-            "userId":"e4af5220-e9f5-4449-98cb-eff9f980d46c",
-            "userRole":"OWNER"
-        }
-    ],
-    "externalId":{
-        "iban":"GB56NTSB04002600001392",
-        "accountNumber":"00001392",
-        "sortCode":"040026"
-    }
-}
-```
-
 ## Appendix A
 
 #### [Bash Script for User PIN Encryption and Initiating Transaction](./assets/bash/pin_encryption_and_initiating_transaction.sh)
-
-[View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-PISP-access-documentation.pdf)
