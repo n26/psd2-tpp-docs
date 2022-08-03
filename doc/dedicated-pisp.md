@@ -466,5 +466,3 @@ Content-Type: application/json
     "scaStatus": "finalised"
 }
 ```
-
-[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-PISP-access-documentation.pdf)

@@ -1065,5 +1065,3 @@ device-token: {{device_token}}
   "paginationKey":"51098d50-573b-11ec-b70c-32d4af35d19a"
 }
 ```
-
-[View as PDF](./assets/pdf/N26-PSD2-Fallback-Interface-AISP-access-documentation.pdf)

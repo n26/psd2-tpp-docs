@@ -768,4 +768,3 @@ X-Request-ID: UUID
     }
 }
 ```
-[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-AISP-access-documentation.pdf)

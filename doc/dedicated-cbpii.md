@@ -358,5 +358,3 @@ Content-Type: application/json
     "fundsAvailable": true
 }
 ```
-
-[View as PDF](./assets/pdf/N26-PSD2-Dedicated-Interface-CBPII-access-documentation.pdf)
