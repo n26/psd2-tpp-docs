@@ -55,12 +55,12 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 ### Validity of access token
 
 
-|                | **Access Token**                                                                                                                                                                                                                                                                                                                     |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Purpose**    | Access for API calls in**one session**                                                                                                                                                                                                                                                                                               |
-| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/token |
-| **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                               |
-| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                |
+|                | **Access Token**                                                                                                                                                                                                                                                                                                                              |
+| ---------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                       |
+| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier    2. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an authCode.   3. Use the authCode along with the unhashed code verifier on POST /oauth2/token |
+| **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                                        |
+| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                         |
 
 > :information_source: **PISP flow does not provide refresh tokens for security purposes**
 
@@ -69,7 +69,7 @@ Access tokens issued for PISP cannot be used for AISP flows.
 
 ## Authentication endpoints
 
-These endpoints are used to retrieve an access or refresh token for use with the /consents and /accounts endpoints.
+These endpoints are used to retrieve an access token for use with the /payments endpoints.
 
 Note: any values shown between curly braces should be taken as variables, while the ones not surrounded are to be read as literals.
 
@@ -119,7 +119,7 @@ As an example, if the TPP  provided “https://www.tpp.com/redirect“ as redire
 
 `https://www.tpp.com/redirect?code=dbtF5AqOApjjSnNF5TK3w3gaEPdwtV2&state=1fL1nn7m9a`
 
-Upon receiving this redirect, the TPP can make the following request can be made to retrieve the access and refresh tokens:
+Upon receiving this redirect, the TPP can make the following request to retrieve the access token:
 
 #### Sample Request
 
@@ -286,7 +286,7 @@ HTTP/1.1 307 Temporary Redirect
 Location: https://n26.com
 ```
 
-> :info: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, you are required to make a new POST request to initiate the payment again in order for it to be executed.
+> :information_source: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, you are required to make a new POST request to initiate the payment again in order for it to be executed.
 
 ### Get payment status
 

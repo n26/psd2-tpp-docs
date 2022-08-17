@@ -106,12 +106,12 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 #### Validity of access & refresh tokens
 
 
-|                | **Access Token**                                                           | **Refresh Token**                                                          |
-| ---------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| **Purpose**    | Access for API calls in**one session**                                     | Generate new access tokens                                                 |
-| **How to get** | 1. Email & password1.**Push**(OOB) or SMS (OTP)or1. Existing Refresh token | 1. Email & password1.**Push**(OOB) or SMS (OTP)or1. Existing Refresh token |
-| **Validity**   | 15 min                                                                     | **One time usable** , but chain of refresh tokens is**valid for 90 days**  |
-| **Storage**    | NEVER                                                                      | Yes, for 89 days (expiry needs to be stored on TPP)                        |
+|                | **Access Token**                                                                  | **Refresh Token**                                                                   |
+| ---------------- |-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| **Purpose**    | Access for API calls in **one session**                                           | Generate new access tokens                                                          |
+| **How to get** | 1. Email & password with **Push**(OOB) or SMS (OTP). Or 2. Existing Refresh token | 1. Email & password  with **Push**(OOB) or SMS (OTP). Or  2. Existing Refresh token |
+| **Validity**   | 15 min                                                                            | **One time usable** , but chain of refresh tokens is **valid for 90 days**          |
+| **Storage**    | NEVER                                                                             | Yes, for 89 days (expiry needs to be stored on TPP)                                 |
 
 > :information_source: **Refreshing refresh tokens**
 > The first refresh token has validity of 90 days, but is  **one-time usable** .
@@ -912,7 +912,7 @@ For instance:
 GET /api/smrt/transactions?limit=20&lastId=c690c24d-9a19-4400-0001-6db5542c82d5&from=1570312800000&to=1570312800001
 ```
 
-> :warning: The TPP should not request request more than 90 days of transactions if the **access token** was generated from a  **refresh token** , **only** if generated **through the SCA** flow with email + password  & OOB/OTP.
+> :warning: The TPP should not request more than 90 days of transactions if the **access token** was generated from a  **refresh token** , **only** if generated **through the SCA** flow with email + password  & OOB/OTP.
 
 #### Response
 

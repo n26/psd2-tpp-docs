@@ -82,14 +82,15 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 
 > :information_source: **Refreshing refresh tokens**     
 > The first refresh token has validity of 90 days, but is  **one-time usable**.
-> With this refresh token, an access and a new refresh token can be requested.
+> With this refresh token, a new set of an access token and a refresh token can be requested.
 > This new refresh token will maintain the initial 90 days validity.
 > So, in summary, the chain of refresh tokens has a validity of 90 days.
-> **Refresh getting close to expiry**
+
+> :information_source: **Refresh token getting close to expiry**   
 > On day 89 the TPP should discard the refresh token and ask users for re-authentication.
 > As highlighted above, the TPP should never store users' passwords.
 
-> :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
+> :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .    
 > If users request a manual refresh, a new access token has to be requested **EVEN** if the original access token is still valid.
 > For this reason the TPP should **NEVER** store the access token.
 

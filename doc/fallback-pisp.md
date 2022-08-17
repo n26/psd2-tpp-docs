@@ -102,12 +102,12 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 #### Validity of access tokens
 
 
-|                | **Access Token**                                |
-| ---------------- | ------------------------------------------------- |
-| **Purpose**    | Access for API calls in**one session**          |
-| **How to get** | 1. Email & password1.**Push**(OOB) or SMS (OTP) |
-| **Validity**   | 15 min                                          |
-| **Storage**    | NEVER                                           |
+|                | **Access Token**                                 |
+| ---------------- |--------------------------------------------------|
+| **Purpose**    | Access for API calls in **one session**          |
+| **How to get** | Email & password with **Push**(OOB) or SMS (OTP) |
+| **Validity**   | 15 min                                           |
+| **Storage**    | NEVER                                            |
 
 > :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .
 > If a user requests initiation of a new payment a new access token has to be requested **EVEN** if the original access token is still valid.
@@ -116,6 +116,8 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 > :warning: The TPP should not use these access tokens on other base URLs than `pisp.tech26.de`.
 
 > :x: If those policies above are not respected, there is no guarantee you will not be rate-limited.
+
+> :information_source: **PISP flow does not provide refresh tokens for security purposes** 
 
 ## User Authentication
 

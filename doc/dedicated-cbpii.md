@@ -52,12 +52,12 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 ### Validity of access token
 
 
-|                | **Access Token**                                                                                                                                                                                                                                                                                                                     |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Purpose**    | Access for API calls in**one session**                                                                                                                                                                                                                                                                                               |
-| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/token |
-| **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                               |
-| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                |
+|                | **Access Token**                                                                                                                                                                                                                                                                                                                          |
+| ---------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                   |
+| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier.  2. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an authCode.  3. Use the authCode along with the unhashed code verifier on POST /oauth2/token |
+| **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                                    |
+| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                     |
 
 > :information_source: **CBPII flow does not provide refresh tokens for security purposes**
 
@@ -66,7 +66,7 @@ Access tokens issued for CBPII cannot be used for AISP flows nor PISP flows.
 
 ## Authentication endpoints
 
-These endpoints are used to retrieve an access or refresh token for use with the /consents and /accounts endpoints.
+These endpoints are used to retrieve an access token for use with the /consents/confirmation-of-funds and /funds-confirmations endpoints.
 
 Note: any values shown between curly braces should be taken as variables, while the ones not surrounded are to be read as literals.
 
@@ -140,12 +140,12 @@ Supported query parameters:
 Supported form parameters:
 
 
-| **Name of parameter** | **Description**                                                                                                                                |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Name of parameter** | **Description**                                                                                                                              |
+| ----------------------- |----------------------------------------------------------------------------------------------------------------------------------------------|
 | grant_type            | Accepted value: “authorization_code”. Mandatory parameter.                                                                                   |
 | code                  | The authorization code as returned by N26 as a parameter (“code”) on the redirect URL (step 7 of the sequence diagram). Mandatory parameter. |
-| code_verifier         | Value of the code verifier; should match hashed code challenge from`GET /oauth2/authorize`request. Mandatory parameter.                        |
-| redirect_uri          | The same redirect URI that was provided to the`GET /oauth2/authorize`request. Optional parameter.                                              |
+| code_verifier         | Value of the code verifier; should match hashed code challenge from `GET /oauth2/authorize` request. Mandatory parameter.                    |
+| redirect_uri          | The same redirect URI that was provided to the `GET /oauth2/authorize` request. Optional parameter.                                          |
 
 #### Response
 
