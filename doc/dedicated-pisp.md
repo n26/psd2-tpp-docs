@@ -189,6 +189,10 @@ Please use your QWAC certificate when calling for any Payment request on `xs2a.t
 token retrieved as per the [Oauth](./dedicated-pisp.md#validity-of-access-token).
 
 ### Create payment
+
+> :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded, 
+> the payment will be executed from the customer's main account.  
+
 #### SEPA Credit Transfers
 ##### Request
 
