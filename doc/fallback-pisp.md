@@ -717,6 +717,7 @@ HTTP/1.1 500 Internal Server Error
 ```
 
 ### Initiate SEPA Standing Order (Recurring/Future Payments)
+> :x: This endpoint is currently unavailable, due to technical issues we are resolving. We apologise for the inconvenience, and will update this documentation as soon as it is available again.
 
 #### Request
 
