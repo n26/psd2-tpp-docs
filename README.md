@@ -1,28 +1,43 @@
-# API Documentation - PSD2 - Open Banking for Third Party Providers
+# N26 PSD2 Interfaces - Open Banking for Third Party Providers
+## Access documentation
+<details>
+<summary> PSD2 Dedicated Interface</summary>
 
-## [PSD2 Dedicated Interface - AISP Access documentation](./doc/dedicated-aisp.md)
+> [AISP Access documentation](./doc/dedicated-aisp.md)
 
-## [PSD2 Dedicated Interface - PISP Access documentation](./doc/dedicated-pisp.md)
+> [PISP Access documentation](./doc/dedicated-pisp.md)
 
-## [PSD2 Dedicated Interface - CBPII Access documentation](./doc/dedicated-cbpii.md)
+> [CBPII Access documentation](./doc/dedicated-cbpii.md)
 
-## [PSD2 Fallback API - AISP access documentation](./doc/fallback-aisp.md)
+</details>
 
-## [PSD2 Fallback API - PISP access documentation](./doc/fallback-pisp.md)
+<details>
+<summary> PSD2 Fallback Interface</summary>
 
-## [PSD2 Sandbox Access documentation](./doc/sandbox.md)
+> [AISP access documentation](./doc/fallback-aisp.md)
 
-# Open API file
-[Open API file for dediacted interface](./doc/assets/openapi/XS2A_Open_API.yml)
+> [PISP access documentation](./doc/fallback-pisp.md)
 
-# Additional API Specification
-[API Request & Response Parameters](./doc/assets/openapi/additional_api_spec.md)
+</details>
 
-# Postman collections
+<details>
+<summary> PSD2 Sandbox Interface</summary>
+
+> [Sandbox Access documentation](./doc/sandbox.md)
+
+</details>
+
+## Additional documentation & files
+[Open API file for dedicated interface](./doc/assets/openapi/XS2A_Open_API.yml)
+
+[Bank transaction codes & transaction types](./doc/assets/openapi/additional_api_spec.md)
+
 [Sandbox postman collection and environment](./doc/assets/postman)
 
-# Frequently asked questions
-## General FAQs
+[Quarterly availability & performance reports (dedicated interface vs PSU interface)](./doc/assets/quarterly-report)
+
+## Frequently asked questions
+### General FAQs
 <details>
   <summary>Which markets are covered by the PSD2 APIs?</summary>
 
@@ -112,7 +127,7 @@
 
 </details>
 
-## Technical FAQs
+### Technical FAQs
 
 <details>
   <summary>I’m trying to connect to your APIs, but I receive a 401 “Unauthorized“ error</summary>
