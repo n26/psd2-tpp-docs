@@ -3,38 +3,92 @@
 <details>
 <summary> PSD2 Dedicated Interface</summary>
 
-> [AISP Access documentation](./doc/dedicated-aisp.md)
+- [AISP Access documentation](./doc/dedicated-aisp.md)
 
-> [PISP Access documentation](./doc/dedicated-pisp.md)
+- [PISP Access documentation](./doc/dedicated-pisp.md)
 
-> [CBPII Access documentation](./doc/dedicated-cbpii.md)
+- [CBPII Access documentation](./doc/dedicated-cbpii.md)
 
 </details>
 
 <details>
 <summary> PSD2 Fallback Interface</summary>
 
-> [AISP access documentation](./doc/fallback-aisp.md)
+- [AISP access documentation](./doc/fallback-aisp.md)
 
-> [PISP access documentation](./doc/fallback-pisp.md)
+- [PISP access documentation](./doc/fallback-pisp.md)
 
 </details>
 
 <details>
 <summary> PSD2 Sandbox Interface</summary>
 
-> [Sandbox Access documentation](./doc/sandbox.md)
+- [Sandbox Access documentation](./doc/sandbox.md)
+
+</details>
+
+## Key announcements
+### PSD2 Dedicated Interface
+<details>
+<summary> 2022</summary>
+
+- **November 24, 2022** Periodic payments are now supported, and can be intitiated without specifying the debtor account *(please refer to our PIS access documentation)*
+
+- **August 26, 2022** SEPA and SEPA instant transfers can now be initiated without specifying the debtor account *(please refer to our PIS access documentation)*
+
+- **July 29, 2022** Funds confirmation endpoints are now supported *(please refer to our CBPII access documentation)*
+
+- **June 30, 2022** Initiation of SEPA instant transfers is now supported *(please refer to our PIS access documentation)*
+
+- **April 25, 2022** The additional Information field has been included in the transaction information we provide, as an ID that links all card transactions related to a single purchase *(please refer to our AIS access documentation)*
+
+- **Jan 24, 2022** The following parameters will be added to transaction information we provide, from Apr 25th, 2022: mandateID, creditorID, remittanceInformationUnstructured *(please refer to our AIS access documentation)*
+
+</details>
+
+<details>
+<summary> 2021</summary>
+
+- **Dec 13, 2021** Transactions previously classified as “pending” will be classified as “booked” transactions, from Mar 14th, 2022 *(please refer to our FAQs)*
+
+- **Feb 3, 2021** token.io interface (deprecated from Nov 4, 2020) will be fully disabled from Mar 1st, 2021
+
+</details>
+
+<details>
+<summary> 2020</summary>
+
+- **Nov 4, 2020** The N26 PSD2 PISP Open Banking API has been released (Berlin Group 1.3.6 conformity). Token.io interface is deprecated.
+
+- **Oct 22, 2020** We’ve just released the brand-new version of our PSD2 AISP Open Banking API, compliant with the Berlin Group 1.3.6 specification
+
+</details>
+
+### PSD2 Fallback Interface
+<details>
+<summary> 2022</summary>
+
+- **August 01, 2022** Initiation of SEPA instant transfers is now supported *(please refer to our PIS access documentation)*
+
+- **May 17, 2022** New Spaces endpoint /api/v3/spaces is live; old Spaces endpoint /api/spaces will be disabled from Aug 17th, 2022 *(please refer to our AIS access documentation)*
+
+</details>
+
+<details>
+<summary> 2021</summary>
+
+- **Nov 17, 2021** /api/v2/spaces endpoint has been disabled
 
 </details>
 
 ## Additional documentation & files
-[Open API file for dedicated interface](./doc/assets/openapi/XS2A_Open_API.yml)
+- [Open API file for dedicated interface](./doc/assets/openapi/XS2A_Open_API.yml)
 
-[Bank transaction codes & transaction types](./doc/assets/openapi/additional_api_spec.md)
+- [Bank transaction codes & transaction types](./doc/assets/openapi/additional_api_spec.md)
 
-[Sandbox postman collection and environment](./doc/assets/postman)
+- [Sandbox postman collection and environment](./doc/assets/postman)
 
-[Quarterly availability & performance reports (dedicated interface vs PSU interface)](./doc/assets/quarterly-report)
+- [Quarterly availability & performance reports (dedicated interface vs PSU interface)](./doc/assets/quarterly-report)
 
 ## Frequently asked questions
 ### General FAQs
