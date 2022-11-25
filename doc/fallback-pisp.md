@@ -10,11 +10,9 @@
     4. [Step 2b - Not Recommended - Continue authentication with Two-Step SMS (OTP)](./fallback-pisp.md#step-2b---not-recommended---continue-authentication-with-two-step-sms-otp)
     5. [Step 3 - Get access token](./fallback-pisp.md#step-3---get-access-token)
 3. [Payment Initiation](./fallback-pisp.md#payment-initiation)
-    1. [Overview](./fallback-pisp.md#overview-1)
-    2. [User PIN Encryption](./fallback-pisp.md#user-pin-encryption)
-    3. [Initiate SEPA (Debit Transfer) DT Transactions](./fallback-pisp.md#initiate-sepa-debit-transfer-dt-transactions)
-    4. [Initiate SEPA Standing Order (Recurring/Future Payments)](./fallback-pisp.md#initiate-sepa-standing-order-recurringfuture-payments)
-    5. [Initiate SEPA Instant Transfer](./fallback-pisp.md#initiate-sepa-instant-transfer)
+    1. [Initiate SEPA (Credit Transfer) CT Transactions](./fallback-pisp.md#initiate-sepa-credit-transfer-ct-transactions)
+    2. [Initiate SEPA Standing Order (Recurring/Future Payments)](./fallback-pisp.md#initiate-sepa-standing-order-recurringfuture-payments)
+    3. [Initiate SEPA Instant Credit Transfer](./fallback-pisp.md#initiate-sepa-instant-transfer)
 4. [Get Status of Initiated Transactions](./fallback-pisp.md#get-status-of-initiated-transactions)
     1. [Overview](./fallback-pisp.md#overview-2)
     2. [Get (Main) Account Transactions List](./fallback-pisp.md#get-main-account-transactions-list)
@@ -526,129 +524,27 @@ HTTP/1.1 429 Too Many Requests
 
 ## Payment Initiation
 
-### Overview
-
-In order to make requests to the payment initiation endpoints such as SEPA DT it is necessary to supply  **encrypted-secret** and **encrypted-pin** headers. These parameters can be obtained by encrypting the user PIN which TPPs shall ask from the user in the same manner as email and password during authentication.
-
-> :warning: A TPP shall not store the PIN provided by a user and should treat it the same way as a user’s password. 
-> Please refer to the [Data which should not be stored](./fallback-pisp.md#data-which-should-not-be-stored-warning) section for more details.
-
-We provide an additional endpoint `/api/encryption/key` which should be used to obtain an encryption key which in turn is used to encrypt the user PIN.
-
-In the following sections we provide the step-by-step guide on how to obtain the encryption key and use it to generate **encrypted-secret** and  **encrypted-pin** .
-
-### User PIN Encryption
-
-#### Step 1 - Getting User PIN
-
-As the first step before initiating any payment a TPP needs to request a user to provide a PIN. PIN is the four digit passcode for confirming payment initiation. The PIN code should be treated the same way as user password and shouldn’t be stored on the TPP side for future usage. In other words, whenever a TPP initiates a transactions, they should ask for the user input providing the PIN code every time.
-
-#### Step 2 - Getting Encryption key
-
-In order to generate `encrypted-secret` and `encrypted-pin` headers for payment initiation endpoints, the next step should be getting a public key to be used for PIN encryption.
-
-**Request**
+### Initiate SEPA (Credit Transfer) CT Transactions
 
 ```
-GET    /api/encryption/key HTTP/1.1
+POST    /api/openbanking/fallback/sepa-ct HTTP/1.1
 Authorization: bearer {{access_token}}
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
 Content-Type: application/json
-```
-
-**Response**
-
-```
-{
-  "publicKey": "..." # Base-64 encoded public key.
-}
-```
-
-**Example (Bash)**
-
-```bash
-public_key=$(curl -k --key $CLIENT_KEY_FILE --cert $CLIENT_CERT_FILE -s -H "Authorization:Bearer $access_token" https://pisp.tech26.de/api/encryption/key | jq -r '.publicKey')
-```
-
-#### Step 3 - Encrypting User PIN
-
-After you obtained the public key from the previous step, the next step would be to encrypt the user PIN and get  **encrypted-secret** and **encrypted-pin** as a result. A short walkthrough follows (with example code in Bash).
-
-1. Generate an AES-256 key/IV of your choice, for example:
-
-```bash
-aes_secret_raw=$(openssl enc -nosalt -aes-256-cbc -pbkdf2 -k $AES_SECRET_KEY -P)
-aes_key_hex=$(echo "$aes_secret_raw" | grep "key\s*=" | sed -e "s/.*=//")
-aes_iv_hex=$(echo "$aes_secret_raw" | grep "iv\s*=" | sed -e "s/.*=//")
-```
-
-2. Encode this key and IV as a JSON string (collectively, this data is the secret) with the following format:
-
-```json
-{
-  "secretKey": "{key encoded as Base-64}",
-  "iv": "{iv encoded as base-64}"
-}
-```
-
-Bash:
-
-```bash
-aes_key_base64=$(echo $aes_key_hex | xxd -r -p | base64)
-aes_iv_base64=$(echo $aes_iv_hex | xxd -r -p | base64)
-unencrypted_aes_secret=$(jq -n --arg key "$aes_key_base64" --arg iv "$aes_iv_base64" '{secretKey: $key, iv: $iv}')
-```
-
-3. Encrypt the secret JSON with RSA using the provided public key. Note: Use PKCS##1 v1.5 padding; this is the default for openssl in the sample below, but may not be with other technologies. Then convert the encrypted secret to base-64:
-
-```bash
-rsa_public_key=$(echo -e "-----BEGIN PUBLIC KEY-----\n$public_key\n-----END PUBLIC KEY-----" | sed -r 's/(.{67})/\1\n/g')
-mkdir -p $TEMP_FOLDER
-echo "$rsa_public_key" > $TEMP_FOLDER/rsa_public_key.pem
-encrypted_secret=$(echo $unencrypted_aes_secret | openssl rsautl -encrypt -inkey $TEMP_FOLDER/rsa_public_key.pem -pubin | base64 | tr -d '\n')
-rm $TEMP_FOLDER/rsa_public_key.pem
-```
-
-4. Encrypt the user’s PIN, as a string, with AES-256, using the key/IV generated in step 1, and convert this to base-64:
-
-```bash
-encrypted_pin=$(echo $PIN | tr -d '\n' | openssl enc -nosalt -aes-256-cbc -K $aes_key_hex -iv $aes_iv_hex | base64 | tr -d '\n')
-```
-
-As a result, you get `encrypted_secret` on Step 3 and `encrypted_pin` on Step 4. Starting from this point you can use the payment initiation endpoints described below.
-
-We provide the full Bash script to encrypt the user PIN for your convenience here: [Bash Script for User PIN Encryption 
-and Initiating Transaction](./assets/bash/pin_encryption_and_initiating_transaction.sh). Feel free to use this sample script or come up with your alternative implementation in the language of your choice.
-
-#### Step 4 - Initiate a payment
-
-At this step you should have everything necessary to make a call to one of the payment initiation endpoints listed below. Please make sure to repeat the process of getting the user PIN, the new encryption key and generating the `encrypted_secret` and `encrypted_pin` with every new transaction, even for the same user.
-
-### Initiate SEPA (Debit Transfer) DT Transactions
-
-Please make sure you’ve completed the steps from the [User PIN encryption](./fallback-pisp.md#user-pin-encryption) section before 
-proceeding with the 
-request.
-
-```
-POST    /api/transactions HTTP/1.1
-Authorization: bearer {{access_token}}
-x-tpp-userip: {{userip}}
-device-token: {{device_token}}
-encrypted-secret: {{encrypted-secret}} 
-encrypted-pin: {{user-pin}}
-Content-Type: application/json
-
 
 {
    "transaction":{
       "amount":"12.0",
-      "partnerBic":"COBADEFXX", # transaction details as partner bic, iban, name
-      "partnerIban":"DE12500105170648489890",
-      "partnerName":"McDonalds",
-      "referenceText":"McMenu",
-      "type":"DT" # debit transfer type,
+      "currency": "EUR",
+      "referenceText":"Gift card",
+      "debtor": {
+        "iban": "DE78500105172857262413"
+      }
+      "beneficiary": {
+        "fullName": "John Snow",
+        "iban": "DE12500105172365448575"
+      }
    }
 }
 ```
@@ -672,19 +568,6 @@ HTTP/1.1 400 Bad Request
 	"status": 400,
 	"error": "Bad Request",
 	"message": "Bad Request",
-	"detail": "Bad Request"
-}
-```
-
-##### Error validating PIN
-
-```
-HTTP/1.1 400 Bad Request
-{
-	"timestamp": 1582911454774,
-	"status": 400,
-	"error": "Bad Request",
-	"message": "PIN validation failure",
 	"detail": "Bad Request"
 }
 ```
@@ -774,7 +657,7 @@ HTTP/1.1 500 Internal Server Error
 }
 ```
 
-## Initiate SEPA Instant Transfer
+## Initiate SEPA Instant Credit Transfer
 ### Request
 ```
 POST    /api/openbanking/fallback/sepa-instant HTTP/1.1

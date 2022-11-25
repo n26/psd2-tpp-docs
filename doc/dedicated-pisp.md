@@ -60,15 +60,12 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 
 ### Validity of access token
 
-| | **Access Token**
-| | ----------------
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Purpose**    | Access for API calls in **one session**
-| | **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier 2.
-Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on
-step 1, along with an authCode. 3. Use the authCode along with the unhashed code verifier on POST /oauth2/token | | **
-Validity**   | 20 min | | **
-Storage**    | NEVER |
+|                | **Access Token**                                                                                                                                                                                                                                                                                                                              |
+| ---------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                       |
+| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier    2. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an authCode.   3. Use the authCode along with the unhashed code verifier on POST /oauth2/token |
+| **Validity**   | 20 min                                                                                                                                                                                                                                                                                                                                        |
+| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                         |
 
 > :information_source: **PISP flow does not provide refresh tokens for security purposes**
 
@@ -99,21 +96,14 @@ HTTP/1.1
 
 Supported query parameters:
 
-| **Name of parameter** | **
-Description**
-| | ----------------------- |
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| | client_id | This should match the QWAC certificate’s organization identifier.This field may be obtained by running
-the following command on the QWAC certificate: `$ openssl x509 -in certificate.pem -noout -text`
-| | scope | Accepted value: “DEDICATED_PISP”. Mandatory field. | | code_challenge | SHA256 hash of the code_verifier to
-be provided on POST /oauth2/token. Minimum size 43 characters, maximum 128. Should be Base-64 URL encoded, as
-per [https://tools.ietf.org/html/rfc7636##section-4.2](https://tools.ietf.org/html/rfc7636##section-4.2): `BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))`
-. Please refer to [https://tonyxu-io.github.io/pkce-generator/](https://tonyxu-io.github.io/pkce-generator/) for sample
-values. So as an example, code_verifier should be set as “foobar” while code challenge would be
-“w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI”. Mandatory field. | | redirect_uri | URI to which users will be redirected
-back when the authorization process is completed. Mandatory field. | | state | Random state string which should be
-returned on the query string when N26 redirects back, so the TPP can link the redirection to the original authorization
-request. Mandatory field. | | response_type | Accepted value: “CODE”. Mandatory field. |
+| **Name of parameter** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| client_id             | This should match the QWAC certificate’s organization identifier.This field may be obtained by running the following command on the QWAC certificate: `$ openssl x509 -in certificate.pem -noout -text`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| scope                 | Accepted value: “DEDICATED_PISP”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| code_challenge        | SHA256 hash of the code_verifier to be provided on POST /oauth2/token. Minimum size 43 characters, maximum 128. Should be Base-64 URL encoded, as per [https://tools.ietf.org/html/rfc7636##section-4.2](https://tools.ietf.org/html/rfc7636##section-4.2): `BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))`. Please refer to [https://tonyxu-io.github.io/pkce-generator/](https://tonyxu-io.github.io/pkce-generator/) for sample values. So as an example, code_verifier should be set as “foobar” while code challenge would be “w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI”. Mandatory field. |
+| redirect_uri          | URI to which users will be redirected back when the authorization process is completed. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| state                 | Random state string which should be returned on the query string when N26 redirects back, so the TPP can link the redirection to the original authorization request. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| response_type         | Accepted value: “CODE”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 #### Sample Response
 
@@ -157,15 +147,12 @@ Supported query parameters:
 
 Supported form parameters:
 
-| **Name of parameter** | **
-Description**
-| | ----------------------- |
-------------------------------------------------------------------------------------------------------------------------------------------------
-| | grant_type | Accepted value: “authorization_code”. Mandatory parameter. | | code | The authorization code as
-returned by N26 as a parameter (“code”) on the redirect URL (step 7 of the sequence diagram). Mandatory parameter. | |
-code_verifier | Value of the code verifier; should match hashed code challenge from`GET /oauth2/authorize`request.
-Mandatory parameter. | | redirect_uri | The same redirect URI that was provided to the`GET /oauth2/authorize`request.
-Optional parameter. |
+| **Name of parameter** | **Description**                                                                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| grant_type            | Accepted value: “authorization_code”. Mandatory parameter.                                                                                   |
+| code                  | The authorization code as returned by N26 as a parameter (“code”) on the redirect URL (step 7 of the sequence diagram). Mandatory parameter. |
+| code_verifier         | Value of the code verifier; should match hashed code challenge from`GET /oauth2/authorize`request. Mandatory parameter.                        |
+| redirect_uri          | The same redirect URI that was provided to the`GET /oauth2/authorize`request. Optional parameter.                                              |
 
 #### Response
 
@@ -406,16 +393,13 @@ Payment final status will be applied no later then **15 minutes. **
 
 Statuses currently supported:
 
-| **Status code** | **
-Description**
-| | ----------------- |
------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| | RCVD | Received. Initial status for a payment. A cerification has been sent to the user’s app. | | ACCP |
-AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this
-is the final successful status for a payment. | | RJCT | Rejected. Status for payment when an in-app certification
-expired or was denied by the user. | | ACFC | AcceptedFundsChecked.**Currently not supported** , but will be implemented
-in the future. | | ACSC | AcceptedSettlementCompleted.**Currently not supported** , but will be implemented in the
-future. |
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A cerification has been sent to the user’s app.                                                                              |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this is the final successful status for a payment. |
+| RJCT            | Rejected. Status for payment when an in-app certification expired or was denied by the user.                                                                          |
+| ACFC            | AcceptedFundsChecked.**Currently not supported** , but will be implemented in the future.                                                                             |
+| ACSC            | AcceptedSettlementCompleted.**Currently not supported** , but will be implemented in the future.                                                                      |
 
 ### SEPA Credit Transfer
 
