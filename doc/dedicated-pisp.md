@@ -6,12 +6,9 @@
 4. [OAuth as a Pre-step](./dedicated-pisp.md#oauth-as-a-pre-step)
 5. [Authentication endpoints](./dedicated-pisp.md#authentication-endpoints)
 6. [Payment endpoints](./dedicated-pisp.md#payment-endpoints)
-    1. [Initiate Payment](./dedicated-pisp.md#initiate-payment)
-    2. [Get Payment Status](./dedicated-pisp.md#get-payment-status)
-    3. [Get Payment](./dedicated-pisp.md#get-payment)
-    4. [Delete Payment](./dedicated-pisp.md#delete-payments)
-    5. [Get authorisations](./dedicated-pisp.md#get-authorisations)
-    6. [Get authorisation](./dedicated-pisp.md#get-authorisation)
+    1. [SEPA Credit Transfers](./dedicated-pisp.md#sepa-credit-transfers)
+    2. [Instant SEPA Credit Transfers](./dedicated-pisp.md#instant-sepa-credit-transfers)
+    3. [Periodic Payments](./dedicated-pisp.md#periodic-payments)
 
 ## General information
 
@@ -19,7 +16,7 @@ Berlin Group Conformity : [Implementation Guidelines version 1.3.6](https://www.
 
 Authorisation protocol: [oAuth 2.0](https://oauth.net/2/ "https://oauth.net/2/")
 
-Security layer: A valid QWAC Certificate for PSD2 is required to access the Berlin Group API. The official list of QTSP is available on the [European Comission eIDAS Trusted List](https://webgate.ec.europa.eu/tl-browser/##/ "https://webgate.ec.europa.eu/tl-browser/##/"). For the N26 PSD2 Dedicated Interface API, the QWAC Certificate must be issued from a production certificate authority.
+Security layer: A valid QWAC Certificate for PSD2 is required to access the Berlin Group API, and should be included in every request. The official list of QTSP is available on the [European Comission eIDAS Trusted List](https://webgate.ec.europa.eu/tl-browser/##/ "https://webgate.ec.europa.eu/tl-browser/##/"). For the N26 PSD2 Dedicated Interface API, the QWAC Certificate must be issued from a production certificate authority.
 
 > :information_source: Certificates can be renewed by making an API call **using the new certificate**, which will then
 > be onboarded automatically.
@@ -189,17 +186,14 @@ HTTP/1.1 400 Bad Request
 
 ## Payment endpoints
 
-Please use your QWAC certificate when calling for any Payment request on `xs2a.tech26.de`, along with a valid access
-token retrieved as per the [Oauth](./dedicated-pisp.md#validity-of-access-token).
+### SEPA Credit Transfers
 
-### Initiate Payment
+#### Initiate SEPA Credit Transfer
 
 > :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
 > the payment will be executed from the customer's main account.
 
-### Initiate SEPA Credit Transfers
-
-#### Request
+##### Request
 
 ```
 POST    /v1/berlin-group/v1/payments/sepa-credit-transfers HTTP/1.1
@@ -227,7 +221,7 @@ Content-Type: application/json
 >
 > :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
 
-#### Response
+###### Response
 
 ```
 HTTP/1.1 201 Created
@@ -249,17 +243,125 @@ aspsp-sca-approach: DECOUPLED
     }
 }
 ```
+#### Get payment status
 
-<br>
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
+using the decoupled SCA approach).
 
-### Initiate Instant SEPA Credit Transfers
+Payment final status will be applied no later than **15 minutes. **
 
-Customers are required to accept Terms and Conditions, specifically for the SEPA Instant feature, prior to performing
+Statuses currently supported:
+
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.                                                                              |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this is the final successful status for a payment. |
+| RJCT            | Rejected. Status for payment when an in-app certification expired or was denied by the user.                                                                          |
+| ACFC            | AcceptedFundsChecked. **Currently not supported**, but will be implemented in the future.                                                                             |
+| ACSC            | AcceptedSettlementCompleted. **Currently not supported**, but will be implemented in the future.   
+
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "ACCP"
+}
+```
+
+#### Get payment details
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentsId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": {
+       "iban": "DE40100100103307118608"
+  },
+  "instructedAmount": {
+       "amount":  0.12,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE96100110012627266269"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "reference text",
+  "transactionStatus": "ACCP"
+}
+```
+
+#### Get list of authorisation IDs
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "authorisationIds": [
+        "e93bf74e-9444-4a5e-8524-648d80848126"
+    ]
+}
+```
+
+#### Get scaStatus of authorisation
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "scaStatus": "finalised"
+}
+```
+
+### Instant SEPA Credit Transfers
+
+#### Initiate Instant SEPA Credit Transfer
+
+> :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
+> the payment will be executed from the customer's main account.
+
+Customers are required to accept ___Terms and Conditions___, specifically for the SEPA Instant feature, once prior to performing
 the transfer. Furthermore, non-premium customers (i.e. customers with an N26 Standard account) are charged a fee for
 each instant transfer. This fee differs by market, ranging from €0.49-€1.99, and can be found on the N26 website of the
 relevant market.
 
-#### Request
+##### Request
 
 ```
 POST    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers HTTP/1.1
@@ -287,7 +389,7 @@ Content-Type: application/json
 >
 > :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
 
-#### Response
+##### Response
 
 ```
 HTTP/1.1 201 Created
@@ -311,18 +413,128 @@ aspsp-sca-approach: DECOUPLED
 ```
 
 Customers should accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer.
-In the event that the customer has not accepted the Term And Conditions for the SEPA Instant feature, before initiating the transfer, the following response would be sent to the TPP:
+In the event that the customer has not accepted the ___Terms And Conditions___ for the SEPA Instant feature, before initiating the transfer, the following response would be sent to the TPP:
 
 ```
 HTTP/1.1 307 Temporary Redirect
 Location: https://n26.com
 ```
 
-> :information_source: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, you are required to make a new POST request to initiate the payment again in order for it to be executed.
+> ⚠️: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, the TPP is required to make a new POST request to initiate the payment again in order for it to be executed.
 
-### Initiate Periodic Payments
+#### Get payment status
 
-#### Request
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
+using the decoupled SCA approach).
+
+Payment final status will be applied no later then **15 minutes. **
+
+Statuses currently supported:
+
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A cerification has been sent to the user’s app.                                                                              |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this is the final successful status for a payment. |
+| RJCT            | Rejected. Status for payment when an in-app certification expired or was denied by the user.                                                                          |
+| ACFC            | AcceptedFundsChecked.**Currently not supported** , but will be implemented in the future.                                                                             |
+| ACSC            | AcceptedSettlementCompleted. **Currently not supported**, but will be implemented in the future.   
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+###### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "ACCP"
+}
+```
+
+#### Get payment details
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentsId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": {
+       "iban": "DE40100100103307118608"
+  },
+  "instructedAmount": {
+       "amount":  0.12,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE96100110012627266269"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "reference text",
+  "transactionStatus": "ACCP"
+}
+```
+
+#### Get list of authorisation IDs
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "authorisationIds": [
+        "e93bf74e-9444-4a5e-8524-648d80848126"
+    ]
+}
+```
+
+#### Get scaStatus of authorisation
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "scaStatus": "finalised"
+}
+```
+
+### Periodic Payments
+
+#### Initiate Periodic Payment
+
+> :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
+> the periodic payment will be executed from the customer's main account.
+
+##### Request
 
 ```
 POST    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers HTTP/1.1
@@ -363,7 +575,7 @@ Content-Type: application/json
 >
 > :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
 
-#### Response
+##### Response
 
 ```
 HTTP/1.1 201 Created
@@ -384,64 +596,27 @@ HTTP/1.1 201 Created
 }
 ```
 
-### Get payment status
+#### Get status of periodic payment
 
-This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
-using the decoupled SCA approach).
+This endpoint provides statuses on both the creation and deletion of periodic payments. The statuses provide information on the rule itself, and not the 
+subsequent execution of payments. Once the rule has been successfully created, the final status would be "ACCP". Once the rule has been successfully deleted, 
+the final status would be "CANC". 
 
-Payment final status will be applied no later then **15 minutes. **
+As users are required to provide confirmation for both the creation and deletion of periodic payments, and we are using the decoupled SCA approach, this 
+endpoint is intended to be polled by the TPP.
 
 Statuses currently supported:
 
 | **Status code** | **Description**                                                                                                                                                       |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RCVD            | Received. Initial status for a payment. A cerification has been sent to the user’s app.                                                                              |
-| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been initiated. Currently this is the final successful status for a payment. |
-| RJCT            | Rejected. Status for payment when an in-app certification expired or was denied by the user.                                                                          |
-| ACFC            | AcceptedFundsChecked.**Currently not supported** , but will be implemented in the future.                                                                             |
-| ACSC            | AcceptedSettlementCompleted.**Currently not supported** , but will be implemented in the future.                                                                      |
+| RCVD            | Received. Initial status for creating a periodic payment. A certification has been sent to the user’s app.                                                                              |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification to create a periodic payment, and the periodic payment has been successfully created. |
+| RJCT            | Rejected. Status for payment when an in-app certification to **create** a periodic payment expired or was denied by the user.                                                                          |
+| CANC            | Cancelled. User has confirmed the in-app certification to **delete** a periodic payment, and the periodic payment has been successfully deleted.                                                                             |
+> :warning: When a periodic payment is being deleted, the status will only change from ACCP to CANC once the in-app certification to **delete** the periodic payment 
+> has been confirmed by the user. If the in-app certification expires or is denied by the user, the status will remain ACCP.
 
-### SEPA Credit Transfer
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "transactionStatus": "ACCP"
-}
-```
-
-### Instant SEPA Credit Transfers
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "transactionStatus": "ACCP"
-}
-```
-
-### Periodic Payment
-
-#### Request
+##### Request
 
 ```
 GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
@@ -449,9 +624,7 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
-#### Response
-
-ℹ️ For periodic payments, the transaction status end point provides statuses on the creation of the rule itself, and not the subsequent execution of payments. Once the rule has been successfully created, the final status would be "ACCP"
+##### Response
 
 ```
 HTTP/1.1 200 OK
@@ -460,73 +633,9 @@ HTTP/1.1 200 OK
 }
 ```
 
-### Get payment
+#### Get periodic payment details
 
-### SEPA Credit Transfer
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentsId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-  "debtorAccount": {
-       "iban": "DE40100100103307118608"
-  },
-  "instructedAmount": {
-       "amount":  0.12,
-       "currency":  "EUR"
-  },
-  "creditorAccount":  {
-       "iban": "DE96100110012627266269"
-  },
-  "creditorName": "Seller",
-  "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
-}
-```
-
-### Instant SEPA Credit Transfers
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentsId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-  "debtorAccount": {
-       "iban": "DE40100100103307118608"
-  },
-  "instructedAmount": {
-       "amount":  0.12,
-       "currency":  "EUR"
-  },
-  "creditorAccount":  {
-       "iban": "DE96100110012627266269"
-  },
-  "creditorName": "Seller",
-  "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
-}
-```
-
-### Periodic Payment
-
-#### Request
+##### Request
 
 ```
 GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}} HTTP/1.1
@@ -534,7 +643,7 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
-#### Response
+##### Response
 
 ```
 HTTP/1.1 200 OK
@@ -558,13 +667,49 @@ HTTP/1.1 200 OK
 }
 ```
 
-### Delete payments
+#### Get list of authorisation IDs
 
-This endpoint is just supported for periodic payments.
+##### Request
 
-### Periodic Payment
+```
+GET    /v1/berlin-group/v1/payments/periodic-payments/sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
 
-#### Request
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "authorisationIds": [
+        "e93bf74e-9444-4a5e-8524-648d80848126"
+    ]
+}
+```
+
+#### Get authorisation
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/payments/periodic-payments/sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "scaStatus": "finalised"
+}
+```
+
+#### Delete periodic payment
+
+##### Request
 
 ```
 DELETE    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}} HTTP/1.1
@@ -572,7 +717,7 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
-#### Response
+##### Response
 
 ```
 HTTP/1.1 202 Accepted
@@ -593,7 +738,7 @@ HTTP/1.1 202 Accepted
 }
 ```
 
-#### Error Response
+##### Error Response
 
 ```
 HTTP/1.1 400 Bad Request
@@ -604,128 +749,10 @@ HTTP/1.1 400 Bad Request
 }
 ```
 
-### Get authorisations
+#### Get list of cancellation authorisation IDs
 
-### SEPA Credit Transfer
+This endpoint is currently not supported.
 
-#### Request
+#### Get scaStatus of cancellation authorisation
 
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "authorisationIds": [
-        "e93bf74e-9444-4a5e-8524-648d80848126"
-    ]
-}
-```
-
-### Instant SEPA Credit Transfers
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "authorisationIds": [
-        "e93bf74e-9444-4a5e-8524-648d80848126"
-    ]
-}
-```
-
-### Periodic Payments
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/periodic-payments/sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "authorisationIds": [
-        "e93bf74e-9444-4a5e-8524-648d80848126"
-    ]
-}
-```
-
-### Get authorisation
-
-### SEPA Credit Transfers
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "scaStatus": "finalised"
-}
-```
-
-### Instant SEPA Credit Transfers
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "scaStatus": "finalised"
-}
-```
-
-### Periodic Payment
-
-⚠️ This is not supported for the DELETE endpoint.
-
-#### Request
-
-```
-GET    /v1/berlin-group/v1/payments/periodic-payments/sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
-Authorization: bearer {{access_token}}
-X-Request-ID: {{Unique UUID}}
-```
-
-#### Response
-
-```
-HTTP/1.1 200 OK
-{
-    "scaStatus": "finalised"
-}
-```
+This endpoint is currently not supported.
