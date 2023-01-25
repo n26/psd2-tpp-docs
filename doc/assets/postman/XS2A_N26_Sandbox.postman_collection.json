@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f46b5def-c59a-46c0-b36c-bb77f4f2ac9d",
+		"_postman_id": "ef72f7c1-6721-4dee-bd8b-086536c89338",
 		"name": "XS2A_N26_Sandbox",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1974,7 +1974,7 @@
 					]
 				},
 				{
-					"name": "PISP Sepa credit transfers",
+					"name": "PISP Sepa",
 					"item": [
 						{
 							"name": "1.1 POST /sepa-credit-transfers",
@@ -2371,7 +2371,7 @@
 					]
 				},
 				{
-					"name": "PISP Instant sepa credit transfers",
+					"name": "PISP Sepa Instant",
 					"item": [
 						{
 							"name": "2.1.a POST /instant-sepa-credit-transfers (User without signed TnC)",
@@ -2850,7 +2850,7 @@
 					]
 				},
 				{
-					"name": "PISP Periodic payment",
+					"name": "PISP Periodic Payment",
 					"item": [
 						{
 							"name": "3.1 POST /periodic-payments/sepa-credit-transfers",
@@ -2860,9 +2860,9 @@
 									"script": {
 										"exec": [
 											"if (pm.response.code == 201) {",
-											"    var periodic_payment_id = pm.response.json();",
+											"    var payment = pm.response.json();",
 											"    ",
-											"    pm.environment.set(\"periodic_payment_id\", periodic_payment_id.paymentId);",
+											"    pm.environment.set(\"payment_id\", payment.paymentId);",
 											"}"
 										],
 										"type": "text/javascript"
@@ -2907,7 +2907,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"debtorAccount\": {\n       \"iban\": \"{{iban}}\"\n  },\n  \"instructedAmount\": {\n       \"amount\":  0.13,\n       \"currency\":  \"EUR\"\n  },\n  \"creditorAccount\": \n  {\n       \"iban\": \"DE73500105175658455178\"\n  },\n  \"creditorName\": \"RandomIban\",\n  \"remittanceInformationUnstructured\": \"From postman\",\n  \"startDate\": \"2023-01-30\",\n  \"frequency\": \"WEEK\"\n}",
+									"raw": "{\n  \"debtorAccount\": {\n       \"iban\": \"{{iban}}\"\n  },\n  \"instructedAmount\": {\n       \"amount\":  0.13,\n       \"currency\":  \"EUR\"\n  },\n  \"creditorAccount\": \n  {\n       \"iban\": \"DE73500105175658455178\"\n  },\n  \"creditorName\": \"RandomIban\",\n  \"remittanceInformationUnstructured\": \"From postman\",\n  \"startDate\": \"2023-01-24\",\n  \"endDate\": \"2029-01-24\",\n  \"frequency\": \"WEEK\"\n}\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2929,17 +2929,13 @@
 							"response": []
 						},
 						{
-							"name": "3.2 GET /periodic-payments/sepa-credit-transfers",
+							"name": "3.2 GET /periodic-payments/sepa-credit-transfers/ID",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"if (pm.response.code == 201) {",
-											"    var payment = pm.response.json();",
-											"    ",
-											"    pm.environment.set(\"payment_id\", payment.paymentId);",
-											"}"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -2963,30 +2959,31 @@
 								"header": [
 									{
 										"key": "Host",
-										"value": "{{host}}",
-										"type": "text"
-									},
-									{
-										"key": "x-tpp-userip",
-										"value": "1.1.1.1",
 										"type": "text",
-										"disabled": true
+										"value": "{{host}}"
 									},
 									{
 										"key": "X-Request-ID",
+										"type": "text",
 										"value": "{{$randomUUID}}",
-										"type": "text"
+										"disabled": true
 									},
 									{
 										"key": "device-token",
-										"value": "{{device_token}}",
 										"type": "text",
+										"value": "{{device_token}}",
+										"disabled": true
+									},
+									{
+										"key": "x-tpp-userip",
+										"type": "text",
+										"value": "1.1.1.1",
 										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"debtorAccount\": {\n       \"iban\": \"{{iban}}\"\n  },\n  \"instructedAmount\": {\n       \"amount\":  0.13,\n       \"currency\":  \"EUR\"\n  },\n  \"creditorAccount\": \n  {\n       \"iban\": \"DE73500105175658455178\"\n  },\n  \"creditorName\": \"RandomIban\",\n  \"remittanceInformationUnstructured\": \"From postman\"\n}\n",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2994,7 +2991,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{periodic_payment_id}}",
+									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{payment_id}}",
 									"host": [
 										"{{address}}"
 									],
@@ -3002,24 +2999,20 @@
 										"sandbox{{api_path}}",
 										"periodic-payments",
 										"sepa-credit-transfers",
-										"{{periodic_payment_id}}"
+										"{{payment_id}}"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "3.3 DELETE /periodic-payments/sepa-credit-transfers",
+							"name": "3.3 DELETE /periodic-payments/sepa-credit-transfers/ID",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"if (pm.response.code == 201) {",
-											"    var payment = pm.response.json();",
-											"    ",
-											"    pm.environment.set(\"payment_id\", payment.paymentId);",
-											"}"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -3040,29 +3033,39 @@
 								"header": [
 									{
 										"key": "Host",
-										"value": "{{host}}",
-										"type": "text"
-									},
-									{
-										"key": "x-tpp-userip",
-										"value": "1.1.1.1",
 										"type": "text",
-										"disabled": true
+										"value": "{{host}}"
 									},
 									{
 										"key": "X-Request-ID",
+										"type": "text",
 										"value": "{{$randomUUID}}",
-										"type": "text"
+										"disabled": true
 									},
 									{
 										"key": "device-token",
-										"value": "{{device_token}}",
 										"type": "text",
+										"value": "{{device_token}}",
+										"disabled": true
+									},
+									{
+										"key": "x-tpp-userip",
+										"type": "text",
+										"value": "1.1.1.1",
 										"disabled": true
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{periodic_payment_id}}",
+									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{payment_id}}",
 									"host": [
 										"{{address}}"
 									],
@@ -3070,24 +3073,20 @@
 										"sandbox{{api_path}}",
 										"periodic-payments",
 										"sepa-credit-transfers",
-										"{{periodic_payment_id}}"
+										"{{payment_id}}"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "3.4 GET /periodic-payments/sepa-credit-transfers/status",
+							"name": "3.4 GET /periodic-payments/sepa-credit-transfers/ID/status",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"if (pm.response.code == 201) {",
-											"    var payment = pm.response.json();",
-											"    ",
-											"    pm.environment.set(\"payment_id\", payment.paymentId);",
-											"}"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -3111,30 +3110,31 @@
 								"header": [
 									{
 										"key": "Host",
-										"value": "{{host}}",
-										"type": "text"
+										"type": "text",
+										"value": "{{host}}"
+									},
+									{
+										"key": "X-Request-ID",
+										"type": "text",
+										"value": "{{$randomUUID}}",
+										"disabled": true
+									},
+									{
+										"key": "device-token",
+										"type": "text",
+										"value": "{{device_token}}",
+										"disabled": true
 									},
 									{
 										"key": "x-tpp-userip",
 										"value": "1.1.1.1",
 										"type": "text",
 										"disabled": true
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{$randomUUID}}",
-										"type": "text"
-									},
-									{
-										"key": "device-token",
-										"value": "{{device_token}}",
-										"type": "text",
-										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"debtorAccount\": {\n       \"iban\": \"{{iban}}\"\n  },\n  \"instructedAmount\": {\n       \"amount\":  0.13,\n       \"currency\":  \"EUR\"\n  },\n  \"creditorAccount\": \n  {\n       \"iban\": \"DE73500105175658455178\"\n  },\n  \"creditorName\": \"RandomIban\",\n  \"remittanceInformationUnstructured\": \"From postman\"\n}\n",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3142,7 +3142,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{periodic_payment_id}}/status",
+									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{payment_id}}/status",
 									"host": [
 										"{{address}}"
 									],
@@ -3150,7 +3150,7 @@
 										"sandbox{{api_path}}",
 										"periodic-payments",
 										"sepa-credit-transfers",
-										"{{periodic_payment_id}}",
+										"{{payment_id}}",
 										"status"
 									]
 								}
@@ -3158,7 +3158,7 @@
 							"response": []
 						},
 						{
-							"name": "3.5 GET /periodic-payments/sepa-credit-transfers/authorisations",
+							"name": "3.5 GET /periodic-payments/sepa-credit-transfers/ID/authorisations",
 							"event": [
 								{
 									"listen": "test",
@@ -3192,30 +3192,31 @@
 								"header": [
 									{
 										"key": "Host",
-										"value": "{{host}}",
-										"type": "text"
-									},
-									{
-										"key": "x-tpp-userip",
-										"value": "1.1.1.1",
 										"type": "text",
-										"disabled": true
+										"value": "{{host}}"
 									},
 									{
 										"key": "X-Request-ID",
+										"type": "text",
 										"value": "{{$randomUUID}}",
-										"type": "text"
+										"disabled": true
 									},
 									{
 										"key": "device-token",
-										"value": "{{device_token}}",
 										"type": "text",
+										"value": "{{device_token}}",
+										"disabled": true
+									},
+									{
+										"key": "x-tpp-userip",
+										"type": "text",
+										"value": "1.1.1.1",
 										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"debtorAccount\": {\n       \"iban\": \"{{iban}}\"\n  },\n  \"instructedAmount\": {\n       \"amount\":  0.13,\n       \"currency\":  \"EUR\"\n  },\n  \"creditorAccount\": \n  {\n       \"iban\": \"DE73500105175658455178\"\n  },\n  \"creditorName\": \"RandomIban\",\n  \"remittanceInformationUnstructured\": \"From postman\"\n}\n",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3223,7 +3224,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{periodic_payment_id}}/authorisations",
+									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{payment_id}}/authorisations",
 									"host": [
 										"{{address}}"
 									],
@@ -3231,7 +3232,7 @@
 										"sandbox{{api_path}}",
 										"periodic-payments",
 										"sepa-credit-transfers",
-										"{{periodic_payment_id}}",
+										"{{payment_id}}",
 										"authorisations"
 									]
 								}
@@ -3239,7 +3240,7 @@
 							"response": []
 						},
 						{
-							"name": "3.6 GET /periodic-payments/sepa-credit-transfers/authorisations/ID",
+							"name": "3.6 GET /periodic-payments/sepa-credit-transfers/ID/authorisations/ID",
 							"event": [
 								{
 									"listen": "test",
@@ -3251,6 +3252,9 @@
 									}
 								}
 							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -3266,29 +3270,39 @@
 								"header": [
 									{
 										"key": "Host",
-										"value": "{{host}}",
-										"type": "text"
-									},
-									{
-										"key": "x-tpp-userip",
-										"value": "1.1.1.1",
 										"type": "text",
-										"disabled": true
+										"value": "{{host}}"
 									},
 									{
 										"key": "X-Request-ID",
+										"type": "text",
 										"value": "{{$randomUUID}}",
-										"type": "text"
+										"disabled": true
 									},
 									{
 										"key": "device-token",
-										"value": "{{device_token}}",
 										"type": "text",
+										"value": "{{device_token}}",
+										"disabled": true
+									},
+									{
+										"key": "x-tpp-userip",
+										"type": "text",
+										"value": "1.1.1.1",
 										"disabled": true
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{periodic_payment_id}}/authorisations/{{authorisation_id}}",
+									"raw": "{{address}}/sandbox{{api_path}}/periodic-payments/sepa-credit-transfers/{{payment_id}}/authorisations/{{authorisation_id}}",
 									"host": [
 										"{{address}}"
 									],
@@ -3296,7 +3310,7 @@
 										"sandbox{{api_path}}",
 										"periodic-payments",
 										"sepa-credit-transfers",
-										"{{periodic_payment_id}}",
+										"{{payment_id}}",
 										"authorisations",
 										"{{authorisation_id}}"
 									]
@@ -3326,6 +3340,7 @@
 									" * ",
 									" * Endpoints related with consent which its scope is DEDICATED_PISP",
 									" * ",
+									" * Sepa Credit Transfer:",
 									" * ",
 									" * POST   /sepa-credit-transfers",
 									" * GET    /sepa-credit-transfers/ID",
@@ -3333,12 +3348,25 @@
 									" * GET    /sepa-credit-transfers/ID/authorisations",
 									" * GET    /sepa-credit-transfers/ID/authorisations",
 									" * GET    /sepa-credit-transfers/ID/authorisations/ID",
+									" * ",
+									" * Insant Sepa Credit Transfer:",
+									" * ",
 									" * POST   /instant-sepa-credit-transfers",
 									" * GET    /instant-sepa-credit-transfers/ID",
 									" * GET    /instant-sepa-credit-transfers/ID/status",
 									" * GET    /instant-sepa-credit-transfers/ID/authorisations",
 									" * GET    /instant-sepa-credit-transfers/ID/authorisations",
 									" * GET    /instant-sepa-credit-transfers/ID/authorisations/ID",
+									" * ",
+									" * Periodic Payment:",
+									" * ",
+									" * POST   /periodic-payments/sepa-credit-transfers",
+									" * GET    /periodic-payments/sepa-credit-transfers/ID",
+									" * DELETE /periodic-payments/sepa-credit-transfers/ID",
+									" * GET    /periodic-payments/sepa-credit-transfers/ID/status",
+									" * GET    /periodic-payments/sepa-credit-transfers/ID/authorisations",
+									" * GET    /periodic-payments/sepa-credit-transfers/ID/authorisations/ID",
+									" * ",
 									" */",
 									""
 								],
