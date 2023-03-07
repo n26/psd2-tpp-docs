@@ -659,12 +659,60 @@ X-Request-ID: UUID
                     "iban": "DE43100110012620287103"
                 },
                 "transactionAmount": {
-                    "amount": "-1.0",
+                    "amount": "-20.0",
                     "currency": "EUR"
                 },
                 "bookingDate": "2020-07-22",
                 "valueDate": "2020-07-22",
+                "remittanceInformationUnstructuredArray":["Payback for lunch"],
+                "remittanceInformationUnstructured":"Payback for lunch",
                 "bankTransactionCode": "PMNT-ICDT-ESCT"
+            },
+            {
+                "transactionId":"df0fed01-f949-4909-88c3-f1c01d2972ca",
+                "debtorName":"User SEPA 2",
+                "debtorAccount":{"iban":"DE65100110011234567890"},
+                "transactionAmount": {
+                    "amount":"22.0",
+                    "currency":"EUR"
+                },
+                "bookingDate":"2020-07-20",
+                "valueDate":"2020-07-20",
+                "remittanceInformationUnstructuredArray":["Payback for drinks"],
+                "remittanceInformationUnstructured":"Payback for drinks",
+                "bankTransactionCode":"PMNT-RCDT-ESCT"
+            },
+            {
+              "transactionId": "8943aefb-ec2b-46fa-8a38-dc264af13eb5",
+              "additionalInformation":"67d507fd-c9e7-4d43-a799-103d37da65db",        
+              "creditorName": "Merchant A",
+              "transactionAmount": {
+                "amount": "-9.50",
+                "currency": "EUR"
+              },
+              "bookingDate": "2022-07-15",
+              "valueDate": "2022-07-15",
+              "remittanceInformationUnstructuredArray":["-"],
+              "remittanceInformationUnstructured":"-",
+              "bankTransactionCode": "PMNT-CCRD-POSD"
+            },
+            {
+                "transactionId": "7f9da399-8c53-4c68-b43c-c7e22a0c70d2",
+                "creditorName": "Merchant B",
+                "creditorAccount": {
+                    "iban": "DE43100110012620287103"
+                },
+                "transactionAmount": {
+                    "amount": "-7.99",
+                    "currency": "EUR"
+                },
+                "bookingDate": "2022-07-05",
+                "valueDate": "2022-07-05",
+                "remittanceInformationUnstructuredArray": ["Monthly fee"],
+                "remittanceInformationUnstructured": "Monthly fee",
+                "bankTransactionCode": "PMNT-IDDT-ESDD",
+                "mandateId": "4ABK2252MNG98",
+                "creditorId": "AB98ZZZ0000000000048"
             }
         ],
         "_links": {
@@ -675,8 +723,9 @@ X-Request-ID: UUID
     }
 }
 ```
-* mandateId and creditorId are supported, for SEPA direct debit transactions only (from 25th April 2022)
-* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable (from 25th April 2022)
+* additionalInformation is an ID that links different transactions related to the same purchase (specifically, card transactions)
+* mandateId and creditorId are supported, for SEPA direct debit transactions only
+* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable
 
 ### Read Transaction Details
 
@@ -700,8 +749,8 @@ Content-Type: application/json
 X-Request-ID: UUID
 
 {
-    "transactionDetails": {
         "transactionId": "4b856f12-a75c-449f-8e71-69bd72947445",
+        "additionalInformation":"5bccb1ed-67a4-48a1-8a88-3feec03a6952"
         "creditorName": "NOAPV21EQZYWG0NC0KNMMW",
         "transactionAmount": {
             "amount": "-1.0",
