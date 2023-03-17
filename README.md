@@ -30,6 +30,13 @@
 ## Key announcements
 ### PSD2 Dedicated Interface
 <details>
+<summary> 2023</summary>
+
+- **March 16, 2023** Additional transaction statuses ACFC and ACSC will be supported in the /v1/payments/sepa-credit-transfers/{{paymentstId}}/status and /v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status endpoints, from Mar 31st, 2023 *(please refer to our PIS access documentation)*
+
+</details>
+
+<details>
 <summary> 2022</summary>
 
 - **November 24, 2022** Periodic payments are now supported, and can be intitiated without specifying the debtor account *(please refer to our PIS access documentation)*
@@ -67,6 +74,8 @@
 ### PSD2 Fallback Interface
 <details>
 <summary> 2022</summary>
+
+- **November 28, 2022** New SEPA CT payment initiation endpoint /api/openbanking/fallback/sepa-ct is live; /api/encryption/key and /api/transactions will be disabled from Feb 27th, 2023 *(please refer to our PIS access documentation)*
 
 - **August 01, 2022** Initiation of SEPA instant transfers is now supported *(please refer to our PIS access documentation)*
 
@@ -187,7 +196,7 @@
   <summary>I’m trying to connect to your APIs, but I receive a 401 “Unauthorized“ error</summary>
 
 > This could happen for a few reasons, such as:
-> Incorrect certificate used (as our APIs can only be accessed with a valid eIDAS QWAC certificate)
+> Incorrect or expired certificate used (as our APIs can only be accessed with a valid eIDAS QWAC certificate)
 > No certificated included in the authorization call (our oAuth/authorize end point includes certificate validation)
 > client_id parameter does not match the organizationId field in your certificate
 > If you continue to face this error, and it is not caused by any of the above reasons, please reach out to us.
@@ -223,6 +232,35 @@
 > External IPs used
 > Requests per application per second or per hour etc
 
+</details>
+
+<details>
+  <summary>Payment did not reach the final status ACSC</summary>
+
+> For successfully executed **SEPA CT and instant SEPA CT payments** , the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACSC.
+> In some cases, the final status may not be reached within the life of the access token, or the status may be changed to RJCT. This may be due to various reasons, some of which are outlined in the table below (this list is not exhaustive):
+> <table>
+<tr>
+    <td><b>Last available status</b></td>
+    <td><b>Possible cause(s)</b></td>
+</tr>
+<tr>
+    <td>RCVD</td>
+    <td>User has not completed certification</td>
+</tr>
+<tr>
+    <td>RJCT (after RCVD)</td>
+    <td>Certification expired, was cancelled by user or failed due to technical issues</td>
+</tr>
+<tr>
+    <td>RJCT (after ACCP)</td>
+    <td>User has insufficient funds for payment, or funds check failed due to technical issues</td>
+</tr>
+<tr>
+    <td>ACFC</td>
+    <td>Delay in compliance checks</td>
+</tr>
+</table>
 </details>
 
 <details>
