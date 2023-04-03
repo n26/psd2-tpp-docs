@@ -248,7 +248,8 @@ aspsp-sca-approach: DECOUPLED
 This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
 using the decoupled SCA approach).
 
-Payment final status will be applied no later than **15 minutes. **
+Payment final status `ACSC` will be applied in most cases **at the end of the day ** after reconciliation from 
+Bundesbank. Until then, the payment may stay in the intermediate status `ACFC`. 
 
 Statuses currently supported:
 
