@@ -248,20 +248,19 @@ aspsp-sca-approach: DECOUPLED
 This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
 using the decoupled SCA approach).
 
-Payment final status `ACSC` will be applied in most cases **at the end of the day ** after reconciliation from 
-Bundesbank. Until then, the payment may stay in the intermediate status `ACFC`. 
-
 Statuses currently supported:
 
 | **Status code** | **Description**                                                                                                                                                       |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
 | ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
-| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds. _(Supported from 31/03)_ |
-| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds. _(Supported from 31/03)_|
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
+| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
 | RJCT            | Rejected. Payment failed to be initiated or executed.| 
 
 The final status of a payment is either **ACSC** or **RJCT**.
+
+:warning: Please note that the final status `ACSC` is only applied after reconciliation from BundesBank which, in most cases, takes place **at the end of the day**. Until then, the payment may stay in the intermediate status `ACFC`. 
 
 ##### Request
 
@@ -429,7 +428,7 @@ Location: https://n26.com
 This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
 using the decoupled SCA approach).
 
-Payment final status will be applied no later then **15 minutes. **
+Payment final status will be applied no later then **15 minutes**.
 
 Statuses currently supported:
 
@@ -437,8 +436,8 @@ Statuses currently supported:
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
 | ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
-| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds. _(Supported from 31/03)_ |
-| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds. _(Supported from 31/03)_|
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
+| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
 | RJCT            | Rejected. Payment failed to be initiated or executed.| 
 
 The final status of a payment is either **ACSC** or **RJCT**.   

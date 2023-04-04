@@ -258,7 +258,7 @@
 </tr>
 <tr>
     <td>ACFC</td>
-    <td>Delay in compliance checks</td>
+    <td>Delay in compliance checks; (SEPA CT only) still pending reconciliation from BundesBank</td>
 </tr>
 </table>
 </details>
