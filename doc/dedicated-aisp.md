@@ -51,7 +51,7 @@ Certificate must be issued from a production certificate authority.
 | Consent scope: Bank-offered consent                                            | Supported                        |
 | Consent scope: Detailed consent                                                | Supported                        |
 | Consents with/without Recurring indicator                                      | Supported                        |
-| SCA Validity                                                                   | 90 days                          |
+| SCA Validity                                                                   | 180 days                          |
 | Support of Signing Baskets                                                     | Not Supported                    |
 | Support of Card accounts                                                       | Not Supported                    |
 | Support of Multicurrency accounts                                              | Not Supported                    |
@@ -68,7 +68,7 @@ Certificate must be issued from a production certificate authority.
 
 OAuth2 is supported by this API through the authentication of a PSU in a pre-step, as per the diagram below:
 
-![Oauth flow](./assets/oauth-flow.png)
+![Oauth flow](./assets/Updated_oauth_flow.png)
 
 ## Validity of access & refresh tokens
 
@@ -77,17 +77,17 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                                          | Generate new access tokens                                                                                                                                                                                                                                                                                                                                      |
 | **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token |
-| **Validity**   | 15 min                                                                                                                                                                                                                                                                                                                                                          | **One time usable** , but chain of refresh tokens is **valid for 90 days**                                                                                                                                                                                                                                                                                       |
-| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                                           | Yes, for 89 days (expiry needs to be stored on TPP)                                                                                                                                                                                                                                                                                                             |
+| **Validity**   | 15 min                                                                                                                                                                                                                                                                                                                                                          | **One time usable** , but chain of refresh tokens is **valid for 180 days**                                                                                                                                                                                                                                                                                       |
+| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                                           | Yes, for 179 days (expiry needs to be stored on TPP)                                                                                                                                                                                                                                                                                                             |
 
 > :information_source: **Refreshing refresh tokens**     
-> The first refresh token has validity of 90 days, but is  **one-time usable**.
+> The first refresh token has validity of 180 days, but is  **one-time usable**.
 > With this refresh token, a new set of an access token and a refresh token can be requested.
-> This new refresh token will maintain the initial 90 days validity.
-> So, in summary, the chain of refresh tokens has a validity of 90 days.
+> This new refresh token will maintain the initial 180 days validity.
+> So, in summary, the chain of refresh tokens has a validity of 180 days.
 
 > :information_source: **Refresh token getting close to expiry**   
-> On day 89 the TPP should discard the refresh token and ask users for re-authentication.
+> On day 179 the TPP should discard the refresh token and ask users for re-authentication.
 > As highlighted above, the TPP should never store users' passwords.
 
 > :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .    

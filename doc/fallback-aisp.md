@@ -114,13 +114,13 @@ As per Art 22 (1), (2b) and Art 33(5a) of [Directive (EU) 2015/2366 of the Europ
 | **Storage**    | NEVER                                                                             | Yes, for 89 days (expiry needs to be stored on TPP)                                 |
 
 > :information_source: **Refreshing refresh tokens**
-> The first refresh token has validity of 90 days, but is  **one-time usable** .
+> The first refresh token has validity of 180 days, but is  **one-time usable** .
 > With this refresh token, an access and a new refresh token can be requested.
-> This new refresh token maintain the initial 90 days validity.
-> So in summary the chain of refresh tokens has a validity of 90 days.
+> This new refresh token maintains the initial 180 day validity.
+> So in summary the chain of refresh tokens has a validity of 180 days.
 
 > :information_source: **Refresh getting close to expiry**
-> On day 89 the TPP should discard the refresh token and ask the user re-authentication.
+> On day 179 the TPP should discard the refresh token and ask the user re-authentication.
 > As highlighted above the TPP should never store the password of the user.
 
 > :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .

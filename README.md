@@ -136,15 +136,15 @@
   <summary>How can TPPs renew their certificates?</summary>
 
 > TPPs can renew their certificates by making a normal API call with the new certificate, in which the certificate will be onboarded automatically. Both the new and old certificate will be supported concurrently, and both can be used, until the old certificate expires.
-> Please note that if key TPP data (e.g. legal name, TPP number) will be different in the new certificate, TPPs will need to re-obtain authorisation tokens from PSUs for the new certificate.
+> Please note that if the **organization identifier / client ID** will be different in the new certificate, TPPs will need to re-obtain authorisation tokens and consent from PSUs for the new certificate.
 
 </details>
 
 <details>
   <summary>How long is consent valid for?</summary>
 
-> For AIS requests, consent is valid for a maximum of 90 days, unless a shorter period is specified using the “validUntil“ parameter. Please note that a PSU has up to 5 minutes to confirm consent in the N26 app.
-> For PIS requests, access is only valid for 15 minutes and for one transaction. Please note that a PSU has up to 5 minutes to certify the payment in the N26 app.
+> For AIS requests, consent is valid for a maximum of 180 days, unless a shorter period is specified using the “validUntil“ parameter. Please note that a PSU has up to 5 minutes to confirm consent in the N26 app.
+> For PIS requests, access is only valid for 15 minutes and for one transaction. Please note that a PSU has up to 12 minutes to certify the payment in the N26 app.
 
 </details>
 
@@ -224,7 +224,7 @@
   <summary>I received a 401 “Refresh token not found“ error</summary>
 
 > This indicates that the refresh token has been invalidated, which could happen for one of the following reasons:
-> It expired after 90 days
+> It expired after 180 days
 > The PSU made a change to their core data (e.g. password, email, phone number)
 > The PSU’s KYC status was reset
 > In this scenario, the PSU is required to re-log in. If this is something you would like us to look into, please reach out to us with the following information:
@@ -247,7 +247,9 @@
 <details>
   <summary>Payment did not reach the final status ACSC</summary>
 
-> For successfully executed **SEPA CT and instant SEPA CT payments** , the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACSC.
+> ⚠️ _Please keep in mind that, as per page 42 of the Berlin Group standards v 1.3.6, we are  only required to provide status information immediately after the initiation of the payment. We are thus not required to ensure that all statuses are reached within the life of the access token._
+> 
+>  For successfully executed **SEPA CT and instant SEPA CT payments** , the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACSC.
 > In some cases, the final status may not be reached within the life of the access token, or the status may be changed to RJCT. This may be due to various reasons, some of which are outlined in the table below (this list is not exhaustive):
 > <table>
 <tr>
@@ -271,6 +273,7 @@
     <td>Delay in compliance checks; (SEPA CT only) still pending reconciliation from BundesBank</td>
 </tr>
 </table>
+
 </details>
 
 <details>
