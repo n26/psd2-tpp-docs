@@ -71,10 +71,12 @@ For the sandbox, this endpoint replaces the following user interaction on the re
 
 Because we don’t have equivalent UI for the sandbox (and because it’s easier for automated testing), we replace this entire flow with a single call to the following endpoint, which returns an authorisation code directly without requiring a redirect to and from N26.
 
+You can also provide an email for the user you want to authorize, using parameter *user*, by defaul the email of the user is _openbankingpsu@n26.com_.
+
 #### Sample request
 
 ```
-POST /sandbox/psu-interaction/generate-auth-code/{requestId}?role=DEDICATED_AISP
+POST /sandbox/psu-interaction/generate-auth-code/{requestId}?role=DEDICATED_AISP&user=email@n26.com
 HTTP/1.1
 ```
 
@@ -82,7 +84,7 @@ HTTP/1.1
 
 ```
 {
-	"code": "3a4918e7-9277-4df6-a56f-fbd2b32fbacb"
+    "code": "j1Q70A6a11AOnvav221Fc8t04TTdH5eEEWh2+WcVdBd3qkal2zBIkBJ9rCdPb4vWBYCkdO4Vhebe9EP0v4o/L2UWKctYljCqAYjJ04OHTuU="
 }
 ```
 
@@ -95,7 +97,7 @@ POST    /sandbox/oauth2/token?role=DEDICATED_AISP HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code&
-code=dbtF5AqOApjjSnNF5TK3w3gaEPdwtV2&
+code=j1Q70A6a11AOnvav221Fc8t04TTdH5eEEWh2+WcVdBd3qkal2zBIkBJ9rCdPb4vWBYCkdO4Vhebe9EP0v4o/L2UWKctYljCqAYjJ04OHTuU=&
 code_verifier=foobar&
 redirect_uri=https://tpp.com/redirect
 ```
