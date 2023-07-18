@@ -78,7 +78,7 @@
 <details>
 <summary> 2023</summary>
 
-- **July 17, 2023** New endpoints to get account transactions (/api/fallback/accounts/{accountId}/transactions) and account transaction details (/api/fallback/accounts/{accountId}/transactions/{transactionId}) have been added to the fallback interface. Old endpoints /api/smrt/transactions, /api/smrt/transactions/{transactionId} and /api/v3/spaces/{ID}/transactions has been marked for deprecation *(please refer to our [Fallback AISP](./doc/fallback-aisp.md#get-account-transactions) documentation)*
+- **July 17, 2023** New endpoints to get account transactions /api/fallback/accounts/{accountId}/transactions and account transaction details /api/fallback/accounts/{accountId}/transactions/{transactionId} have been added to the fallback interface. Old endpoints /api/smrt/transactions, /api/smrt/transactions/{transactionId} and /api/v3/spaces/{ID}/transactions are deprecated and will be disabled from October 18th, 2023.  *(please refer to our [Fallback AISP](./doc/fallback-aisp.md#get-account-transactions) documentation)*
 
 - **April 21, 2023** To comply with EU Delegated Regulation 2022/2360, on Jun 22nd, 2023 we will make a change, so that newly issued tokens required to access account information will be valid for up to 180 days. Existing tokens, at the time of the change, will not be impacted *(please contact us if you have further questions)*
 
