@@ -32,6 +32,8 @@
 <details>
 <summary> 2023</summary>
 
+- **July 17, 2023** New endpoints to get account transactions and account transaction details have been added to the fallback interface *(please refer to our [Fallback AISP](./doc/fallback-aisp.md#get-account-transactions) documentation)*
+
 - **April 21, 2023** To comply with EU Delegated Regulation 2022/2360, on Jun 22nd, 2023 we will make a change, so that newly issued tokens and consent required to access account information will be valid for up to 180 days. Existing tokens and consent, at the time of the change, will not be impacted *(please contact us if you have further questions)*
 
 - **March 16, 2023** Additional transaction statuses ACFC and ACSC will be supported in the /v1/payments/sepa-credit-transfers/{{paymentstId}}/status and /v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status endpoints, from Mar 31st, 2023 *(please refer to our PIS access documentation)*

@@ -17,9 +17,11 @@
     4. [Get (Spaces) Accounts Information](./fallback-aisp.md#get-spaces-accounts-information)
 4. [Account Transactions](./fallback-aisp.md#account-transactions)
     1. [Overview](./fallback-aisp.md#overview-2)
-    2. [Get (Main) Account Transactions](./fallback-aisp.md#get-main-account-transactions)
-    3. [Get (Main) Account Transactions Details](./fallback-aisp.md#get-main-account-transactions-details)
-    4. [Get (Spaces) Account Transactions](./fallback-aisp.md#get-spaces-account-transactions)
+    2. [Get Account Transactions](./fallback-aisp.md#get-account-transactions)
+    3. [Get Account Transaction Details](./fallback-aisp.md#get-account-transaction-details)
+    4. [Get (Main) Account Transactions (Deprecated)](./fallback-aisp.md#get-main-account-transactions-deprecated)
+    5. [Get (Main) Account Transactions Details (Deprecated)](./fallback-aisp.md#get-main-account-transactions-details-deprecated)
+    6. [Get (Spaces) Account Transactions (Deprecated)](./fallback-aisp.md#get-spaces-account-transactions-with-optional-parameters-deprecated)
     
 
 ## Access & Identification of TPP
@@ -878,14 +880,100 @@ device-token: {{device_token}}
 
 ### Overview
 
-#### Entities
+### Get account transactions
+#### Request
+
+```
+GET    /api/fallback/accounts/{accountId}/transactions HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+##### Parameters
+
+`from` from timestamp, Unixtime
+
+`to` to timestamp, Unixtime
+
+For instance:
+
+```
+GET /api/fallback/accounts/91656fc9-4489-4f97-8d33-c5b327df8d8b/transactions?from=1570312800000&to=1570312800001
+```
+
+#### Response
+
+```
+[
+    {
+        "id": "48466e5e-72d6-4846-858d-9dbe74cd80c5",
+        "accountId": "91656fc9-4489-4f97-8d33-c5b327df8d8b",
+        "amount": -0.61,
+        "currency": "EUR",
+        "referenceText": "reference text",
+        "displayTimestamp": "1570313800000",
+        "status": "TRANSACTION_STATUS_SUCCEEDED",
+        "type": "TRANSACTION_TYPE_DT",
+        "paymentScheme": "PAYMENT_SCHEME_SEPA",
+        "category": "CATEGORY_FAMILY_AND_FRIENDS",
+        "transactionMetadata": {
+            "partnerBic": "SOGEDEFFXXX",
+            "partnerIban": "DE75512108001245126199",
+            "operationType": "HOLD",
+            "initiatorUserId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
+            "sepaTransactionId": "c6aa8d21fde743e5a0e13ac3d9b9ed82",
+            "partnerAccountName": "Jhon"
+        }
+    },
+    {...}
+]
+```
+
+### Get Account Transaction Details
+
+#### Request
+
+```
+GET    /api/fallback/accounts/{accountId}/transactions/{transactionId} HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+#### Response
+
+```
+{
+  "id": "48466e5e-72d6-4846-858d-9dbe74cd80c5",
+  "accountId": "91656fc9-4489-4f97-8d33-c5b327df8d8b",
+  "amount": -0.61,
+  "currency": "EUR",
+  "referenceText": "reference text",
+  "displayTimestamp": "1570313800000",
+  "status": "TRANSACTION_STATUS_SUCCEEDED",
+  "type": "TRANSACTION_TYPE_DT",
+  "paymentScheme": "PAYMENT_SCHEME_SEPA",
+  "category": "CATEGORY_FAMILY_AND_FRIENDS",
+  "transactionMetadata": {
+      "partnerBic": "SOGEDEFFXXX",
+      "partnerIban": "DE75512108001245126199",
+      "operationType": "HOLD",
+      "initiatorUserId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
+      "sepaTransactionId": "c6aa8d21fde743e5a0e13ac3d9b9ed82",
+      "partnerAccountName": "Jhon"
+  }
+}
+```
+
+#### Entities  [Deprecated]
 
 `(Primary) Account transactions` - Are all transactions done on the primary account of the user. Information is provided via `/api/smrt/transactions`.
 
 `(Secondary) Accounts aka Spaces transactions` - Are all of the space <> space transactions of one account. For the 
 primary it does not include the Bank transfers and card transactions. Information is provided via `/api/v3/spaces`.
 
-### Get (Main) Account Transactions
+### Get (Main) Account Transactions [Deprecated]
 
 #### Request
 
@@ -948,7 +1036,7 @@ GET /api/smrt/transactions?limit=20&lastId=c690c24d-9a19-4400-0001-6db5542c82d5&
 ]
 ```
 
-### Get (Main) Account Transactions Details
+### Get (Main) Account Transactions Details [Deprecated]
 
 #### Request
 
@@ -990,7 +1078,7 @@ device-token: {{device_token}}
   }
 ```
 
-### Get (Spaces) Account Transactions (without optional parameters)
+### Get (Spaces) Account Transactions (without optional parameters) [Deprecated]
 
 #### Request
 
@@ -1037,7 +1125,7 @@ device-token: {{device_token}}
 }
 ```
 
-### Get (Spaces) Account Transactions (with optional parameters)
+### Get (Spaces) Account Transactions (with optional parameters) [Deprecated]
 
 #### Request
 
