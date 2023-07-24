@@ -640,6 +640,7 @@ Content-Type: application/json
 * Query parameter “withBalance”  is currently not supported.
 * Query parameter “deltaList” is currently not supported.
 * Pagination through “_links”  is currently not supported.
+* From 24/10/2023, pagination through “_links” will be supported only during the first 15 minutes of an AIS consent lifecycle, for returning all transactions made since the account was created. Each page will return all transactions limited to a period of 90 days.
 
 #### Response
 
@@ -726,6 +727,96 @@ X-Request-ID: UUID
 * additionalInformation is an ID that links different transactions related to the same purchase (specifically, card transactions)
 * mandateId and creditorId are supported, for SEPA direct debit transactions only
 * Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable
+
+#### Response with pagination, only during the first 15 minutes of an AIS consent lifecycle (From 24/10/2023)
+
+```
+X-Request-ID: UUID
+
+{
+    "account": {
+        "iban": "DE73100110012629586632"
+    },
+    "transactions": {
+        "booked": [
+            {
+                "transactionId": "7f9da399-8c53-4c68-b43c-c7e22a0c70d2",
+                "creditorName": "User SEPA",
+                "creditorAccount": {
+                    "iban": "DE43100110012620287103"
+                },
+                "transactionAmount": {
+                    "amount": "-20.0",
+                    "currency": "EUR"
+                },
+                "bookingDate": "2020-07-22",
+                "valueDate": "2020-07-22",
+                "remittanceInformationUnstructuredArray":["Payback for lunch"],
+                "remittanceInformationUnstructured":"Payback for lunch",
+                "bankTransactionCode": "PMNT-ICDT-ESCT"
+            },
+            {
+                "transactionId":"df0fed01-f949-4909-88c3-f1c01d2972ca",
+                "debtorName":"User SEPA 2",
+                "debtorAccount":{"iban":"DE65100110011234567890"},
+                "transactionAmount": {
+                    "amount":"22.0",
+                    "currency":"EUR"
+                },
+                "bookingDate":"2020-07-20",
+                "valueDate":"2020-07-20",
+                "remittanceInformationUnstructuredArray":["Payback for drinks"],
+                "remittanceInformationUnstructured":"Payback for drinks",
+                "bankTransactionCode":"PMNT-RCDT-ESCT"
+            },
+            {
+              "transactionId": "8943aefb-ec2b-46fa-8a38-dc264af13eb5",
+              "additionalInformation":"67d507fd-c9e7-4d43-a799-103d37da65db",        
+              "creditorName": "Merchant A",
+              "transactionAmount": {
+                "amount": "-9.50",
+                "currency": "EUR"
+              },
+              "bookingDate": "2022-07-15",
+              "valueDate": "2022-07-15",
+              "remittanceInformationUnstructuredArray":["-"],
+              "remittanceInformationUnstructured":"-",
+              "bankTransactionCode": "PMNT-CCRD-POSD"
+            },
+            {
+                "transactionId": "7f9da399-8c53-4c68-b43c-c7e22a0c70d2",
+                "creditorName": "Merchant B",
+                "creditorAccount": {
+                    "iban": "DE43100110012620287103"
+                },
+                "transactionAmount": {
+                    "amount": "-7.99",
+                    "currency": "EUR"
+                },
+                "bookingDate": "2022-07-05",
+                "valueDate": "2022-07-05",
+                "remittanceInformationUnstructuredArray": ["Monthly fee"],
+                "remittanceInformationUnstructured": "Monthly fee",
+                "bankTransactionCode": "PMNT-IDDT-ESDD",
+                "mandateId": "4ABK2252MNG98",
+                "creditorId": "AB98ZZZ0000000000048"
+            }
+        ],
+        "_links": {
+            "account": {
+                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564"
+            },
+            "previous": {
+                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?entryReferenceFrom=d26369d6-e192-46a1-801c-4cdf060b7fbf"
+            },
+            "next": {
+                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?entryReferenceFrom=e05e302a-c29c-4f36-80b6-c9610d0a457a"
+            }
+        }
+    }
+}
+```
+* Pagination through “_links” will support two attributes: ”previous” and ”next”. 
 
 ### Read Transaction Details
 
