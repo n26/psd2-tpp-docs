@@ -297,6 +297,7 @@ HTTP/1.1 200 OK
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
        "currency":  "EUR"
@@ -477,6 +478,7 @@ HTTP/1.1 200 OK
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
        "currency":  "EUR"
@@ -654,6 +656,7 @@ HTTP/1.1 200 OK
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
        "currency":  "EUR"
