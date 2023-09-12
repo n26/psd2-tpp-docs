@@ -806,9 +806,6 @@ X-Request-ID: UUID
             "account": {
                 "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564"
             },
-            "previous": {
-                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?entryReferenceFrom=d26369d6-e192-46a1-801c-4cdf060b7fbf"
-            },
             "next": {
                 "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?entryReferenceFrom=e05e302a-c29c-4f36-80b6-c9610d0a457a"
             }
@@ -816,7 +813,7 @@ X-Request-ID: UUID
     }
 }
 ```
-* Pagination through “_links” will support two attributes: ”previous” and ”next”. 
+* Pagination through “_links” will support new attribute: ”next”. 
 
 ### Read Transaction Details
 
