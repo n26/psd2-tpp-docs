@@ -32,6 +32,8 @@
 <details>
 <summary> 2023</summary>
 
+- **September 18, 2023** New account selection screen on payment initiation step for users that have multiple IBANs, from Oct 4th 2023. *(please refer to our PIS access documentation)*
+
 - **August 18, 2023** A debtor name is now displayed after payment initiation on GET /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentsId}}, /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentsId}}, and /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}}. *(please refer to our PIS access documentation)* 
 
 - **July 24, 2023** An endpoint to get account transactions, from Oct 24th, 2023, will return the same date of a transaction provided in the response as the date of the same transaction in the N26 app. The endpoint also introduces pagination during the first 15 minutes of an AIS consent lifecycle. *(please refer to our AIS access documentation)*
