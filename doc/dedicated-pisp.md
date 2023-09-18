@@ -192,6 +192,12 @@ HTTP/1.1 400 Bad Request
 
 > :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
 > the payment will be executed from the customer's main account.
+> From October 4th 2023, this behavior remains the same to users with a single IBAN.
+> If this parameter is excluded and a user has multiple IBANs, the user will be asked to select an account for the payment in the N26 app via a push notification.
+> Then, the payment will only be executed once the user has selected an IBAN through the new screen. Until this selection is complete:
+> 1) The “debtorAccount” value will be null in the GET payment details endpoints.
+> 2) The payment status will remain “RCVD”
+> 3) If the selection is not completed within 5 mins, the payment status will change to "RJCT"
 
 ##### Request
 
@@ -290,13 +296,32 @@ X-Request-ID: {{Unique UUID}}
 ```
 
 ##### Response
-
+1) If "debtorAccount" is selected
 ```
 HTTP/1.1 200 OK
 {
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
+  "instructedAmount": {
+       "amount":  0.12,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE96100110012627266269"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "reference text",
+  "transactionStatus": "ACCP"
+}
+```
+
+2) If "debtorAccount" is not selected
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": null,
   "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
@@ -357,6 +382,12 @@ HTTP/1.1 200 OK
 
 > :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
 > the payment will be executed from the customer's main account.
+> From October 4th 2023, this behavior remains the same to users with a single IBAN.
+> If this parameter is excluded and a user has multiple IBANs, the user will be asked to select an account for the payment in the N26 app via a push notification.
+> Then, the payment will only be executed once the user has selected an IBAN through the new screen. Until this selection is complete:
+> 1) The “debtorAccount” value will be null in the GET payment details endpoints.
+> 2) The payment status will remain “RCVD”
+> 3) If the selection is not completed within 5 mins, the payment status will change to "RJCT"
 
 Customers are required to accept ___Terms and Conditions___, specifically for the SEPA Instant feature, once prior to performing
 the transfer. Furthermore, non-premium customers (i.e. customers with an N26 Standard account) are charged a fee for
@@ -472,12 +503,32 @@ X-Request-ID: {{Unique UUID}}
 
 ##### Response
 
+1) If "debtorAccount" is selected
 ```
 HTTP/1.1 200 OK
 {
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
+  "instructedAmount": {
+       "amount":  0.12,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE96100110012627266269"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "reference text",
+  "transactionStatus": "ACCP"
+}
+```
+
+2) If "debtorAccount" is not selected
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": null,
   "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
@@ -538,6 +589,12 @@ HTTP/1.1 200 OK
 
 > :information_source: Please note that the **debtorAccount** parameter is not mandatory; if this parameter is excluded,
 > the periodic payment will be executed from the customer's main account.
+> From October 4th 2023, this behavior remains the same to users with a single IBAN.
+> If this parameter is excluded and a user has multiple IBANs, the user will be asked to select an account for the payment in the N26 app via a push notification.
+> Then, the payment will only be executed once the user has selected an IBAN through the new screen. Until this selection is complete:
+> 1) The “debtorAccount” value will be null in the GET payment details endpoints.
+> 2) The payment status will remain “RCVD”
+> 3) If the selection is not completed within 5 mins, the payment status will change to "RJCT"
 
 ##### Request
 
@@ -650,12 +707,35 @@ X-Request-ID: {{Unique UUID}}
 
 ##### Response
 
+1) If "debtorAccount" is selected
 ```
 HTTP/1.1 200 OK
 {
   "debtorAccount": {
        "iban": "DE40100100103307118608"
   },
+  "debtorName": "Buyer",
+  "instructedAmount": {
+       "amount":  0.12,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE96100110012627266269"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "reference text",
+  "transactionStatus": "ACCP",
+  "startDate": "2023-01-30",
+  "endDate": "2024-01-30",
+  "frequency": "WEEK"
+}
+```
+
+2) If "debtorAccount" is not selected
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": null,
   "debtorName": "Buyer",
   "instructedAmount": {
        "amount":  0.12,
