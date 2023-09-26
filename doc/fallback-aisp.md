@@ -12,8 +12,8 @@
     6. [Get new access & refresh token from valid refresh token](./fallback-aisp.md#get-new-access--refresh-token-from-valid-refresh-token)
 3. [Account & User information](./fallback-aisp.md#account--user-information)
     1. [Overview](./fallback-aisp.md#overview-1)
-    2. [Get user information](./fallback-aisp.md#get-user-information)
-    3. [Get (Main) Account Information](./fallback-aisp.md#get-main-account-information)
+    2. [Get user information (Deprecated)](./fallback-aisp.md#get-user-information)
+    3. [Get (Main) Account Information (Deprecated)](./fallback-aisp.md#get-main-account-information)
     4. [Get (Spaces) Accounts Information](./fallback-aisp.md#get-spaces-accounts-information)
 4. [Account Transactions](./fallback-aisp.md#account-transactions)
     1. [Overview](./fallback-aisp.md#overview-2)
@@ -609,15 +609,15 @@ Receiving a `401` indicates that the usage of access and refresh tokens is not a
 
 #### Entities
 
-`User` - the natural person, which is owner of the account. User information is provided via `/api/me`.
+`User` - the natural person, which is owner of the account. User information is provided via `/api/me`. (Deprecated)
 
-`(Primary) Account` - Main user account. Every user has only one main account. This is the checking account. Information is provided via `/api/accounts`.
+`(Primary) Account` - Main user account. Every user has only one main account. This is the checking account. Information is provided via `/api/accounts`. (Deprecated)
 
 `(Secondary) Accounts aka Spaces` - A user can have multiple secondary accounts . The primary account is included in 
 this response as well. Information is provided via `/api/v3/spaces`(if shared spaces also might 
 be included).
 
-### Get user information
+### Get user information (Deprecated)
 
 #### Request
 
@@ -650,7 +650,7 @@ device-token: {{device_token}}
 }
 ```
 
-### Get (Main) Account Information
+### Get (Main) Account Information (Deprecated)
 
 #### Request
 
