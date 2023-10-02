@@ -84,7 +84,7 @@
 <details>
 <summary> 2023</summary>
 
-- **September 26, 2023** Endpoints /api/me, /api/accounts are deprecated and will be disabled from Dec 27th 2023.  *(please refer to our AIS access documentation)*
+- **October 2, 2023** Endpoints /api/me, /api/accounts are deprecated and will be disabled from Jan 2th 2024.  *(please refer to our AIS access documentation)*
 
 - **July 17, 2023** New endpoints to get account transactions /api/fallback/accounts/{accountId}/transactions and account transaction details /api/fallback/accounts/{accountId}/transactions/{transactionId} have been added to the fallback interface. Old endpoints /api/smrt/transactions, /api/smrt/transactions/{transactionId} and /api/v3/spaces/{ID}/transactions are deprecated and will be disabled from October 18th, 2023.  *(please refer to our [Fallback AISP](./doc/fallback-aisp.md#get-account-transactions) documentation)*
 
