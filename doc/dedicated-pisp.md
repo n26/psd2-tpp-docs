@@ -450,7 +450,7 @@ In the event that the customer has not accepted the ___Terms And Conditions___ f
 
 ```
 HTTP/1.1 307 Temporary Redirect
-Location: https://n26.com
+Location: https://app.n26.com/login?redirect=%2Fterms-and-conditions
 ```
 
 > ⚠️: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, the TPP is required to make a new POST request to initiate the payment again in order for it to be executed.
