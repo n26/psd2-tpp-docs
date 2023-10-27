@@ -83,6 +83,9 @@
 
 <details>
 <summary> 2023</summary>
+- **October 27, 2023** Following the disabling of /api/smrt/transactions, also used to confirm the initiation of a payment, 3 new payment status endpoints have been added. *(please refer to our [Fallback PISP](./doc/fallback-pisp.md#get-status-of-initiated-transactions)*
+
+- **October 19, 2023** Endpoints /api/me, /api/accounts, /api/v3/spaces, /api/v3/spaces/{ID} are deprecated but will remain enabled until further notice. New endpoints will be added to get accounts, which will replace aforementioned endpoints.  *(please refer to our AIS access documentation)*
 
 - **October 2, 2023** Endpoints /api/me, /api/accounts are deprecated and will be disabled from Jan 2nd 2024.  *(please refer to our AIS access documentation)*
 

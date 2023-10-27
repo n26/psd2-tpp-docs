@@ -14,11 +14,9 @@
     2. [Initiate SEPA Standing Order (Recurring/Future Payments)](./fallback-pisp.md#initiate-sepa-standing-order-recurringfuture-payments)
     3. [Initiate SEPA Instant Credit Transfer](./fallback-pisp.md#initiate-sepa-instant-transfer)
 4. [Get Status of Initiated Transactions](./fallback-pisp.md#get-status-of-initiated-transactions)
-    1. [Overview](./fallback-pisp.md#overview-2)
-    2. [Get (Main) Account Transactions List](./fallback-pisp.md#get-main-account-transactions-list)
-    3. [Get (Main) Account Transactions Details](./fallback-pisp.md#get-main-account-transactions-details)
-    4. [Get  Standing Order Transactions List](./fallback-pisp.md#get--standing-order-transactions-list)
-    5. [Get (Main) Account Information](./fallback-pisp.md#get-main-account-information)
+   1. [Sepa Credit Transfer](./fallback-pisp.md#sepa-credit-transfer)
+   2. [Sepa Instant Credit Transfer](./fallback-pisp.md#sepa-instant-credit-transfer)
+   3. [Sepa Standing Order](./fallback-pisp.md#sepa-standing-order-recurringfuture-payments)
 5. [Appendix A](./fallback-pisp.md#appendix-a)
 
 
@@ -734,223 +732,107 @@ HTTP/1.1 500 Internal Server Error
 
 ## Get Status of Initiated Transactions
 
-### Overview
+### SEPA Credit Transfer
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
+using the decoupled SCA approach).
 
-Access to lists of *user transactions* and *standing orders* is provided as a means of identifying whether a transaction has been successfully initiated. Since every transaction needs to be certified by a user via a  mobile app, payment initiation endpoints listed in the previous section, return only a transaction ID and can’t guarantee that the transaction will be booked. The result of the user confirmation (certification) of a transaction can be queried by making the GET transaction lists requests.
+Statuses currently supported:
 
-If a transaction is present on a list of transactions, it means that a user has accepted the certification and all validations have been completed.
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
+| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
+| RJCT            | Rejected. Payment failed to be initiated or executed.| 
 
-* To check the **SEPA DT** transaction statuses, please use  **Main Account Transaction List** : Each N26 user has only one payment account, which is the Main Account. All transactions successfully initiated and certified by a user appear on the Main Account Transaction List. Transaction list of the main account is provided via `/api/smrt/transactions`
-* To check the **Standing Order** transaction status, please use  **Standing Order Transaction List** : Approved Standing Orders don’t appear on the list of Main Account Transaction List, but on the separate list of Standing orders provided via `/api/transactions/so` with a not null `"userCertified”`field.
+The final status of a payment is either **ACSC** or **RJCT**.
 
-> :information_source: For  **Standing Orders** , don’t forget to check the `"userCertified"`field
-Not yet confirmed Standing Orders have `"userCertified": null`
-Confirmed Standing Orders have not null `"userCertified"`
+:warning: Please note that the final status `ACSC` is only applied after reconciliation from BundesBank which, in most cases, takes place **at the end of the day**. Until then, the payment may stay in the intermediate status `ACFC`.
 
-### Get (Main) Account Transactions List
-
-#### Request
+##### Request
 
 ```
-GET    /api/smrt/transactions HTTP/1.1
-Authorization: bearer {{access_token}}
+GET    /api/openbanking/fallback/sepa-ct/{{paymentstId}}/status HTTP/1.1
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
+Content-Type: application/json
 ```
 
-##### Parameters
-
-`limit` number of transactions, defaults to 20.
-
-`lastId` the last transactionId, exclusive.
-
-`from` from timestamp, Unixtime
-
-`to` to timestamp, Unixtime
-
-For instance:
+##### Response
 
 ```
-GET /api/smrt/transactions?limit=20&lastId=c690c24d-9a19-4400-0001-6db5542c82d5&from=1570312800000&to=1570312800001
-```
-
-#### Response
-
-```
-[
-  {
-    "id": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "userId": "fdd2d3eb-f16f-4aa1-9292-eac88ee356d5",
-    "type": "PT",
-    "amount": -5432.0,
-    "currencyCode": "EUR",
-    "originalAmount": -5432.0,
-    "originalCurrency": "EUR",
-    "exchangeRate": 1.0,
-    "visibleTS": 1570705239000,
-    "mcc": 6011,
-    "mccGroup": 18,
-    "recurring": false,
-    "partnerAccountIsSepa": false,
-    "accountId": "4badce07-0de0-420d-a648-d3ae3e2d54d5",
-    "category": "micro-v2-atm",
-    "cardId": "096b54f1-f9ca-4d7a-8e78-7b1cebd2edd0",
-    "userCertified": 1570705240081,
-    "pending": false,
-    "transactionNature": "NORMAL",
-    "transactionTerminal": "ATM",
-    "createdTS": 1570705240090,
-    "smartLinkId": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "linkId": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "confirmed": 1570705240081
-  },
-  {...}
-]
-```
-
-### Get (Main) Account Transactions Details
-
-#### Request
-
-```
-GET    /api/smrt/transactions/{transactionId} HTTP/1.1
-Authorization: bearer {{access_token}}
-x-tpp-userip: {{userip}}
-device-token: {{device_token}}
-```
-
-#### Response
-
-```
+HTTP/1.1 200 OK
 {
-    "id": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "userId": "fdd2d3eb-f16f-4aa1-9292-eac88ee356d5",
-    "type": "PT",
-    "amount": -5432.0,
-    "currencyCode": "EUR",
-    "originalAmount": -5432.0,
-    "originalCurrency": "EUR",
-    "exchangeRate": 1.0,
-    "visibleTS": 1570705239000,
-    "mcc": 6011,
-    "mccGroup": 18,
-    "recurring": false,
-    "partnerAccountIsSepa": false,
-    "accountId": "4badce07-0de0-420d-a648-d3ae3e2d54d5",
-    "category": "micro-v2-atm",
-    "cardId": "096b54f1-f9ca-4d7a-8e78-7b1cebd2edd0",
-    "userCertified": 1570705240081,
-    "pending": false,
-    "transactionNature": "NORMAL",
-    "transactionTerminal": "ATM",
-    "createdTS": 1570705240090,
-    "smartLinkId": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "linkId": "b6255a9a-97bd-4453-b332-701ac576bd10",
-    "confirmed": 1570705240081
-  }
+    "transactionStatus": "ACFC"
+}
 ```
 
-### Get  Standing Order Transactions List
+### SEPA Instant Credit Transfer
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
+using the decoupled SCA approach).
 
-#### Request
+Statuses currently supported:
+
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
+| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
+| RJCT            | Rejected. Payment failed to be initiated or executed.| 
+
+The final status of a payment is either **ACSC** or **RJCT**.
+
+##### Request
 
 ```
-GET    /api/transactions/so HTTP/1.1
-Authorization: bearer {{access_token}}
+GET    /api/openbanking/fallback/sepa-instant/{{paymentstId}}/status HTTP/1.1
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
+Content-Type: application/json
 ```
 
-#### Response
+##### Response
 
 ```
-[
-  {
-    "id": "ca27ad61-630f-49ea-b763-dc2ee5402c52",
-    "actionConfig": {
-      "sourceSpaceId": "4f6b353d-4931-462a-81f6-a9d153431e22",
-      "destinationSpaceId": "f68c2628-deba-40d2-9f3f-3c93528a0b97",
-      "amount": "1.0000",
-      "currency": "EUR",
-      "referenceText": ""
-    },
-    "actionType": "SPACES_MONEY_TRANSFER",
-    "triggerConfig": {
-      "startDateTime": "2019-12-15T00:00:00Z",
-      "endDateTime": null,
-      "userTimeOffsetInHours": null,
-      "frequency": "MONTHLY"
-    },
-    "triggerType": "DATE_TIME",
-    "created": "2019-11-28T14:43:51.760134Z",
-    "status": "DELETED"
-  },
-  {
-    "id": "57c71e0f-e0e1-4f9a-b569-6812c8d3adbe",
-    "actionConfig": {
-      "accountId": "edd2305a-d4e8-4229-8cb4-dae1f3af356e",
-      "amount": "10.00",
-      "currency": "EUR",
-      "partnerName": "PARTNER_IBAN",
-      "partnerBic": null,
-      "partnerIban": "DE43100110012624425996",
-      "partnerBankName": null,
-      "referenceText": "Reference text test"
-    },
-    "actionType": "SEPA_MONEY_TRANSFER",
-    "triggerConfig": {
-      "startDateTime": "2022-08-14T00:00:00Z",
-      "endDateTime": "2032-02-15T00:00:00Z",
-      "userTimeOffsetInHours": null,
-      "frequency": "ONCE"
-    },
-    "triggerType": "DATE_TIME",
-    "created": "2022-07-18T08:15:13.630143Z",
-    "status": "ENABLED",
-    "lastScheduledExecution": "2022-08-14T00:00:00Z"
-  }
-]
-```
-
-### Get (Main) Account Information
-
-This is the main method for identifying if a user account is based on the EU.
-
-#### Request
-
-```
-GET    /api/accounts HTTP/1.1
-Authorization: bearer {{access_token}}
-x-tpp-userip: {{userip}}
-device-token: {{device_token}}
-```
-
-#### Response for EU users
-
-EU users include all countries in Europe with the exception of the UK, no matter if it is a German Iban or not. Countries such as Switzerland will also have EU as legal entity and thus support SEPA.
-
-```
+HTTP/1.1 200 OK
 {
-    "id": "4badce07-0de0-420d-a648-d3ae3e2d54d5",
-    "physicalBalance": null,
-    "availableBalance": 1044970.94,
-    "usableBalance": 1044970.94,
-    "bankBalance": 1044970.94,
-    "iban": "DE15100110012627633320",
-    "bic": "NTSBDEB1XXX",
-    "bankName": "N26 Bank",
-    "seized": false,
-    "currency": "EUR",
-    "legalEntity": "EU", 
-    "users": [
-        {
-            "userId": "fdd2d3eb-f16f-4aa1-9292-eac88ee356d5",
-            "userRole": "OWNER"
-        }
-    ],
-    "externalId": {
-        "iban": "DE15100110012627633320"
-    }
+    "transactionStatus": "ACSC"
+}
+```
+
+### SEPA Standing Order (Recurring/Future Payments)
+This endpoint provides statuses on both the creation and deletion of periodic payments. The statuses provide information on the rule itself, and not the subsequent execution of payments. Once the rule has been successfully created, the final status would be "ACCP". Once the rule has been successfully deleted, the final status would be "CANC".
+
+As users are required to provide confirmation for both the creation and deletion of periodic payments, and we are using the decoupled SCA approach, this endpoint is intended to be polled by the TPP.
+
+Statuses currently supported:
+
+| **Status code** | **Description**                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
+| RJCT            | Rejected. Payment failed to be initiated or executed.| 
+| CANC            | Cancelled. User has confirmed the in-app certification to delete a periodic payment, and the periodic payment has been successfully deleted.| 
+
+:warning: When a periodic payment is being deleted, the status will only change from ACCP to CANC once the in-app certification to delete the periodic payment has been confirmed by the user. If the in-app certification expires or is denied by the user, the status will remain ACCP.
+
+##### Request
+
+```
+GET    /api/openbanking/fallback/so/{{paymentstId}}/status HTTP/1.1
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+Content-Type: application/json
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "ACCP"
 }
 ```
 
