@@ -14,7 +14,8 @@
     1. [Overview](./fallback-aisp.md#overview-1)
     2. [Get user information (Deprecated)](./fallback-aisp.md#get-user-information-deprecated)
     3. [Get (Main) Account Information (Deprecated)](./fallback-aisp.md#get-main-account-information-deprecated)
-    4. [Get (Spaces) Accounts Information](./fallback-aisp.md#get-spaces-accounts-information)
+    4. [Get (Spaces) Accounts Information (Deprecated)](./fallback-aisp.md#get-spaces-accounts-information-deprecated)
+   5. [Get (Spaces) Account Information (single Space) (Deprecated)](./fallback-aisp.md#get-spaces-account-information-single-space-deprecated)
 4. [Account Transactions](./fallback-aisp.md#account-transactions)
     1. [Overview](./fallback-aisp.md#overview-2)
     2. [Get Account Transactions](./fallback-aisp.md#get-account-transactions)
@@ -615,7 +616,7 @@ Receiving a `401` indicates that the usage of access and refresh tokens is not a
 
 `(Secondary) Accounts aka Spaces` - A user can have multiple secondary accounts . The primary account is included in 
 this response as well. Information is provided via `/api/v3/spaces`(if shared spaces also might 
-be included).
+be included). (Deprecated)
 
 ### Get user information (Deprecated)
 
@@ -688,7 +689,7 @@ device-token: {{device_token}}
 }
 ```
 
-### Get (Spaces) Accounts Information
+### Get (Spaces) Accounts Information (deprecated)
 
 #### Request
 
@@ -808,7 +809,7 @@ device-token: {{device_token}}
 }
 ```
 
-### Get (Spaces) Account Information (single Space)
+### Get (Spaces) Account Information (single Space) (deprecated)
 
 #### Request
 
