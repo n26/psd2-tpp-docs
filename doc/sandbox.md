@@ -7,7 +7,7 @@
 5. [Consent endpoints](./sandbox.md#consent-endpoints)
 6. [AIS endpoints](./sandbox.md#ais-endpoints)
 7. [PIS endpoints](./sandbox.md#pis-endpoints)
-7. [CBPII endpoints](./sandbox.md#cbpii-endpoints)
+8. [CBPII endpoints](./sandbox.md#cbpii-endpoint)
 
 ## General information
 
@@ -63,15 +63,16 @@ location: https://app.n26.com/open-banking?requestId=0daa152a-651a-4592-8542-47f
 
 ### Generate authorization code
 
-For the sandbox, this endpoint replaces the following user interaction on the real API:
+For sandbox, this endpoint replaces the following user interaction on the real API:
 
 1. The TPP redirects the PSU to the URL returned by the authorize endpoint.
 2. We communicate directly with the PSU to give them an authorization code.
 3. The PSU redirects back to the TPP, providing the authorization code.
 
-Because we don’t have equivalent UI for the sandbox (and because it’s easier for automated testing), we replace this entire flow with a single call to the following endpoint, which returns an authorisation code directly without requiring a redirect to and from N26.
+Because we don’t have equivalent UI for sandbox (and because it’s easier for automated testing), we replace this entire flow with a single call to the following endpoint, which returns an authorisation code directly without requiring a redirect to and from N26.
 
-You can also provide an email for the user you want to authorize, using parameter *user*, by defaul the email of the user is _openbankingpsu@n26.com_.
+#### Providing an email to log in
+You can also provide an email for the user you want to authorize, using parameter *user*, by default the email of the user is _openbankingpsu@n26.com_.
 
 #### Sample request
 
@@ -120,7 +121,7 @@ HTTP/1.1 200 OK
 
 Consent interactions are the same as for the real API, except that some edge cases may not be covered identically. We also have an additional endpoint allowing TPPs to simulate the SCA flow (described below).
 
-All endpoints are prefixed with `/sandbox` compared to the live system, so for example for the root URL for consents would be:
+All endpoints are prefixed with `/sandbox` compared to the live system so, for example, the root URL for consents would be:
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/consents`
 
@@ -136,7 +137,7 @@ As described in our AISP documentation, we currently use the `DECOUPLED` SCA flo
 2. Instruct the user to confirm with N26 directly (in our mobile app).
 3. In the meantime, poll the consent status
 
-For the sandbox, step 2 is replaced by an endpoint which simulates the PSU interaction without requiring UI, similar to what is done for the authorisation code above, so the flow changes to:
+For sandbox, step 2 is replaced by an endpoint which simulates the PSU interaction without requiring UI, similar to what is done for the authorisation code above, so the flow changes to:
 
 1. POST /consents to create the consent
 2. POST /psu-interaction/consents/{consentId}/scas to simulate SCA
@@ -164,7 +165,7 @@ HTTP/1.1 204 No Content
 
 These endpoints currently respond with dummy data. You can expect requests to be validated for correct syntax and valid responses to be returned.
 
-All endpoints are prefixed with `/sandbox` compared to the live system, so for example for the root URL for accounts would be:
+All endpoints are prefixed with `/sandbox` compared to the live system so, for example, the root URL for accounts would be:
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/accounts`
 
@@ -172,11 +173,33 @@ All endpoints are prefixed with `/sandbox` compared to the live system, so for e
 
 These endpoints currently respond with dummy data. You can expect requests to be validated for correct syntax and valid responses to be returned.
 
-All endpoints are prefixed with `/sandbox` compared to the live system, so for example for the root URL for payments would be:
+All endpoints are prefixed with `/sandbox` compared to the live system so, for example, the root URL for payments would be:
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/payments`
 
-### SEPA Instant Transfer
+For PIS endpoints, we provide a set of [user emails](#providing-an-email-to-log-in) listed in the below table, which simulate different use cases. For example, logging in with the email `openbankingpsu@n26.com` will show how the payment status changes in the default happy path, in the following order: RCVD (Immediately after the payment creation) -> ACCP (2 minutes after the previous status) -> ACFC -> ACSC:
+
+### Emails and use cases for SEPA and Instant SEPA credit transfers
+| User email                                     | Use case description                                                               | Payment Status/Time           | Payment Status/Time after previous status | Payment Status/Time after previous status | Payment Status/Time after previous status |
+|------------------------------------------------|------------------------------------------------------------------------------------|-------------------------------|-------------------------------------------|-------------------------------------------|-------------------------------------------|
+| openbankingpsu@n26.com                         | Payment is successful                                                              | RCVD / After creating payment | ACCP / 2 minutes                          | ACFC / 2 minutes                          | ACSC / 2 minutes                          |
+| test.account+account-selection-success@n26.com | Payment is successful after customer selects account to initiate the payment from  | RCVD / After creating payment | ACCP / 5 minutes                          | ACFC / 5 minutes                          | ACSC / 5 minutes                          |
+| test.account+account-selection-expired@n26.com | Payment fails after customer account selection expires                             | RCVD / After creating payment | RJCT / 5 minutes                          |                                           |                                           |
+| test.account+user.rejects@n26.com              | Payment fails because customer rejects certification                                 | RCVD / After creating payment | RJCT / 2 minutes                          |                                           |                                           |
+| test.account+payment.failed@n26.com            | Payment fails, user is not authorised to initiate a payment from given account     |                               |                                           |                                           |                                           |
+| test.account+account.not.found@n26.com         | Payment fails, provided account does not exist                                     |                               |                                           |                                           |                                           |
+
+
+### Emails and use cases for Periodic Payments
+In addition to the users listed above, the below users are also available to see periodic payment user flows.
+
+
+| User email                                      | Use case description                               | Payment Status/Time           | Payment Status/Time after previous status | Payment Status/Time after previous status | Payment Status/Time after previous status |
+|-------------------------------------------------|----------------------------------------------------|-------------------------------|-------------------------------------------|-------------------------------------------|-------------------------------------------|
+| periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 minutes                          | ACFC / 2 minutes                          | ACSC / 2 minutes                          |
+| periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 minutes                          |                                           |                                           |
+
+### Instant SEPA Credit Transfer
 
 As described in our PISP documentation, customers are required to accept specific Terms and Conditions in order to perform instant transfers. Calling the endpoint below assumes the customer has already accepted the Terms and Conditions:
 
@@ -197,7 +220,7 @@ As described in our PISP documentation, we currently use the `DECOUPLED` SCA flo
 2. Instruct the user to confirm with N26 directly (in our mobile app).
 3. In the meantime, poll the payment status
 
-For the PISP sandbox, these endpoints are currently stateless, which means the API cannot be tested in exactly the same way we do it for AIS consents. Instead - by default - as soon as you query payment status you will receive that the payment was accepted, meaning that the flow changes to:
+If you choose not to use one the [emails and use cases specified above](#emails-and-use-cases-for-SEPA-and-Instant-SEPA-credit-transfers), please note that the API function differently. By default, as soon as you query the payment status, you will receive that the payment was accepted. This means that the flow changes to:
 
 1. POST /payments to create the payment
 2. Payment is immediately considered to be accepted without any other action required.
