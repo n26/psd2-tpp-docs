@@ -807,7 +807,7 @@ X-Request-ID: UUID
                 "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564"
             },
             "next": {
-                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?entryReferenceFrom=e05e302a-c29c-4f36-80b6-c9610d0a457a"
+                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions?dateFrom=2022-04-04&dateTo2022-07-04"
             }
         }
     }
