@@ -41,9 +41,9 @@ Certificate must be issued from a production certificate authority.
 
 
 | **Service**                                                                    | **Support**                      |
-| -------------------------------------------------------------------------------- | ---------------------------------- |
+|--------------------------------------------------------------------------------|----------------------------------|
 | Supported SCA Approaches                                                       | Decoupled (Oauth2 as a pre-step) |
-| Maximum “frequency per day” supported by consents                            | 4                                |
+| Maximum “frequency per day” supported by consents                              | 4                                |
 | Consent confirmation timeout                                                   | 5 minutes                        |
 | Consent scope: Global consent (allPsd2= allAccounts, allAccountsWithOwnerName) | Supported                        |
 | Consent scope: availableAccounts= allAccounts                                  | Not Supported                    |
@@ -51,14 +51,14 @@ Certificate must be issued from a production certificate authority.
 | Consent scope: Bank-offered consent                                            | Supported                        |
 | Consent scope: Detailed consent                                                | Supported                        |
 | Consents with/without Recurring indicator                                      | Supported                        |
-| SCA Validity                                                                   | 180 days                          |
+| SCA Validity                                                                   | 180 days                         |
 | Support of Signing Baskets                                                     | Not Supported                    |
 | Support of Card accounts                                                       | Not Supported                    |
 | Support of Multicurrency accounts                                              | Not Supported                    |
 | Support of Account Owner extension                                             | Supported                        |
 | Parameter withBalance=true                                                     | Not supported                    |
 | Balance types supported                                                        | Expected                         |
-| Transaction list retrieval through entryReferenceFrom                          | Not supported                    |
+| Transaction list retrieval through pagination                                  | Supported                        |
 | Transaction list retrieval through deltaList                                   | Not supported                    |
 | Transaction list format                                                        | application/json                 |
 | Standing orders through bookingStatus=INFORMATION                              | Supported                        |
@@ -620,7 +620,7 @@ X-Request-ID: UUID
 
 ### Read Transaction List
 
-Generally, GET /transactions requests are limited to a period of 90 days from the time the request is made. The only exception to this limitation, applies during the first 15 minutes of an AIS consent lifecycle. In this time period, any GET /transactions request made will not be limited. Moreover, requests made without specifying dateFrom and dateTo will return all transactions made since the account was created. After this time period, the above limitation will apply, and any requests trying to retrieve transactions older than 90 days will be rejected.
+Generally, GET /transactions requests are limited to a period of 90 days from the time the request is made. The only exception to this limitation applies during the first 15 minutes of an AIS consent lifecycle. In this time period, any GET /transactions request made will not be limited by time range. After this time period, the above limitation will apply, and any requests trying to retrieve transactions older than 90 days will be rejected.
 
 The list of transactions is returned in reverse chronological order, therefore newer transactions are listed first.
 
@@ -635,12 +635,11 @@ PSU-IP-Address: {{Users'IP if they are present}}
 Content-Type: application/json
 ```
 
-* Query parameter “bookingStatus” is supported with values “booked” and “information” (“pending” and “both“ are not supported from 14th March 2022)
+* Query parameter “bookingStatus” is supported with values “booked” and “information”
 * Query parameters “dateFrom” and “dateTo” are supported when “bookingStatus” is not “information“
 * Query parameter “withBalance”  is currently not supported.
 * Query parameter “deltaList” is currently not supported.
-* Pagination through “_links”  is currently not supported.
-* From 24/10/2023, pagination through “_links” will be supported only during the first 15 minutes of an AIS consent lifecycle, for returning all transactions made since the account was created. Each page will return all transactions limited to a period of 90 days.
+* Pagination through “_links” is currently supported, and is based on time-range.
 
 #### Response
 
@@ -724,11 +723,11 @@ X-Request-ID: UUID
     }
 }
 ```
-* additionalInformation is an ID that links different transactions related to the same purchase (specifically, card transactions)
-* mandateId and creditorId are supported, for SEPA direct debit transactions only
+* additionalInformation is an ID that links different transactions related to the same purchase
+* mandateId and creditorId are supported for SEPA direct debit transactions only
 * Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable
 
-#### Response with pagination, only during the first 15 minutes of an AIS consent lifecycle (From 24/10/2023)
+#### Response with pagination
 
 ```
 X-Request-ID: UUID
@@ -812,8 +811,7 @@ X-Request-ID: UUID
         }
     }
 }
-```
-* Pagination through “_links” will support new attribute: ”next”. 
+``` 
 
 ### Read Transaction Details
 
@@ -850,8 +848,8 @@ X-Request-ID: UUID
     }
 }
 ```
-* mandateId and creditorId are supported, for SEPA direct debit transactions only (from 25th April 2022)
-* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable (from 25th April 2022)
+* mandateId and creditorId are supported for SEPA direct debit transactions only
+* Both remittanceInformationUnstructuredArray and remittanceInformationUnstructured are provided, where applicable
 
 ### Read Standing order List
 
