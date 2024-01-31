@@ -271,7 +271,7 @@ The final status of a payment is either **ACSC** or **RJCT**.
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -290,7 +290,7 @@ HTTP/1.1 200 OK
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentsId}} HTTP/1.1
+GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -477,7 +477,7 @@ The final status of a payment is either **ACSC** or **RJCT**.
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -496,7 +496,7 @@ HTTP/1.1 200 OK
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentsId}} HTTP/1.1
+GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -681,7 +681,7 @@ Statuses currently supported:
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -700,7 +700,7 @@ HTTP/1.1 200 OK
 ##### Request
 
 ```
-GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}} HTTP/1.1
+GET    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
@@ -798,7 +798,7 @@ HTTP/1.1 200 OK
 ##### Request
 
 ```
-DELETE    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentstId}} HTTP/1.1
+DELETE    /v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/{{paymentId}} HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
