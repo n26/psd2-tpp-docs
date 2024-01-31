@@ -177,15 +177,15 @@ All endpoints are prefixed with `/sandbox` compared to the live system so, for e
 
 `https://xs2a.tech26.de/sandbox/v1/berlin-group/v1/payments`
 
-For PIS endpoints, we provide a set of [user emails](#providing-an-email-to-log-in) listed in the below table, which simulate different use cases. For example, logging in with the email `openbankingpsu@n26.com` will show how the payment status changes in the default happy path, in the following order: RCVD (Immediately after the payment creation) -> ACCP (2 minutes after the previous status) -> ACFC -> ACSC:
+For PIS endpoints, we provide a set of [user emails](#providing-an-email-to-log-in) listed in the below table, which simulate different use cases. For example, logging in with the email `openbankingpsu@n26.com` will show how the payment status changes in the default happy path, in the following order: RCVD (Immediately after the payment creation) -> ACCP (2 seconds after the previous status) -> ACFC -> ACSC:
 
 ### Emails and use cases for SEPA and Instant SEPA credit transfers
 | User email                                     | Use case description                                                               | Payment Status/Time           | Payment Status/Time after previous status | Payment Status/Time after previous status | Payment Status/Time after previous status |
 |------------------------------------------------|------------------------------------------------------------------------------------|-------------------------------|-------------------------------------------|-------------------------------------------|-------------------------------------------|
-| openbankingpsu@n26.com                         | Payment is successful                                                              | RCVD / After creating payment | ACCP / 2 minutes                          | ACFC / 2 minutes                          | ACSC / 2 minutes                          |
-| test.account+account-selection-success@n26.com | Payment is successful after customer selects account to initiate the payment from  | RCVD / After creating payment | ACCP / 5 minutes                          | ACFC / 5 minutes                          | ACSC / 5 minutes                          |
-| test.account+account-selection-expired@n26.com | Payment fails after customer account selection expires                             | RCVD / After creating payment | RJCT / 5 minutes                          |                                           |                                           |
-| test.account+user.rejects@n26.com              | Payment fails because customer rejects certification                                 | RCVD / After creating payment | RJCT / 2 minutes                          |                                           |                                           |
+| openbankingpsu@n26.com                         | Payment is successful                                                              | RCVD / After creating payment | ACCP / 2 seconds                          | ACFC / 2 seconds                          | ACSC / 2 seconds                          |
+| test.account+account-selection-success@n26.com | Payment is successful after customer selects account to initiate the payment from  | RCVD / After creating payment | ACCP / 5 seconds                          | ACFC / 5 seconds                          | ACSC / 5 seconds                          |
+| test.account+account-selection-expired@n26.com | Payment fails after customer account selection expires                             | RCVD / After creating payment | RJCT / 5 seconds                          |                                           |                                           |
+| test.account+user.rejects@n26.com              | Payment fails because customer rejects certification                               | RCVD / After creating payment | RJCT / 2 seconds                          |                                           |                                           |
 | test.account+payment.failed@n26.com            | Payment fails, user is not authorised to initiate a payment from given account     |                               |                                           |                                           |                                           |
 | test.account+account.not.found@n26.com         | Payment fails, provided account does not exist                                     |                               |                                           |                                           |                                           |
 
@@ -196,8 +196,8 @@ In addition to the users listed above, the below users are also available to see
 
 | User email                                      | Use case description                               | Payment Status/Time           | Payment Status/Time after previous status | Payment Status/Time after previous status | Payment Status/Time after previous status |
 |-------------------------------------------------|----------------------------------------------------|-------------------------------|-------------------------------------------|-------------------------------------------|-------------------------------------------|
-| periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 minutes                          | ACFC / 2 minutes                          | ACSC / 2 minutes                          |
-| periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 minutes                          |                                           |                                           |
+| periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 seconds                          | ACFC / 2 seconds                          | ACSC / 2 seconds                          |
+| periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 seconds                          |                                           |                                           |
 
 ### Instant SEPA Credit Transfer
 
@@ -231,7 +231,7 @@ If you want to test the polling case more thoroughly, you can store state on the
 #### Request
 
 ```
-GET    /sandbox/v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentstId}}/status HTTP/1.1
+GET    /sandbox/v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 X-Sandbox-Transaction-Status: RCVD

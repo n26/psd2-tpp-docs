@@ -753,7 +753,7 @@ The final status of a payment is either **ACSC** or **RJCT**.
 ##### Request
 
 ```
-GET    /api/openbanking/fallback/sepa-ct/{{paymentstId}}/status HTTP/1.1
+GET    /api/openbanking/fallback/sepa-ct/{{paymentId}}/status HTTP/1.1
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
 Content-Type: application/json
@@ -787,7 +787,7 @@ The final status of a payment is either **ACSC** or **RJCT**.
 ##### Request
 
 ```
-GET    /api/openbanking/fallback/sepa-instant/{{paymentstId}}/status HTTP/1.1
+GET    /api/openbanking/fallback/sepa-instant/{{paymentId}}/status HTTP/1.1
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
 Content-Type: application/json
@@ -821,7 +821,7 @@ Statuses currently supported:
 ##### Request
 
 ```
-GET    /api/openbanking/fallback/so/{{paymentstId}}/status HTTP/1.1
+GET    /api/openbanking/fallback/so/{{paymentId}}/status HTTP/1.1
 x-tpp-userip: {{userip}}
 device-token: {{device_token}}
 Content-Type: application/json
