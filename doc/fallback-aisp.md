@@ -16,6 +16,8 @@
     3. [Get (Main) Account Information (Deprecated)](./fallback-aisp.md#get-main-account-information-deprecated)
     4. [Get (Spaces) Accounts Information (Deprecated)](./fallback-aisp.md#get-spaces-accounts-information-deprecated)
    5. [Get (Spaces) Account Information (single Space) (Deprecated)](./fallback-aisp.md#get-spaces-account-information-single-space-deprecated)
+   6. [Get accounts information](./fallback-aisp.md#get-accounts-information)
+   7. [Get a single account information](./fallback-aisp.md#get-a-single-account-information)
 4. [Account Transactions](./fallback-aisp.md#account-transactions)
     1. [Overview](./fallback-aisp.md#overview-2)
     2. [Get Account Transactions](./fallback-aisp.md#get-account-transactions)
@@ -876,6 +878,87 @@ device-token: {{device_token}}
 }
 ```
 
+### Get accounts information
+
+#### Request
+
+```
+GET    /api/v2/accounts HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+#### Response
+
+```
+{
+  "accounts": [
+    {
+      "accountId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
+      "account": {
+        "iban": "DE8615632626323261115503",
+        "currency": "EUR",
+        "balance": 41.20,
+        "product": "Main Account",
+        "name": "Main Account",
+        "bic": "NTSBESM1XXX",
+        "cashAccountType": "CACC",
+        "status": "ACTIVE",
+        "usage": "PRIV",
+        "ownerName": "Alberto Test Cuatro"
+      }
+    },
+    {
+      "accountId": "f58a9789-c062-11ea-b03d-cb57909ea31a",
+      "account": {
+        "iban": "DE7615632626393263689235",
+        "currency": "EUR",
+        "balance": 10.20,
+        "product": "SAVINGS",
+        "name": "Savings Space",
+        "bic": "NTSBESM1XXX",
+        "cashAccountType": "CACC",
+        "status": "ACTIVE",
+        "usage": "PRIV",
+        "ownerName": "Alberto Test Cuatro"
+      }
+    }
+  ]
+}
+```
+
+
+### Get a single account information
+
+#### Request
+
+```
+GET    /api/v2/accounts/{accountId} HTTP/1.1
+Authorization: bearer {{access_token}}
+x-tpp-userip: {{userip}}
+device-token: {{device_token}}
+```
+
+#### Response
+
+```
+{
+   "accountId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
+   "account": {
+     "iban": "DE8615632626323261115503",
+     "currency": "EUR",
+     "balance": 41.20,
+     "product": "Main Account",
+     "name": "Main Account",
+     "bic": "NTSBESM1XXX",
+     "cashAccountType": "CACC",
+     "status": "ACTIVE",
+     "usage": "PRIV",
+     "ownerName": "Alberto Test Cuatro"
+   }
+}
+```
 
 ## Account Transactions
 
