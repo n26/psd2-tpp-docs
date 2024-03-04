@@ -1,0 +1,14 @@
+{
+    "type": "documentation",
+    "status": "active",
+    "ownership": {
+        "domain": "Everyday Banking",
+        "segment": "Payments",
+        "engineeringManager": "haitham.aboshahba@n26.com",
+        "productManager": "nomvuzo.maitin@n26.com",
+        "group": "Open Banking"
+    },
+    "contact": {
+        "communicationChannel": "payments-public: https://chat.google.com/room/AAAABegf9XY?cls=7"
+    }
+}
