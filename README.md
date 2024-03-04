@@ -82,6 +82,13 @@
 ### PSD2 Fallback Interface
 
 <details>
+<summary> 2024</summary>
+
+- **March 5, 2024** Endpoints /api/me, /api/accounts, /api/v3/spaces, /api/v3/spaces/{ID} will be disabled from June 5th 2024. Following the disabling of aforementioned endpoints, 2 new endpoints `/api/v2/accounts` and `/api/v2/accounts/{accountId}` have been added. *(please refer to our [Fallback AISP](./doc/fallback-aisp.md#get-accounts-information))*
+
+</details>
+
+<details>
 <summary> 2023</summary>
   
 - **October 27, 2023** Following the disabling of /api/smrt/transactions, also used to confirm the initiation of a payment, 3 new payment status endpoints have been added. *(please refer to our [Fallback PISP](./doc/fallback-pisp.md#get-status-of-initiated-transactions)*
