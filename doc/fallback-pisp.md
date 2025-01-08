@@ -663,9 +663,6 @@ HTTP/1.1 500 Internal Server Error
 > :information_source: Please note that the debtor IBAN is not mandatory; if this parameter is excluded,
 > the payment will be executed from the customer's main account.
 
-Customers are required to accept ___Terms and Conditions___, specifically for the SEPA Instant feature, once prior to performing
-the transfer. Furthermore, non-premium customers (i.e. customers with an N26 Standard account) are charged a fee for
-each instant transfer. This fee differs by market, and can be found on the N26 website of the relevant market.
 
 ### Request
 ```
@@ -698,17 +695,6 @@ Content-Type: application/json
   "id": "bc7170a7-725e-11e9-80f4-0242ac110004" # created Transaction id
 }
 ```
-
-#### T&Cs not signed
-Customers should accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer.
-In the event that the customer has not accepted the ___Terms And Conditions___ for the SEPA Instant feature, before initiating the transfer, the following response would be sent to the TPP:
-
-```
-HTTP/1.1 307 Temporary Redirect
-Location: https://n26.com
-```
-
-> ⚠️: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, the TPP is required to make a new POST request to initiate the payment again in order for it to be executed.
 
 #### Incorrectly formatted payload (e.g. missing field etc)
 ```
