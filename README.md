@@ -30,6 +30,12 @@
 ## Key announcements
 ### PSD2 Dedicated Interface
 <details>
+<summary> 2025</summary>
+
+- **January 08, 2025** We are no longer requiring customers to accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer. There are no longer any fees associated with SEPA Instant.
+
+</details>
+<details>
 <summary> 2023</summary>
 
 - **September 18, 2023** New account selection screen on payment initiation step for users that have multiple IBANs, from Oct 4th 2023. *(please refer to our PIS access documentation)*
@@ -80,6 +86,13 @@
 </details>
 
 ### PSD2 Fallback Interface
+
+<details>
+<summary> 2025</summary>
+
+- **January 08, 2025** We are no longer requiring customers to accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer. There are no longer any fees associated with SEPA Instant.
+
+</details>
 
 <details>
 <summary> 2024</summary>

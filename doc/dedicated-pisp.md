@@ -387,11 +387,6 @@ HTTP/1.1 200 OK
 > 2) The payment status will remain “RCVD”
 > 3) If the selection is not completed within 5 mins, the payment status will change to "RJCT"
 
-Customers are required to accept ___Terms and Conditions___, specifically for the SEPA Instant feature, once prior to performing
-the transfer. Furthermore, non-premium customers (i.e. customers with an N26 Standard account) are charged a fee for
-each instant transfer. This fee differs by market, ranging from €0.49-€1.99, and can be found on the N26 website of the
-relevant market.
-
 ##### Request
 
 ```
@@ -442,16 +437,6 @@ aspsp-sca-approach: DECOUPLED
     }
 }
 ```
-
-Customers should accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer.
-In the event that the customer has not accepted the ___Terms And Conditions___ for the SEPA Instant feature, before initiating the transfer, the following response would be sent to the TPP:
-
-```
-HTTP/1.1 307 Temporary Redirect
-Location: https://app.n26.com/login?redirect=%2Fterms-and-conditions
-```
-
-> ⚠️: The temporary redirect is the end of the payment initiation. After the customer has accepted the Terms and Conditions, the TPP is required to make a new POST request to initiate the payment again in order for it to be executed.
 
 #### Get payment status
 
