@@ -196,7 +196,7 @@ In addition to the users listed above, the below users are also available to see
 
 | User email                                      | Use case description                               | Payment Status/Time           | Payment Status/Time after previous status | Payment Status/Time after previous status | Payment Status/Time after previous status |
 |-------------------------------------------------|----------------------------------------------------|-------------------------------|-------------------------------------------|-------------------------------------------|-------------------------------------------|
-| periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 seconds                          | ACFC / 2 seconds                          | ACSC / 2 seconds                          |
+| periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 seconds                          |                        |                           |
 | periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 seconds                          |                                           |                                           |
 
 ### Instant SEPA Credit Transfer
