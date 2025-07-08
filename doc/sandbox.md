@@ -199,18 +199,6 @@ In addition to the users listed above, the below users are also available to see
 | periodic.payment+successful@n26.com             | Payment is successful                              | RCVD / After creating payment | ACCP / 2 seconds                          |                        |                           |
 | periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 seconds                          |                                           |                                           |
 
-### Instant SEPA Credit Transfer
-
-As described in our PISP documentation, customers are required to accept specific Terms and Conditions in order to perform instant transfers. Calling the endpoint below assumes the customer has already accepted the Terms and Conditions:
-
-POST /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers
-
-If you would like to test the redirection performed when the customer has not accepted the Terms and Conditions, you can include an additional parameter called signed in your request in order to be redirected to the provided URI:
-```
-POST    /sandbox/v1/berlin-group/v1/payments/instant-sepa-credit-transfers?signed=https://n26.com HTTP/1.1
-HTTP/1.1 307 Temporary Redirect
-Location: https://n26.com
-```
 
 ### Get payment status
 
