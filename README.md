@@ -32,7 +32,7 @@
 <details>
 <summary> 2025</summary>
 
-- **September 19, 2025** SEPA Instant transfers' final status becomes ACCC instead of ACSC, indicating that both creditor and debtor are settled.
+- **September 18, 2025** Additional transaction status ACCC will replace ACSC in the /v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status endpoint, from Oct 9th 2025, according to the Instant Payment Regulation.
 
 - **January 08, 2025** We are no longer requiring customers to accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer. There are no longer any fees associated with SEPA Instant.
 

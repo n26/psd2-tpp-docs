@@ -254,15 +254,13 @@ using the decoupled SCA approach).
 
 Statuses currently supported:
 
-| **Status code** | **Description**                                                                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
-| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
-| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
-| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
-| ACCC            | AcceptedSettlementCompleted. The payment has been successfully processed and the funds have been credited to the creditor's account.|
-| RJCT            | Rejected. Payment failed to be initiated or executed.| 
-# ⬆️ TODO ⬆️: double check if ACSC has the correct info. (AcceptedSettlementCompletedOnDebtorAccount): The settlement on the debtor's account has been completed.
+| **Status code** | **Description**                                                                                                                                                                           |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.                                                                                                  |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated.                                                                     |                   _
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.                                                                               |
+| ACSC            | AcceptedSettlementCompletedOnDebtorAccount. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds. |
+| RJCT            | Rejected. Payment failed to be initiated or executed.                                                                                                                                     | 
 
 The final status of a payment is either **ACSC** or **RJCT**.
 
@@ -449,16 +447,16 @@ Payment final status will be applied no later then **15 minutes**.
 
 Statuses currently supported:
 
-| **Status code** | **Description**                                                                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.|
-| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
-| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
-| ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
-| ACCC            | AcceptedSettlementCompleted. The payment has been successfully processed and the funds have been credited to the creditor's account.|
-| RJCT            | Rejected. Payment failed to be initiated or executed.| 
+| **Status code** | **Description**                                                                                                                                                                                                        |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RCVD            | Received. Initial status for a payment. A certification has been sent to the user’s app.                                                                                                                               |
+| ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated.                                                                                                  |                   _
+| ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.                                                                                                            |
+| ACSC            | (Support until Oct 8th 2025) AcceptedSettlementCompletedOnDebtorAccount. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds. |
+| ACCC            | (Support starting Oct 9th 2025) AcceptedSettlementCompleted. The payment has been successfully processed and the funds have been credited to the creditor's account.                                                   |
+| RJCT            | Rejected. Payment failed to be initiated or executed.                                                                                                                                                                  | 
 
-The final status of a payment is either **ACSC** or **RJCT**.   
+The final status of a payment is either **ACCC** or **RJCT**.
 
 ##### Request
 
