@@ -397,7 +397,7 @@ HTTP/1.1 429 Too Many Requests
 ### Step 3 - Get access token
 
 > :information_source: The TPP should poll endpoints in this section not more than every 2 seconds.
-> After a successful, expired or unauthorised response the polling should stop.
+After a successful, expired or unauthorised response the polling should stop.
 
 #### Request for `OOB`
 
