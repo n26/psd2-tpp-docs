@@ -92,6 +92,8 @@
 <details>
 <summary> 2025</summary>
 
+- **September 18, 2025** Additional transaction status ACCC will replace ACSC in the /v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status endpoint, from October 9th 2025, to comply with the Instant Payments Regulation enforced by the European Union.
+
 - **January 08, 2025** We are no longer requiring customers to accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer. There are no longer any fees associated with SEPA Instant.
 
 </details>
