@@ -32,6 +32,8 @@
 <details>
 <summary> 2025</summary>
 
+- **September 19, 2025** From October 13, 2025, all requests to our PSD2 APIs must include the user-agent of your http client. Requests without this information will be blocked as part of infrastructure updates to improve API performance and security.
+
 - **September 18, 2025** Additional transaction status ACCC will replace ACSC in the /v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status endpoint, from October 9th 2025, to comply with the Instant Payments Regulation enforced by the European Union.
 
 - **January 08, 2025** We are no longer requiring customers to accept the ___Term And Conditions___ for the SEPA Instant feature prior to performing the first transfer. There are no longer any fees associated with SEPA Instant.
@@ -91,6 +93,8 @@
 
 <details>
 <summary> 2025</summary>
+
+- **September 19, 2025** From October 13, 2025, all requests to our PSD2 APIs must include the user-agent of your http client. Requests without this information will be blocked as part of infrastructure updates to improve API performance and security.
 
 - **September 18, 2025** Additional transaction status ACCC will replace ACSC in the /v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status endpoint, from October 9th 2025, to comply with the Instant Payments Regulation enforced by the European Union.
 
@@ -225,9 +229,17 @@
 <details>
   <summary>What type of accounts are accessible through the API?</summary>
 
-> N26 customers have a main account and, depending on their membership, up to 10 additional sub-accounts which are called [Spaces](https://n26.com/en-eu/spaces). Furthermore, N26 customers can enable a unique IBAN number for each sub-account, which is different to the IBAN number of the main account.
-> Please note that the main account and sub-accounts each have their own individual balances. More specifically, the main account balance does not include the balance(s) of the sub-account(s).
-> There is currently, unfortunately, no way to retrieve a customer’s single total account balance through our API. To achieve this, we recommend retrieving the balance of the main account and each sub-account individually, and then aggregating them. The balance of Space(s) will be returned even in cases where N26 customers have chosen to “lock“ a Space or “hide“ the Space’s balance in the N26 app.
+>Through the API, various account types can be accessed:
+>- **Main account** (with IBAN)
+>- **Sub-accounts** [(Spaces)](https://n26.com/en-eu/spaces), which may be created with or without their own IBAN, depending on the customer’s choice. Spaces can be individual or shared.
+>- **Joint account** (with IBAN)
+>- **Instant savings account** (with IBAN)
+>
+>Examples of how these accounts are represented in the API can be found in the response of the `/accounts` endpoint in our API documentation.
+>
+> Each account has its own individual balance. The balance of the main account does not include the balance(s) of any sub-accounts. To calculate a customer’s total balance, you should retrieve the balances of the main account and each sub-account separately and aggregate them. Balances will be returned, even if the customer has chosen to “lock” one of the accounts or “hide” its balance in the N26 app.
+> 
+> The API returns both **open and closed accounts**, as different TPPs may require one or the other. If you only wish to retrieve open accounts, please use the `status` variable to filter the response.
 
 </details>
 

@@ -599,19 +599,8 @@ HTTP/1.1 401 Unauthorized
 Receiving a `401` indicates that the usage of access and refresh tokens is not as defined in [Validity of access 
 > &amp; refresh tokens](./fallback-aisp.md#validity-of-access--refresh-tokens).
 
-## Account & User information
+## Account information
 
-### Overview
-
-#### Entities
-
-`User` - the natural person, which is owner of the account. User information is provided via `/api/me`. (Deprecated)
-
-`(Primary) Account` - Main user account. Every user has only one main account. This is the checking account. Information is provided via `/api/accounts`. (Deprecated)
-
-`(Secondary) Accounts aka Spaces` - A user can have multiple secondary accounts . The primary account is included in 
-this response as well. Information is provided via `/api/v3/spaces`(if shared spaces also might 
-be included). (Deprecated)
 
 ### Get accounts information
 
@@ -626,42 +615,150 @@ device-token: {{device_token}}
 
 #### Response
 
-```
+<details>
+  <summary>Show full transaction response (click to expand)</summary>
+
+```json 
 {
   "accounts": [
     {
-      "accountId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
-      "account": {
-        "iban": "DE8615632626323261115503",
-        "currency": "EUR",
-        "balance": 41.20,
-        "product": "Main Account",
-        "name": "Main Account",
-        "bic": "NTSBESM1XXX",
-        "cashAccountType": "CACC",
-        "status": "ACTIVE",
-        "usage": "PRIV",
-        "ownerName": "Alberto Test Cuatro"
+      "resourceId": "6d3fc103-23c1-429c-9809-fc7672ea21c1",
+      "iban": "DE05100110012802645265",
+      "currency": "EUR",
+      "product": "Joint Account",
+      "name": "Aiyana & Wayne",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/transactions"
+        }
       }
     },
     {
-      "accountId": "f58a9789-c062-11ea-b03d-cb57909ea31a",
-      "account": {
-        "iban": "DE7615632626393263689235",
-        "currency": "EUR",
-        "balance": 10.20,
-        "product": "SAVINGS",
-        "name": "Savings Space",
-        "bic": "NTSBESM1XXX",
-        "cashAccountType": "CACC",
-        "status": "ACTIVE",
-        "usage": "PRIV",
-        "ownerName": "Alberto Test Cuatro"
+      "resourceId": "a128ed07-5437-4f4f-9377-a7c0466ce9ef",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "trip space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "62a56502-4547-4447-9383-9dbf97aedb82",
+      "currency": "EUR",
+      "product": "Shared Space",
+      "name": "apartment space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "543de370-0654-4cd6-8213-051bc0cf435a",
+      "iban": "DE73100110012852278456",
+      "currency": "EUR",
+      "product": "Individual Current Account",
+      "name": "Main Account",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "142a69b6-d9a3-43db-a641-b082159bee2b",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "house space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "80ff6dfb-c1c5-44d0-bc81-f6de437ebd06",
+      "iban": "DE16100110012703791106",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "car space",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "5a15a96b-0765-4d40-bbc3-05e5b5688297",
+      "iban": "DE50100110012583312129",
+      "currency": "EUR",
+      "product": "Individual Instant Saving",
+      "name": "Instant Savings",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "SVGS",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/transactions"
+        }
       }
     }
   ]
 }
 ```
+</details>
 
 
 ### Get a single account information
@@ -677,27 +774,30 @@ device-token: {{device_token}}
 
 #### Response
 
-```
+```json
 {
-   "accountId": "206a9bbb-d440-409d-95ed-d2eb13dbac78",
-   "account": {
-     "iban": "DE8615632626323261115503",
-     "currency": "EUR",
-     "balance": 41.20,
-     "product": "Main Account",
-     "name": "Main Account",
-     "bic": "NTSBESM1XXX",
-     "cashAccountType": "CACC",
-     "status": "ACTIVE",
-     "usage": "PRIV",
-     "ownerName": "Alberto Test Cuatro"
+   "resourceId": "543de370-0654-4cd6-8213-051bc0cf435a",
+   "iban": "DE73100110012852278456",
+   "currency": "EUR",
+   "product": "Individual Current Account",
+   "name": "Main Account",
+   "bic": "NTSBDEB1XXX",
+   "cashAccountType": "CACC",
+   "status": "enabled",
+   "usage": "PRIV",
+   "ownerName": "Aiyana Hartmann",
+   "_links": {
+      "balances": {
+         "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
+      },
+      "transactions": {
+         "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/transactions"
+      }
    }
 }
 ```
 
 ## Account Transactions
-
-### Overview
 
 ### Get account transactions
 #### Request
@@ -784,10 +884,3 @@ device-token: {{device_token}}
   }
 }
 ```
-
-#### Entities  [Deprecated]
-
-`(Primary) Account transactions` - Are all transactions done on the primary account of the user. Information is provided via `/api/smrt/transactions`.
-
-`(Secondary) Accounts aka Spaces transactions` - Are all of the space <> space transactions of one account. For the 
-primary it does not include the Bank transfers and card transactions. Information is provided via `/api/v3/spaces`.

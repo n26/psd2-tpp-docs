@@ -234,8 +234,9 @@ GET    /v1/berlin-group/v1/consents/confirmation-of-funds/{{consentId}}/status H
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
-
 ```
+
+> ℹ️ This endpoint should not be polled more than **two times per second**. After a terminal status is reached (`REJECTED`; `VALID`; `EXPIRED`; `REVOKED_BY_PSU`; `TERMINATED_BY_TPP`), the polling should stop.
 
 #### Response
 
@@ -294,6 +295,8 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 ```
+
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
 
 #### Response
 

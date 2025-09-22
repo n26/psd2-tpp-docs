@@ -274,6 +274,9 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACSC`), the polling should stop.
+
+
 ##### Response
 
 ```
@@ -364,6 +367,8 @@ GET    /v1/berlin-group/v1/payments/sepa-credit-transfers/{{paymentId}}/authoris
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
+>ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
+
 
 ##### Response
 
@@ -466,6 +471,9 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCC`), the polling should stop.
+
+
 ###### Response
 
 ```
@@ -557,6 +565,10 @@ GET    /v1/berlin-group/v1/payments/instant-sepa-credit-transfers/{{paymentId}}/
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
+
+>ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
+
+
 
 ##### Response
 
@@ -670,6 +682,9 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCP`; `CANC`), the polling should stop.
+
+
 ##### Response
 
 ```
@@ -767,6 +782,10 @@ GET    /v1/berlin-group/v1/payments/periodic-payments/sepa-credit-transfers/{{pa
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
+
+>ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
+
+
 
 ##### Response
 
