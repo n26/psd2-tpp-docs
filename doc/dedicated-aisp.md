@@ -351,8 +351,11 @@ GET    /v1/berlin-group/v1/consents/{{consentId}}/status HTTP/1.1
 Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
-
 ```
+
+>ℹ️  This endpoint should not be polled more than **two times per second**. After a terminal status is reached (`REJECTED`; `VALID`; `EXPIRED`; `REVOKED_BY_PSU`; `TERMINATED_BY_TPP`), the polling should stop.
+
+
 
 #### Response
 
@@ -442,6 +445,8 @@ X-Request-ID: {{Unique UUID}}
 Content-Type: application/json
 ```
 
+>ℹ️  This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
+
 #### Response
 
 ```
@@ -477,64 +482,142 @@ Field Owner name is only supported if the consent is “allAccountsWithOwnerName
 ```
 X-Request-ID: {{Unique UUID}}
 {
-    "accounts": [
-        {
-            "resourceId": "54683c9e-1160-4bf8-9a18-5c0bda473fb1",
-            "currency": "EUR",
-            "product": "Space",
-            "name": "Trip to Australia",
-            "cashAccountType": "CACC",
-            "status": "enabled",
-            "usage": "PRIV",
-            "ownerName": "Name of owner",
-            "_links": {
-                "balances": {
-                    "href": "/v1/berlin-group/v1/accounts/54683c9e-1160-4bf8-9a18-5c0bda473fb1/balances"
-                },
-                "transactions": {
-                    "href": "/v1/berlin-group/v1/accounts/54683c9e-1160-4bf8-9a18-5c0bda473fb1/transactions"
-                }
-            }
+  "accounts": [
+    {
+      "resourceId": "6d3fc103-23c1-429c-9809-fc7672ea21c1",
+      "iban": "DE05100110012802645265",
+      "currency": "EUR",
+      "product": "Joint Account",
+      "name": "Aiyana & Wayne",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/balances"
         },
-        {
-            "resourceId": "9ce689d3-d7ce-4159-9405-d6756d645564",
-            "iban": "DE73100110012629586632",
-            "currency": "EUR",
-            "product": "Main Account",
-            "name": "Main Account",
-            "bic": "NTSBDEB1XXX",
-            "cashAccountType": "CACC",
-            "status": "enabled",
-            "usage": "PRIV",
-            "ownerName": "Name of owner",
-            "_links": {
-                "balances": {
-                    "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/balances"
-                },
-                "transactions": {
-                    "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions"
-                }
-            }
-        },
-        {
-            "resourceId": "5fc825d0-102c-4d1b-8bd1-871e26a58001",
-            "currency": "EUR",
-            "product": "Shared Space",
-            "name": "shared space",
-            "cashAccountType": "CACC",
-            "status": "enabled",
-            "usage": "PRIV",
-            "ownerName": "Name of owner",
-            "_links": {
-                "balances": {
-                    "href": "/v1/berlin-group/v1/accounts/5fc825d0-102c-4d1b-8bd1-871e26a58001/balances"
-                },
-                "transactions": {
-                    "href": "/v1/berlin-group/v1/accounts/5fc825d0-102c-4d1b-8bd1-871e26a58001/transactions"
-                }
-            }
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/transactions"
         }
-    ]
+      }
+    },
+    {
+      "resourceId": "a128ed07-5437-4f4f-9377-a7c0466ce9ef",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "trip space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "62a56502-4547-4447-9383-9dbf97aedb82",
+      "currency": "EUR",
+      "product": "Shared Space",
+      "name": "apartment space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "543de370-0654-4cd6-8213-051bc0cf435a",
+      "iban": "DE73100110012852278456",
+      "currency": "EUR",
+      "product": "Individual Current Account",
+      "name": "Main Account",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "142a69b6-d9a3-43db-a641-b082159bee2b",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "house space",
+      "cashAccountType": "TRAN",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "80ff6dfb-c1c5-44d0-bc81-f6de437ebd06",
+      "iban": "DE16100110012703791106",
+      "currency": "EUR",
+      "product": "Individual Space",
+      "name": "car space",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "CACC",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/transactions"
+        }
+      }
+    },
+    {
+      "resourceId": "5a15a96b-0765-4d40-bbc3-05e5b5688297",
+      "iban": "DE50100110012583312129",
+      "currency": "EUR",
+      "product": "Individual Instant Saving",
+      "name": "Instant Savings",
+      "bic": "NTSBDEB1XXX",
+      "cashAccountType": "SVGS",
+      "status": "enabled",
+      "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
+      "_links": {
+        "balances": {
+          "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/balances"
+        },
+        "transactions": {
+          "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/transactions"
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -561,22 +644,22 @@ Field Owner name is only supported if consent is “allAccountsWithOwnerName”.
 X-Request-ID: {{Unique UUID}}
 {
     "account": {
-        "resourceId": "9ce689d3-d7ce-4159-9405-d6756d645564",
-        "iban": "DE73100110012629586632",
+        "resourceId": "543de370-0654-4cd6-8213-051bc0cf435a",
+        "iban": "DE73100110012852278456",
         "currency": "EUR",
-        "product": "Main Account",
+        "product": "Individual Current Account",
         "name": "Main Account",
         "bic": "NTSBDEB1XXX",
         "cashAccountType": "CACC",
         "status": "enabled",
         "usage": "PRIV",
-        "ownerName": "Name of owner",
+        "ownerName": "Aiyana Hartmann",
         "_links": {
             "balances": {
-                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/balances"
+                "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
             },
             "transactions": {
-                "href": "/v1/berlin-group/v1/accounts/9ce689d3-d7ce-4159-9405-d6756d645564/transactions"
+                "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/transactions"
             }
         }
     }
@@ -729,7 +812,10 @@ X-Request-ID: UUID
 
 #### Response with pagination
 
-```
+<details>
+<summary>Show full transaction response (click to expand)</summary>
+
+```json 
 X-Request-ID: UUID
 
 {
@@ -811,7 +897,8 @@ X-Request-ID: UUID
         }
     }
 }
-``` 
+```
+</details>
 
 ### Read Transaction Details
 

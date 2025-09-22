@@ -745,6 +745,9 @@ device-token: {{device_token}}
 Content-Type: application/json
 ```
 
+>ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACSC`), the polling should stop.
+
+
 ##### Response
 
 ```
@@ -780,6 +783,7 @@ device-token: {{device_token}}
 Content-Type: application/json
 ```
 
+>ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCC`), the polling should stop.
 ##### Response
 
 ```
@@ -813,6 +817,8 @@ x-tpp-userip: {{userip}}
 device-token: {{device_token}}
 Content-Type: application/json
 ```
+
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCP`; `CANC`), the polling should stop.
 
 ##### Response
 
