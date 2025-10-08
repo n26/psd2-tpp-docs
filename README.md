@@ -32,6 +32,8 @@
 <details>
 <summary> 2025</summary>
 
+- **October 08, 2025** From October 9th 2025, an additional field `tppMessages` will be included in the response when requesting the status of a payment to comply with the Instant Payments Regulation enforced by the European Union. The field will detail, for rejected payments, whether it failed due to funds not available or other.
+
 - **September 19, 2025** From October 13, 2025, all requests to our PSD2 APIs must include the user-agent of your http client. Requests without this information will be blocked as part of infrastructure updates to improve API performance and security.
 
 - **September 18, 2025** Additional transaction status ACCC will replace ACSC in the /v1/payments/instant-sepa-credit-transfers/{{paymentId}}/status endpoint, from October 9th 2025, to comply with the Instant Payments Regulation enforced by the European Union.
@@ -93,6 +95,8 @@
 
 <details>
 <summary> 2025</summary>
+
+- **October 08, 2025** From October 9th 2025, an additional field `tppMessages` will be included in the response when requesting the status of a payment to comply with the Instant Payments Regulation enforced by the European Union. The field will detail, for rejected payments, whether it failed due to funds not available or other.
 
 - **September 19, 2025** From October 13, 2025, all requests to our PSD2 APIs must include the user-agent of your http client. Requests without this information will be blocked as part of infrastructure updates to improve API performance and security.
 
