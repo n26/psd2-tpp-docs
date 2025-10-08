@@ -753,9 +753,26 @@ Content-Type: application/json
 ```
 HTTP/1.1 200 OK
 {
-    "transactionStatus": "ACFC"
+    "transactionStatus": "ACFC",
+    "tppMessages": []
 }
 ```
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "RJCT",
+    "tppMessages": [
+        {
+            "category": "ERROR",
+            "code": "FUNDS_NOT_AVAILABLE",
+            "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+        }
+    ]
+}
+```
+
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
 
 ### SEPA Instant Credit Transfer
 This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the payment (as we are
@@ -789,9 +806,26 @@ Content-Type: application/json
 ```
 HTTP/1.1 200 OK
 {
-    "transactionStatus": "ACSC"
+    "transactionStatus": "ACSC",
+    "tppMessages": []
 }
 ```
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "RJCT",
+    "tppMessages": [
+        {
+            "category": "ERROR",
+            "code": "FUNDS_NOT_AVAILABLE",
+            "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+        }
+    ]
+}
+```
+
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
 
 ### SEPA Standing Order (Recurring/Future Payments)
 This endpoint provides statuses on both the creation and deletion of periodic payments. The statuses provide information on the rule itself, and not the subsequent execution of payments. Once the rule has been successfully created, the final status would be "ACCP". Once the rule has been successfully deleted, the final status would be "CANC".

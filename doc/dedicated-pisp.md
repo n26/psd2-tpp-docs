@@ -282,9 +282,26 @@ X-Request-ID: {{Unique UUID}}
 ```
 HTTP/1.1 200 OK
 {
-    "transactionStatus": "ACSC"
+    "transactionStatus": "ACSC",
+    "tppMessages": []
 }
 ```
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "RJCT",
+    "tppMessages": [
+        {
+            "category": "ERROR",
+            "code": "FUNDS_NOT_AVAILABLE",
+            "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+        }
+    ]
+}
+```
+
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
 
 #### Get payment details
 
@@ -314,9 +331,11 @@ HTTP/1.1 200 OK
   },
   "creditorName": "Seller",
   "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
+  "transactionStatus": "ACCP",
+  "tppMessages": []
 }
 ```
+
 
 2) If "debtorAccount" is not selected
 ```
@@ -333,7 +352,21 @@ HTTP/1.1 200 OK
   },
   "creditorName": "Seller",
   "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
+  "transactionStatus": "ACCP",
+  "tppMessages": []
+}
+```
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
+```
+{
+   ...
+   "tppMessages": [
+      {
+         "category": "ERROR",
+         "code": "FUNDS_NOT_AVAILABLE",
+         "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+      }
+   ]
 }
 ```
 
@@ -479,9 +512,26 @@ X-Request-ID: {{Unique UUID}}
 ```
 HTTP/1.1 200 OK
 {
-    "transactionStatus": "ACSC"
+    "transactionStatus": "ACSC",
+    "tppMessages": []
 }
 ```
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "RJCT",
+    "tppMessages": [
+        {
+            "category": "ERROR",
+            "code": "FUNDS_NOT_AVAILABLE",
+            "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+        }
+    ]
+}
+```
+
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
 
 #### Get payment details
 
@@ -512,7 +562,8 @@ HTTP/1.1 200 OK
   },
   "creditorName": "Seller",
   "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
+  "transactionStatus": "ACCP",
+  "tppMessages": []
 }
 ```
 
@@ -531,7 +582,21 @@ HTTP/1.1 200 OK
   },
   "creditorName": "Seller",
   "remittanceInformationUnstructured": "reference text",
-  "transactionStatus": "ACCP"
+  "transactionStatus": "ACCP",
+  "tppMessages": []
+}
+```
+> ℹ️ The response will contain a non-emtpy list of `tppMessages` only when `transactionStatus` is `RJCT`. The category will in this case always be `ERROR` and the code will take one of the following values: `FUNDS_NOT_AVAILABLE`, `CONTENT_INVALID`.
+```
+{
+   ...
+   "tppMessages": [
+      {
+         "category": "ERROR",
+         "code": "FUNDS_NOT_AVAILABLE",
+         "text": "Insufficient available balance or configured limits prevented execution after initial acceptance."
+      }
+   ]
 }
 ```
 
