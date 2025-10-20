@@ -303,7 +303,10 @@
 
 > ⚠️ _Please keep in mind that, as per page 42 of the Berlin Group standards v 1.3.6, we are  only required to provide status information immediately after the initiation of the payment. We are thus not required to ensure that all statuses are reached within the life of the access token._
 > 
->  For successfully executed **SEPA CT and instant SEPA CT payments** , the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACSC.
+>  For successfully executed **SEPA CT** payments, the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACSC.
+> 
+>  For successfully executed **Instant SEPA CT** payments, the payment statuses follow the order: RCVD -> ACCP -> ACFC -> ACCC.
+> 
 > In some cases, the final status may not be reached within the life of the access token, or the status may be changed to RJCT. This may be due to various reasons, some of which are outlined in the table below (this list is not exhaustive):
 > <table>
 <tr>
