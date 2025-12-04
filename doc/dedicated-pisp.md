@@ -451,7 +451,7 @@ Content-Type: application/json
 
 > :warning: Allowed special characters in creditorName for N26 SEPA CT -  ( **:,.+?/** )
 >
-> :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA CT -  (:,.+?/\-')
+> :warning: Allowed special characters in remittanceInformationUnstructured for N26 SEPA ICT are: -():,.+?&"'/\
 
 ##### Response
 
