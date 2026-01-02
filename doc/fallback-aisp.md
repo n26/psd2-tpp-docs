@@ -800,6 +800,7 @@ device-token: {{device_token}}
 ## Account Transactions
 
 ### Get account transactions
+
 #### Request
 
 ```
@@ -848,6 +849,31 @@ GET /api/fallback/accounts/91656fc9-4489-4f97-8d33-c5b327df8d8b/transactions?fro
     {...}
 ]
 ```
+
+### Get higher numbers of account transactions
+
+A call to the `/api/fallback/accounts/{accountId}/transactions` API endpoint only returns a limited number 
+of transactions for the given `accountId`.
+
+To retrieve higher numbers of account transactions, e.g., all transactions of the past 31 days: 
+
+1. Perform the request 
+   ```
+   GET    /api/fallback/accounts/842857ef-3af0-4901-90fd-4ceed189c49e/transactions?from=<31 days before now>&to=<now> HTTP/1.1
+   Authorization: bearer {{access_token}}
+   x-tpp-userip: {{userip}}
+   device-token: {{device_token}}
+   ```
+   and save the time `t_last` of the last returned transaction.
+2. Perform the follow-up request 
+   ```
+   GET    https://aisp.tech26.de/api/fallback/accounts/842857ef-3af0-4901-90fd-4ceed189c49e/transactions?from=<31 days before t_last>&to=<1 millisecond before t_last> HTTP/1.1
+   Authorization: bearer {{access_token}}
+   x-tpp-userip: {{userip}}
+   device-token: {{device_token}}
+   ```
+   and save the time `t_last` of the last returned transaction.
+3. Repeat step 2. until all transactions of the past 31 days have been retrieved.
 
 ### Get Account Transaction Details
 
