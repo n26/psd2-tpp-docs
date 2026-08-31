@@ -3,11 +3,21 @@
 <details>
 <summary> PSD2 Dedicated Interface</summary>
 
-- [AISP Access documentation](./doc/dedicated-aisp.md)
+**Decoupled (OAuth2 as a pre-step)**
 
-- [PISP Access documentation](./doc/dedicated-pisp.md)
+- [AISP Access documentation](./doc/decoupled/dedicated-aisp.md)
 
-- [CBPII Access documentation](./doc/dedicated-cbpii.md)
+- [PISP Access documentation](./doc/decoupled/dedicated-pisp.md)
+
+- [CBPII Access documentation](./doc/decoupled/dedicated-cbpii.md)
+
+**Redirect (App-to-App)**
+
+- [AISP Access documentation](./doc/redirect/dedicated-aisp.md)
+
+- [PISP Access documentation](./doc/redirect/dedicated-pisp.md)
+
+- [CBPII Access documentation](./doc/redirect/dedicated-cbpii.md)
 
 </details>
 
@@ -29,6 +39,13 @@
 
 ## Key announcements
 ### PSD2 Dedicated Interface
+<details>
+<summary> 2026</summary>
+
+- **August 31, 2026** The Redirect (App-to-App) SCA approach is now available for AIS, PIS and CBPII, as an alternative to the existing Decoupled approach. The PSU authenticates directly in the N26 app and is redirected back to the TPP. *(please refer to our Redirect access documentation)*
+
+</details>
+
 <details>
 <summary> 2025</summary>
 

@@ -1,5 +1,12 @@
 # N26 - PSD2 Dedicated Interface - AISP Access documentation
 
+> :information_source: This document describes the **Redirect (App-to-App)** SCA approach for the N26
+> PSD2 Dedicated Interface AISP flow. The TPP obtains a single cert-only access token, creates the
+> AIS account-information consent with the `TPP-Redirect-Preferred: true` header, and redirects the PSU to
+> the N26 app to authenticate. The PSU confirms directly in the N26 mobile app (App-to-App via a
+> Universal Link / App Link) — or, when the app is not installed, on an N26 web page — and is then
+> redirected back to the TPP.
+
 1. [General information](./dedicated-aisp.md#general-information)
 2. [Access & Identification of TPP](./dedicated-aisp.md#access--identification-of-tpp)
 3. [Support for this implementation on the Berlin Group API](./dedicated-aisp.md#support-for-this-implementation-on-the-berlin-group-api)
@@ -8,6 +15,8 @@
 6. [Authentication endpoints](./dedicated-aisp.md#authentication-endpoints)
 7. [Consent endpoints](./dedicated-aisp.md#consent-endpoints)
 8. [AIS endpoints](./dedicated-aisp.md#ais-endpoints)
+9. [Redirect SCA flow](./dedicated-aisp.md#redirect-sca-flow)
+10. [Error scenarios](./dedicated-aisp.md#error-scenarios)
 
 ## General information
 
@@ -42,16 +51,16 @@ Certificate must be issued from a production certificate authority.
 
 | **Service**                                                                    | **Support**                      |
 |--------------------------------------------------------------------------------|----------------------------------|
-| Supported SCA Approaches                                                       | Decoupled (Oauth2 as a pre-step) |
+| Supported SCA Approaches                                                       | Redirect / App-to-App (OAuth2 client_credentials pre-step) |
 | Maximum “frequency per day” supported by consents                              | 4                                |
-| Consent confirmation timeout                                                   | 5 minutes                        |
-| Consent scope: Global consent (allPsd2= allAccounts, allAccountsWithOwnerName) | Supported                        |
+| Consent scope: Global consent (allPsd2= allAccounts, allAccountsWithOwnerName) | Not Supported                    |
 | Consent scope: availableAccounts= allAccounts                                  | Not Supported                    |
 | Consent scope: availableAccountsWithBalances= allAccounts                      | Not Supported                    |
-| Consent scope: Bank-offered consent                                            | Supported                        |
-| Consent scope: Detailed consent                                                | Supported                        |
+| Consent scope: Bank-offered consent                                            | Supported (the only supported model) |
+| Consent scope: Detailed consent                                                | Not Supported                    |
 | Consents with/without Recurring indicator                                      | Supported                        |
 | SCA Validity                                                                   | 180 days                         |
+| Redirect SCA completion timeout                                                | 10 minutes                       |
 | Support of Signing Baskets                                                     | Not Supported                    |
 | Support of Card accounts                                                       | Not Supported                    |
 | Support of Multicurrency accounts                                              | Not Supported                    |
@@ -62,13 +71,34 @@ Certificate must be issued from a production certificate authority.
 | Transaction list retrieval through deltaList                                   | Not supported                    |
 | Transaction list format                                                        | application/json                 |
 | Standing orders through bookingStatus=INFORMATION                              | Supported                        |
-| App to app redirection                                                         | Not supported                    |
+| App to app redirection                                                         | Supported                        |
 
 ## OAuth as a Pre-step
 
-OAuth2 is supported by this API through the authentication of a PSU in a pre-step, as per the diagram below:
+OAuth2 is supported by this API through a cert-only **`client_credentials`** grant. The TPP obtains a
+single access token by calling `POST /oauth2/token` over an mTLS connection presenting its eIDAS QWAC
+certificate — there is **no** browser-based PSU login, **no** authorization code, and **no** token
+exchange step. N26 derives the TPP's `client_id` from the certificate.
 
-![Oauth flow](./assets/Updated_oauth_flow.png)
+The token response also returns a `refresh_token`, which the TPP uses to renew the access token.
+
+The PSU is authenticated later, directly inside the N26 app, during the Redirect SCA step (see
+[Redirect SCA flow](#redirect-sca-flow)).
+
+> :information_source: Each access token is bound to **exactly one resource** — a single consent. The
+> same token cannot be reused to initiate a second consent or payment.
+
+```mermaid
+sequenceDiagram
+    participant TPP as AISP (TPP)
+    participant N26 as N26 XS2A API
+    Note over TPP,N26: 1. Get the cert-only token
+    TPP->>N26: POST /oauth2/token<br/>grant_type=client_credentials (eIDAS QWAC cert)
+    N26-->>TPP: access_token (+ refresh_token)
+    Note over TPP,N26: 2. Use that token to create the consent
+    TPP->>N26: POST /consents<br/>Authorization: Bearer access_token
+    N26-->>TPP: 201 Created — consentId
+```
 
 ## Validity of access & refresh tokens
 
@@ -76,18 +106,18 @@ OAuth2 is supported by this API through the authentication of a PSU in a pre-ste
 |                | **Access Token**                                                                                                                                                                                                                                                                                                                                                | **Refresh Token**                                                                                                                                                                                                                                                                                                                                               |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Purpose**    | Access for API calls in **one session**                                                                                                                                                                                                                                                                                                                          | Generate new access tokens                                                                                                                                                                                                                                                                                                                                      |
-| **How to get** | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token | 1. Make a request to GET /oauth2/authorize providing a redirectUrl and a hashed code verifier1. Redirect users to n26 web page, where they will log in. If successful, page will be redirected to the URL provided on step 1, along with an auth Code1. Use the authCode along with the unhashed code verifier on POST /oauth2/tokenor1. Existing Refresh token |
-| **Validity**   | 15 min                                                                                                                                                                                                                                                                                                                                                          | **One time usable** , but chain of refresh tokens is **valid for 180 days**                                                                                                                                                                                                                                                                                       |
-| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                                           | Yes, for 179 days (expiry needs to be stored on TPP)                                                                                                                                                                                                                                                                                                             |
+| **How to get** | Call `POST /oauth2/token` with `grant_type=client_credentials` over mTLS with your eIDAS QWAC certificate. No PSU login or authorization code is required. | Existing refresh token |
+| **Validity**   | 15 min                                                                                                                                                                                                                                                                                                                                                          | **One time usable** , but chain of refresh tokens is **valid for 200 days**                                                                                                                                                                                                                                                                                       |
+| **Storage**    | NEVER                                                                                                                                                                                                                                                                                                                                                           | Yes, for 199 days (expiry needs to be stored on TPP)                                                                                                                                                                                                                                                                                                             |
 
 > :information_source: **Refreshing refresh tokens**     
-> The first refresh token has validity of 180 days, but is  **one-time usable**.
+> The first refresh token has validity of 200 days, but is  **one-time usable**.
 > With this refresh token, a new set of an access token and a refresh token can be requested.
-> This new refresh token will maintain the initial 180 days validity.
-> So, in summary, the chain of refresh tokens has a validity of 180 days.
+> This new refresh token will maintain the initial 200 days validity.
+> So, in summary, the chain of refresh tokens has a validity of 200 days.
 
 > :information_source: **Refresh token getting close to expiry**   
-> On day 179 the TPP should discard the refresh token and ask users for re-authentication.
+> On day 199 the TPP should discard the refresh token and ask users for re-authentication.
 > As highlighted above, the TPP should never store users' passwords.
 
 > :warning: Access tokens are supposed to be used only for  **1 session (sequence of calls)** .    
@@ -102,82 +132,31 @@ These endpoints are used to retrieve an access or refresh token for use with the
 
 Note: any values shown between curly braces should be taken as variables, while the ones not surrounded are to be read as literals.
 
-### Initiate authorization
+### Obtain an access token
 
-This begins the authorization process. Users should be redirected to the URL supplied in the response.
+The TPP obtains a cert-only `client_credentials` access token bound to its eIDAS QWAC certificate. This single token is used to create the consent and call the AIS endpoints after SCA — no PSU login and no authorization code exchange take place.
 
-#### Sample request
-
-```
-GET /oauth2/authorize?client_id=PSDDE-BAFIN-000001&
-                      scope=DEDICATED_AISP&
-                      code_challenge=w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI&
-                      redirect_uri=https://tpp.com/redirect&
-                      response_type=CODE&
-                      state=1fL1nn7m9a 
-HTTP/1.1
-```
-
-Supported query parameters:
-
-
-| **Name of parameter** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| client_id             | This should match the QWAC certificate’s organization identifier.This field may be obtained by running the following command on the QWAC certificate:*$ openssl x509 -in certificate.pem -noout -text                                                                                                                                                                                                                                                                                                                                                                                             |
-| scope                 | Accepted value: “DEDICATED_AISP”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| code_challenge        | SHA256 hash of the code_verifier to be provided on POST /oauth2/token. Minimum size 43 characters, maximum 128. Should be Base-64 URL encoded, as per [https://tools.ietf.org/html/rfc7636#section-4.2](https://tools.ietf.org/html/rfc7636#section-4.2): `BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))`. Please refer to [https://tonyxu-io.github.io/pkce-generator/](https://tonyxu-io.github.io/pkce-generator/) for sample values. So as an example, code_verifier should be set as “foobar” while code challenge would be “w6uP8Tcg6K2QR905Rms8iXTlksL6OD1KOWBxTK7wxPI”. Mandatory field. |
-| redirect_uri          | URI to which users will be redirected back when the authorization process is completed. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| state                 | Random state string which should be returned on the query string when N26 redirects back, so the TPP can link the redirection to the original authorization request. Please note that the state string should not include "localhost" string, which will return 403. Mandatory field.                                                                                                                                                                                                                                                                                                             |
-| response_type         | Accepted value: “CODE”. Mandatory field.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-
-#### Sample Response
-
-```
-HTTP/1.1 302 Found
-location: https://app.n26.com/open-banking?requestId=0daa152a-651a-4592-8542-47ff60799deb&state=1fL1nn7m9a&authType=XS2A
-```
-
-### Retrieve Token
-
-When users are redirected back from the URL supplied in the previous request (step 7 of the sequence diagram), the following two query string parameters should be extracted and verified
-
-* **state** - should match the state supplied in the initiate authorization request
-* **code** - this is the authorization code which will be used to retrieve the token
-
-As an example, if the TPP  provided `https://www.tpp.com/redirect` as redirect_uri, after the users have successfully logged in, the TPP can expect a redirection to the following URL:
-
-`https://www.tpp.com/redirect?code=dbtF5AqOApjjSnNF5TK3w3gaEPdwtV2&state=1fL1nn7m9a`
-
-Upon receiving this redirect, the TPP can make the following request can be made to retrieve the access and refresh tokens:
-
-### Sample Request
+#### Sample Request
 
 ```
 POST    /oauth2/token?role=DEDICATED_AISP HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
+(mTLS connection presenting the eIDAS QWAC certificate)
 
-grant_type=authorization_code&
-code=dbtF5AqOApjjSnNF5TK3w3gaEPdwtV2&
-code_verifier=foobar&
-redirect_uri=https://tpp.com/redirect
+grant_type=client_credentials
 ```
 
 Supported query parameters:
 
-
-| **Name of query parameter** | **Description**                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------------- |
-| role                        | Accepted value: “`DEDICATED_AISP`” to generate a AISP-only token. Mandatory field. |
+| **Name of query parameter** | **Description**                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| role                        | Accepted value: "`DEDICATED_AISP`" to generate an AISP-only token. Mandatory field. |
 
 Supported form parameters:
 
-
-| **Name of parameter** | **Description**                                                                                                                                |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| grant_type            | Accepted value: “authorization_code”. Mandatory parameter.                                                                                   |
-| code                  | The authorization code as returned by N26 as a parameter (“code”) on the redirect URL (step 7 of the sequence diagram). Mandatory parameter. |
-| code_verifier         | Value of the code verifier; should match hashed code challenge from `GET /oauth2/authorize` request. Mandatory parameter.                        |
-| redirect_uri          | The same redirect URI that was provided to the `GET /oauth2/authorize` request. Optional parameter.                                              |
+| **Name of parameter** | **Description**                                             |
+| --------------------- | ---------------------------------------------------------- |
+| grant_type            | Accepted value: "client_credentials". Mandatory parameter. |
 
 #### Response
 
@@ -193,21 +172,12 @@ HTTP/1.1 200 OK
 }
 ```
 
-##### TPP has provided the wrong authorization code or code verifier
+##### Unsuccessful
 
 ```
 HTTP/1.1 400 Bad Request
 {
-    "userMessage": {
-        "title": "Error",
-        "detail": "Please try again later."
-    },
-    "error_description": "Bad Request",
-    "detail": "Bad Request",
-    "type": "invalid_request",
-    "error": "invalid_request",
-    "title": "invalid_request",
-    "status": 400
+    "error": "invalid_request"
 }
 ```
 
@@ -261,56 +231,30 @@ token retrieved as per the oauth session.
 
 ### Create consent
 
-#### Request (Global consent)
+To request the Redirect (App-to-App) SCA approach, send the following headers with the create-consent request:
 
-This is the only consent type that provides access to N26 spaces, since those do not have IBANs. For allPsd2, “allAccounts“ and “allAccountsWithOwnerName” options are supported. Recurring indicator is a mandatory parameter.
+| **Header**             | **Description**                                                                                                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| TPP-Redirect-Preferred | Must be set to `true` to select the Redirect SCA approach. Mandatory for this flow.                               |
+| TPP-Redirect-URI       | The URI N26 redirects the PSU back to after SCA. Mandatory when `TPP-Redirect-Preferred=true`.                    |
+| TPP-State              | Opaque value echoed back on the redirect callback so the TPP can correlate the response. Optional but recommended. |
 
-```
-POST    /v1/berlin-group/v1/consents HTTP/1.1
-Authorization: bearer {{access_token}}
-Content-Type: application/json
+> :warning: If `TPP-Redirect-Preferred` is `true` but `TPP-Redirect-URI` is missing or malformed, the
+> request is rejected with `400 Bad Request` and a `FORMAT_ERROR` message.
 
-{
-  "access": {
-      "allPsd2": "allAccounts"
-  },
-  "recurringIndicator": true,
-  "validUntil": "2020-10-01",
-  "frequencyPerDay": "4"
-}
-```
+#### Request
 
-#### Request (consent by IBAN)
+With the Redirect (App-to-App) SCA approach, N26 always creates the consent as a **Bank Offered Consent** — the TPP does **not** name any accounts. The `access` object must be sent with **empty** `accounts`, `balances` and `transactions` arrays; the PSU then selects which accounts to share directly in the N26 app during SCA. `recurringIndicator` is mandatory.
+
+> :warning: Bank Offered Consent is the **only** supported consent-creation model for the Redirect approach. Any accounts/IBANs or `allPsd2` value sent in the `access` object is ignored — the granted scope is always the set of accounts the PSU selects in the app.
 
 ```
 POST    /v1/berlin-group/v1/consents HTTP/1.1
 Authorization: bearer {{access_token}}
 Content-Type: application/json
-
-{
-  "access": {
-    "accounts": [{
-      "iban" : "DE73100110012629586632"
-    }],
-    "balances": [{
-      "iban" :  "DE73100110012629586632"
-    }],
-    "transactions": [{
-      "iban" :  "DE73100110012629586632"
-    }]
-  },
-  "recurringIndicator": true,
-  "validUntil": "2020-10-01",
-  "frequencyPerDay": "4"
-}
-```
-
-#### Request (bank offered consent)
-
-```
-POST    /v1/berlin-group/v1/consents HTTP/1.1
-Authorization: bearer {{access_token}}
-Content-Type: application/json
+TPP-Redirect-Preferred: true
+TPP-Redirect-URI: https://tpp.com/redirect
+TPP-State: 1fL1nn7m9a
 
 {
   "access": {
@@ -319,7 +263,7 @@ Content-Type: application/json
     "transactions": []
   },
   "recurringIndicator": true,
-  "validUntil": "2020-10-01",
+  "validUntil": "2026-12-01",
   "frequencyPerDay": "4"
 }
 ```
@@ -327,14 +271,20 @@ Content-Type: application/json
 #### Response
 
 ```
-aspsp-sca-approach: DECOUPLED
+ASPSP-SCA-Approach: REDIRECT
 
 {
     "consentStatus": "received",
     "consentId": "fb44eb9c-d12f-4aef-90bd-726c47f2e864",
     "_links": {
+        "scaRedirect": {
+            "href": "https://app.n26.com/wl/open-banking/aisp?consentId=fb44eb9c-d12f-4aef-90bd-726c47f2e864"
+        },
         "status": {
             "href": "/v1/berlin-group/v1/consents/fb44eb9c-d12f-4aef-90bd-726c47f2e864/status"
+        },
+        "scaStatus": {
+            "href": "/v1/berlin-group/v1/consents/fb44eb9c-d12f-4aef-90bd-726c47f2e864/authorisations/985f9d29-10ee-4ab0-90d6-6c2aeda65852"
         }
     }
 }
@@ -342,7 +292,7 @@ aspsp-sca-approach: DECOUPLED
 
 ### Get consent status
 
-This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the consent (as we are using the decoupled SCA approach). Please note that users have up to 5 minutes to confirm consent, and thus the time taken for the status to change is dependent on the user.
+This endpoint is intended to be polled by the TPP to determine whether the users have confirmed the consent in the N26 app. Please note that users have up to 10 minutes to confirm consent, and thus the time taken for the status to change is dependent on the user.
 
 #### Request
 
@@ -378,15 +328,28 @@ Content-Type: application/json
 
 #### Response
 
+Once the PSU has approved, the consent reflects exactly the accounts the PSU selected, listed by IBAN:
+
 ```
 {
     "access": {
-        "allPsd2": "allAccounts"
+        "accounts": [
+            { "iban": "DE05100110012802645265" },
+            { "iban": "DE73100110012852278456" }
+        ],
+        "balances": [
+            { "iban": "DE05100110012802645265" },
+            { "iban": "DE73100110012852278456" }
+        ],
+        "transactions": [
+            { "iban": "DE05100110012802645265" },
+            { "iban": "DE73100110012852278456" }
+        ]
     },
     "recurringIndicator": true,
-    "validUntil": "2020-11-01",
+    "validUntil": "2026-11-01",
     "frequencyPerDay": 4,
-    "lastActionDate": "2020-08-03",
+    "lastActionDate": "2026-08-03",
     "consentStatus": "valid",
     "_links": {
         "account": {
@@ -395,6 +358,8 @@ Content-Type: application/json
     }
 }
 ```
+
+> :information_source: If the PSU also grants access to an N26 **Space**, it is **not** listed here — a Space has no IBAN, so it cannot appear in the `access` lists. The shared Space is still returned by [Read Account List](#read-account-list) (`GET /v1/berlin-group/v1/accounts`), identified by its `resourceId`.
 
 ### Delete consent
 
@@ -477,7 +442,7 @@ Content-Type: application/json
 
 #### Response
 
-Field Owner name is only supported if the consent is “allAccountsWithOwnerName”. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
+With the Redirect (App-to-App) approach the consent is always a **Bank Offered Consent**, so the `ownerName` field is **not** returned. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
 
 ```
 X-Request-ID: {{Unique UUID}}
@@ -493,7 +458,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/balances"
@@ -511,7 +475,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/balances"
@@ -529,7 +492,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/balances"
@@ -549,7 +511,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
@@ -567,7 +528,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/balances"
@@ -587,7 +547,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/balances"
@@ -607,7 +566,6 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "SVGS",
       "status": "enabled",
       "usage": "PRIV",
-      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/balances"
@@ -638,7 +596,7 @@ Content-Type: application/json
 
 #### Response
 
-Field Owner name is only supported if consent is “allAccountsWithOwnerName”. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
+With the Redirect (App-to-App) approach the consent is always a **Bank Offered Consent**, so the `ownerName` field is **not** returned. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
 
 ```
 X-Request-ID: {{Unique UUID}}
@@ -653,7 +611,6 @@ X-Request-ID: {{Unique UUID}}
         "cashAccountType": "CACC",
         "status": "enabled",
         "usage": "PRIV",
-        "ownerName": "Aiyana Hartmann",
         "_links": {
             "balances": {
                 "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
@@ -682,7 +639,7 @@ Content-Type: application/json
 #### Response
 
 ```
-X-Request-ID: UUID
+X-Request-ID: {{Unique UUID}}
 
 {
     "balances": [
@@ -727,7 +684,7 @@ Content-Type: application/json
 #### Response
 
 ```
-X-Request-ID: UUID
+X-Request-ID: {{Unique UUID}}
 
 {
     "account": {
@@ -815,8 +772,8 @@ X-Request-ID: UUID
 <details>
 <summary>Show full transaction response (click to expand)</summary>
 
-```json 
-X-Request-ID: UUID
+```
+X-Request-ID: {{Unique UUID}}
 
 {
     "account": {
@@ -919,7 +876,7 @@ Content-Type: application/json
 #### Response
 
 ```
-X-Request-ID: UUID
+X-Request-ID: {{Unique UUID}}
 
 {
         "transactionId": "4b856f12-a75c-449f-8e71-69bd72947445",
@@ -957,7 +914,7 @@ Content-Type: application/json
 #### Response
 
 ```
-X-Request-ID: UUID
+X-Request-ID: {{Unique UUID}}
 
 {
     "account": {
@@ -991,3 +948,78 @@ X-Request-ID: UUID
     }
 }
 ```
+
+## Redirect SCA flow
+
+With the Redirect (App-to-App) SCA approach the PSU authenticates directly in the N26 app instead of
+confirming an out-of-band push notification. The end-to-end sequence is:
+
+```mermaid
+sequenceDiagram
+    actor PSU
+    participant TPP as AISP (TPP)
+    participant N26 as N26 XS2A API
+    participant App as N26 App
+    TPP->>N26: POST /oauth2/token (client_credentials, eIDAS QWAC)
+    N26-->>TPP: access_token (+ refresh_token)
+    TPP->>N26: POST /consents<br/>TPP-Redirect-Preferred: true, TPP-Redirect-URI, TPP-State
+    N26-->>TPP: 201 ASPSP-SCA-Approach: REDIRECT<br/>_links.scaRedirect
+    TPP->>PSU: redirect browser to scaRedirect URL
+    PSU->>App: Universal Link / App Link opens the N26 app
+    PSU->>App: authenticates & confirms consent (SCA)
+    App-->>PSU: redirect to TPP-Redirect-URI?state=... (success)
+    PSU->>TPP: lands on TPP callback
+    TPP->>N26: GET /consents/{consentId}/status
+    N26-->>TPP: consentStatus: valid
+    TPP->>N26: GET /accounts (same access_token)
+    N26-->>TPP: account data
+```
+
+1. The TPP obtains a cert-only `client_credentials` access token (see
+   [Obtain an access token](#obtain-an-access-token)).
+2. The TPP creates the consent with the `TPP-Redirect-Preferred: true`, `TPP-Redirect-URI` and
+   (optionally) `TPP-State` headers. For bank-offered consent, the PSU selects the accounts to share
+   in the N26 app.
+3. N26 responds with `ASPSP-SCA-Approach: REDIRECT` and a `scaRedirect` entry in the `_links` object.
+4. The TPP redirects the PSU's browser to the `scaRedirect` URL.
+5. The `scaRedirect` URL is a Universal Link (iOS) / App Link (Android). If the N26 app is installed it
+   opens directly (App-to-App); otherwise the PSU continues on an N26 web page.
+6. The PSU authenticates and confirms the consent inside the N26 app.
+7. N26 redirects the PSU back to the TPP's `TPP-Redirect-URI`:
+   - On success: `TPP-Redirect-URI?state=<TPP-State>` (the `state` parameter is omitted if no
+     `TPP-State` was provided).
+   - On failure: `TPP-Redirect-URI?error=access_denied&state=<TPP-State>`.
+8. The TPP can then poll the consent status / `scaStatus` and, once the consent is `valid`, call the
+   [AIS endpoints](#ais-endpoints) with the same access token.
+
+> :warning: **The PSU must complete the Redirect SCA within 10 minutes.** If the consent is not
+> authorised within this window, N26 moves it to a terminal `expired` `consentStatus` so it is never
+> left pending. The TPP must then create a new consent to start a fresh SCA.
+
+The `scaRedirect` base URL depends on the environment:
+
+| **Environment** | **scaRedirect URL**                                                    |
+| --------------- | ---------------------------------------------------------------------- |
+| Production      | `https://app.n26.com/wl/open-banking/aisp?consentId={{consentId}}`      |
+| Sandbox/Staging | `https://app.staging-n26.com/wl/open-banking/aisp?consentId={{consentId}}` |
+
+## Error scenarios
+
+When the SCA cannot be completed, N26 redirects the PSU back to the `TPP-Redirect-URI` with an `error`
+query parameter instead of a success response. The following parameters may be present on the callback:
+
+| **Query parameter** | **Description**                                                                                     |
+| ------------------- | --------------------------------------------------------------------------------------------------- |
+| error               | Present only on failure. `access_denied` (the PSU declined or did not complete SCA) or `server_error` (an unexpected error occurred on the N26 side). |
+| state               | The value provided in the `TPP-State` header on consent creation, echoed back so the TPP can correlate the callback. Omitted if no `TPP-State` was sent. |
+
+Example failure callback:
+
+```
+GET https://tpp.com/redirect?error=access_denied&state=1fL1nn7m9a
+```
+
+> :information_source: **SCA not completed within 10 minutes.** If the PSU never finishes the SCA,
+> the consent is moved to `expired` and the redirect session is closed as a failure
+> (`?error=access_denied`). Poll `GET /consents/{consentId}/status` to detect the terminal
+> `expired` state.
