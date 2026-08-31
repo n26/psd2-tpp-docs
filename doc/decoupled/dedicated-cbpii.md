@@ -1,5 +1,9 @@
 # N26 - PSD2 Dedicated Interface - CBPII Access documentation
 
+> :information_source: This document describes the **Decoupled** SCA approach (OAuth2 as a pre-step),
+> N26's default for the dedicated interface. N26 also supports a **Redirect (App-to-App)** SCA approach
+> for the same CBPII flows — see [CBPII Redirect Access documentation](../redirect/dedicated-cbpii.md).
+
 1. [General information](./dedicated-cbpii.md#general-information)
 2. [Access & Identification of TPP](./dedicated-cbpii.md#access--identification-of-tpp)
 3. [Support for this implementation on the Berlin Group API](./dedicated-cbpii.md#support-for-this-implementation-on-the-berlin-group-api)
@@ -47,7 +51,7 @@ Security layer: A valid QWAC Certificate for PSD2 is required to access the Berl
 
 OAuth2 is supported by this API through the authentication of a PSU in a pre-step, as per the diagram below:
 
-![Oauth flow](./assets/oauth-flow.png)
+![Oauth flow](../assets/oauth-flow.png)
 
 ### Validity of access token
 

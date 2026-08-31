@@ -4,10 +4,11 @@
 2. [Access & Identification of TPP](./sandbox.md#access--identification-of-tpp)
 3. [On-boarding of new TPPs](./sandbox.md#on-boarding-of-new-tpps)
 4. [OAuth as a Pre-step](./sandbox.md#oauth-as-a-pre-step)
-5. [Consent endpoints](./sandbox.md#consent-endpoints)
-6. [AIS endpoints](./sandbox.md#ais-endpoints)
-7. [PIS endpoints](./sandbox.md#pis-endpoints)
-8. [CBPII endpoints](./sandbox.md#cbpii-endpoint)
+5. [Redirect (App-to-App) SCA approach](./sandbox.md#redirect-app-to-app-sca-approach)
+6. [Consent endpoints](./sandbox.md#consent-endpoints)
+7. [AIS endpoints](./sandbox.md#ais-endpoints)
+8. [PIS endpoints](./sandbox.md#pis-endpoints)
+9. [CBPII endpoints](./sandbox.md#cbpii-endpoint)
 
 ## General information
 
@@ -31,6 +32,10 @@ This is as described for the real interface, and all valid QWAC certificates are
 * Details of the request and response received
 
 ## OAuth as a Pre-step
+
+> :information_source: There are two variants depending on the SCA approach:
+> - **Decoupled** uses the authorization-code flow with the **`GET /sandbox/oauth2/authorize`** endpoint, described below.
+> - **Redirect (App-to-App)** uses the cert-only **`POST /sandbox/oauth2/token`** `client_credentials` call — see [OAuth pre-step (redirect)](#oauth-pre-step-redirect).
 
 This may be simulated as follows:
 
@@ -116,6 +121,115 @@ HTTP/1.1 200 OK
     "expires_in": {{expires_in_seconds}}
 }
 ```
+
+## Redirect (App-to-App) SCA approach
+
+Alongside the `DECOUPLED` flow described above, the sandbox also supports the **Redirect (App-to-App)** SCA approach. This lets you test the redirect flow end-to-end without a real N26 app: dedicated sandbox endpoints stand in for the PSU approving (or declining) in the app.
+
+### Requesting the redirect approach
+
+Add the following headers when creating a consent or a payment:
+
+| Header                   | Example value                  | Notes                                                              |
+|--------------------------|--------------------------------|-------------------------------------------------------------------|
+| `TPP-Redirect-Preferred` | `true`                         | Opts into the Redirect (App-to-App) approach.                     |
+| `TPP-Redirect-URI`       | `https://tpp.example.com/cb`   | Mandatory when redirect is preferred. Must be a valid URL.        |
+| `TPP-State`              | `xyz`                          | Optional. Echoed back on the callback URL.                        |
+
+> :information_source: In the sandbox the redirect approach is honoured whenever `TPP-Redirect-Preferred: true` is sent. If `TPP-Redirect-URI` is missing or malformed, the request is rejected with `400 Bad Request`.
+
+The create response returns the `ASPSP-SCA-Approach: REDIRECT` header and an `scaRedirect` link that, in production, points the PSU to the N26 app:
+
+```
+HTTP/1.1 201 Created
+ASPSP-SCA-Approach: REDIRECT
+
+{
+    "consentStatus": "received",
+    "consentId": "fb44eb9c-d12f-4aef-90bd-726c47f2e864",
+    "_links": {
+        "scaRedirect": {
+            "href": "https://app.n26.com/wl/open-banking/aisp?consentId=fb44eb9c-d12f-4aef-90bd-726c47f2e864"
+        },
+        "status": {
+            "href": "/v1/berlin-group/v1/consents/fb44eb9c-d12f-4aef-90bd-726c47f2e864/status"
+        }
+    }
+}
+```
+
+> :information_source: For AISP, the redirect approach only supports the **bank-offered** consent shape (empty `accounts`, `balances` and `transactions` arrays); the PSU selects the accounts during the SCA. Any other access shape is rejected with `400 Bad Request`.
+
+### OAuth pre-step (redirect)
+
+For the redirect approach, obtain the access token with the cert-only `client_credentials` grant. You do **not** need the `/oauth2/authorize` or `generate-auth-code` steps described above.
+
+The `role` query parameter carries the scope and must be one of `DEDICATED_AISP`, `DEDICATED_PISP` or `DEDICATED_CBPII`. The `client_id` (your TPP id) is derived from the eIDAS QWAC certificate presented over the mTLS connection.
+
+#### Sample request
+
+```
+POST /sandbox/oauth2/token?role=DEDICATED_AISP HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+(mTLS connection presenting the eIDAS QWAC certificate)
+
+client_id={{tpp-id}}&
+grant_type=client_credentials&
+scope=DEDICATED_AISP
+```
+
+Supported parameters:
+
+| **Name**     | **Description**                                                                                  |
+|--------------|-------------------------------------------------------------------------------------------------|
+| role / scope | The requested scope: `DEDICATED_AISP`, `DEDICATED_PISP` or `DEDICATED_CBPII`. Mandatory.         |
+| grant_type   | Accepted value: `client_credentials`. Mandatory.                                                |
+| client_id    | Your TPP id (`{{tpp-id}}`), derived from the eIDAS QWAC certificate.                             |
+
+The response has the same shape as the [Retrieve Token](#retrieve-token) response.
+
+### Simulating the Redirect SCA
+
+In production the PSU approves in the N26 app. For sandbox, call the matching endpoint below to simulate the PSU approving or declining, passing `APPROVED` or `REJECTED` (equivalent to the decoupled `/scas` endpoints).
+
+| Role  | Endpoint                                                                       |
+|-------|--------------------------------------------------------------------------------|
+| AISP  | `POST /sandbox/psu-interaction/redirect/consents/{consentId}/scas`             |
+| CBPII | `POST /sandbox/psu-interaction/redirect/confirmation-of-funds-consents/{consentId}/scas` |
+| PISP  | `POST /sandbox/psu-interaction/redirect/payments/{paymentId}/scas`             |
+
+#### Sample request
+
+```
+POST /sandbox/psu-interaction/redirect/consents/{consentId}/scas HTTP/1.1
+{
+    "result": "APPROVED"
+}
+```
+
+#### Sample response (AISP / CBPII consent)
+
+```
+HTTP/1.1 200 OK
+{
+    "redirectUri": "https://tpp.example.com/cb?state=xyz",
+    "consentStatus": "valid",
+    "scaStatus": "finalised"
+}
+```
+
+On `REJECTED`, the `consentStatus` becomes `rejected`, the `scaStatus` becomes `failed`, and the `redirectUri` carries an error, e.g. `https://tpp.example.com/cb?error=access_denied&state=xyz`.
+
+#### Sample response (PISP payment)
+
+```
+HTTP/1.1 200 OK
+{
+    "redirectUri": "https://tpp.example.com/cb?state=xyz"
+}
+```
+
+The `redirectUri` is the callback URL the N26 app would redirect the PSU to once the SCA completes. After simulating the SCA, poll the consent or payment status as usual.
 
 ## Consent endpoints
 
