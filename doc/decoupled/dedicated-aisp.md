@@ -311,6 +311,8 @@ Content-Type: application/json
 
 #### Request (bank offered consent)
 
+With a bank-offered consent, the PSU selects the accounts to share in the N26 app during SCA. Once the consent is `valid`, the account holder name (`ownerName`) is returned on Read Account List and Read Account Details for every selected account the PSU owns. No `additionalInformation.ownerName` is needed in the request. Get consent lists these accounts under `access.additionalInformation.ownerName`.
+
 ```
 POST    /v1/berlin-group/v1/consents HTTP/1.1
 Authorization: bearer {{access_token}}
@@ -484,7 +486,7 @@ Content-Type: application/json
 
 #### Response
 
-Field Owner name is only supported if the consent is “allAccountsWithOwnerName”. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
+Field Owner name (`ownerName`) is returned if the consent is “allAccountsWithOwnerName”, for every account the PSU selected in a bank-offered consent, and for the accounts listed in `additionalInformation.ownerName` of a detailed consent. It is only returned for accounts the PSU owns, not for Shared Spaces where the PSU is only a member. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
 
 ```
 X-Request-ID: {{Unique UUID}}
@@ -645,7 +647,7 @@ Content-Type: application/json
 
 #### Response
 
-Field Owner name is only supported if consent is “allAccountsWithOwnerName”. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
+Field Owner name (`ownerName`) is returned if the consent is “allAccountsWithOwnerName”, for every account the PSU selected in a bank-offered consent, and for the accounts listed in `additionalInformation.ownerName` of a detailed consent. It is only returned for accounts the PSU owns, not for Shared Spaces where the PSU is only a member. If allPsd2 Consent is requested, accounts without IBANs may be returned, corresponding to the N26 Spaces.
 
 ```
 X-Request-ID: {{Unique UUID}}

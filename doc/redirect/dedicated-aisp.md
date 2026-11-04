@@ -328,7 +328,7 @@ Content-Type: application/json
 
 #### Response
 
-Once the PSU has approved, the consent reflects exactly the accounts the PSU selected, listed by IBAN:
+Once the PSU has approved, the consent reflects exactly the accounts the PSU selected, listed by IBAN. `additionalInformation.ownerName` lists the accounts for which the `ownerName` field is returned:
 
 ```
 {
@@ -344,7 +344,13 @@ Once the PSU has approved, the consent reflects exactly the accounts the PSU sel
         "transactions": [
             { "iban": "DE05100110012802645265" },
             { "iban": "DE73100110012852278456" }
-        ]
+        ],
+        "additionalInformation": {
+            "ownerName": [
+                { "iban": "DE05100110012802645265" },
+                { "iban": "DE73100110012852278456" }
+            ]
+        }
     },
     "recurringIndicator": true,
     "validUntil": "2026-11-01",
@@ -442,7 +448,7 @@ Content-Type: application/json
 
 #### Response
 
-With the Redirect (App-to-App) approach the consent is always a **Bank Offered Consent**, so the `ownerName` field is **not** returned. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
+The `ownerName` field (account holder name) is returned for every account the PSU selected in the N26 app and owns. It is not returned for Shared Spaces where the PSU is only a member. No extension of the consent request is needed. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
 
 ```
 X-Request-ID: {{Unique UUID}}
@@ -458,6 +464,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/6d3fc103-23c1-429c-9809-fc7672ea21c1/balances"
@@ -475,6 +482,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/a128ed07-5437-4f4f-9377-a7c0466ce9ef/balances"
@@ -492,6 +500,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/62a56502-4547-4447-9383-9dbf97aedb82/balances"
@@ -511,6 +520,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
@@ -528,6 +538,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "TRAN",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/142a69b6-d9a3-43db-a641-b082159bee2b/balances"
@@ -547,6 +558,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "CACC",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/80ff6dfb-c1c5-44d0-bc81-f6de437ebd06/balances"
@@ -566,6 +578,7 @@ X-Request-ID: {{Unique UUID}}
       "cashAccountType": "SVGS",
       "status": "enabled",
       "usage": "PRIV",
+      "ownerName": "Aiyana Hartmann",
       "_links": {
         "balances": {
           "href": "/v1/berlin-group/v1/accounts/5a15a96b-0765-4d40-bbc3-05e5b5688297/balances"
@@ -596,7 +609,7 @@ Content-Type: application/json
 
 #### Response
 
-With the Redirect (App-to-App) approach the consent is always a **Bank Offered Consent**, so the `ownerName` field is **not** returned. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
+The `ownerName` field (account holder name) is returned for every account the PSU selected in the N26 app and owns. It is not returned for Shared Spaces where the PSU is only a member. No extension of the consent request is needed. Accounts without IBANs may be returned, corresponding to the N26 Spaces the PSU chose to share.
 
 ```
 X-Request-ID: {{Unique UUID}}
@@ -611,6 +624,7 @@ X-Request-ID: {{Unique UUID}}
         "cashAccountType": "CACC",
         "status": "enabled",
         "usage": "PRIV",
+        "ownerName": "Aiyana Hartmann",
         "_links": {
             "balances": {
                 "href": "/v1/berlin-group/v1/accounts/543de370-0654-4cd6-8213-051bc0cf435a/balances"
