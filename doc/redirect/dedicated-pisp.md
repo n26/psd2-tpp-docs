@@ -289,9 +289,10 @@ Statuses currently supported:
 | ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
 | ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
 | ACSC            | AcceptedSettlementCompleted. Payment execution process has been successfully completed by N26. This is **NOT** a confirmation that the beneficiary has received the funds.|
-| RJCT            | Rejected. Payment failed to be initiated or executed.| 
+| RJCT            | Rejected. The bank rejected the payment: the in-app certification expired, no paired device was available, or the payment failed to be executed (for example insufficient funds).|
+| CANC            | Cancelled. The user cancelled the payment before execution, for example by declining the in-app certification or closing the redirect journey.|
 
-The final status of a payment is either **ACSC** or **RJCT**.
+The final status of a payment is either **ACSC**, **RJCT** or **CANC**. `RJCT` means the bank rejected the payment; `CANC` means the user cancelled it.
 
 :warning: Please note that the final status `ACSC` is only applied after reconciliation from BundesBank which, in most cases, takes place **at the end of the day**. Until then, the payment may stay in the intermediate status `ACFC`. 
 
@@ -303,7 +304,7 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
-> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACSC`), the polling should stop.
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `CANC`; `ACSC`), the polling should stop.
 
 
 ##### Response
@@ -532,9 +533,10 @@ Statuses currently supported:
 | ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification and the payment has been successfully initiated. |                   _
 | ACFC            | AcceptedFundsChecked. User has enough funds to perform a payment, and a hold has been applied on the funds.|
 | ACCC            | AcceptedSettlementCompleted. The payment has been successfully processed and the funds have been credited to the creditor's account.|
-| RJCT            | Rejected. Payment failed to be initiated or executed.| 
+| RJCT            | Rejected. The bank rejected the payment: the in-app certification expired, no paired device was available, or the payment failed to be executed (for example insufficient funds).|
+| CANC            | Cancelled. The user cancelled the payment before execution, for example by declining the in-app certification or closing the redirect journey.|
 
-The final status of a payment is either **ACCC** or **RJCT**.   
+The final status of a payment is either **ACCC**, **RJCT** or **CANC**. `RJCT` means the bank rejected the payment; `CANC` means the user cancelled it.
 
 ##### Request
 
@@ -544,7 +546,7 @@ Authorization: bearer {{access_token}}
 X-Request-ID: {{Unique UUID}}
 ```
 
-> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCC`), the polling should stop.
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `CANC`; `ACCC`), the polling should stop.
 
 
 ###### Response
@@ -788,8 +790,8 @@ Statuses currently supported:
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | RCVD            | Received. Initial status for creating a periodic payment. A certification has been sent to the user’s app.                                                                              |
 | ACCP            | AcceptedCustomerProfile. User has confirmed the in-app certification to create a periodic payment, and the periodic payment has been successfully created. |
-| RJCT            | Rejected. Status for payment when an in-app certification to **create** a periodic payment expired or was denied by the user.                                                                          |
-| CANC            | Cancelled. User has confirmed the in-app certification to **delete** a periodic payment, and the periodic payment has been successfully deleted.                                                                             |
+| RJCT            | Rejected. Status for payment when an in-app certification to **create** a periodic payment expired or the bank rejected the periodic payment.                                                            |
+| CANC            | Cancelled. The user cancelled the **creation** of the periodic payment before it was accepted, or confirmed the in-app certification to **delete** a periodic payment and the periodic payment has been successfully deleted.                    |
 > :warning: When a periodic payment is being deleted, the status will only change from ACCP to CANC once the in-app certification to **delete** the periodic payment 
 > has been confirmed by the user. If the in-app certification expires or is denied by the user, the status will remain ACCP.
 
