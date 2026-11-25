@@ -324,6 +324,21 @@ In addition to the users listed above, the below users are also available to see
 | periodic.payment+certification.rejected@n26.com | Payment fails cause customer rejects certification | RCVD / After creating payment | RJCT / 2 seconds                          |                                           |                                           |
 
 
+### Instant Periodic Payments
+Instant periodic payments (standing orders executed as Instant SEPA Credit Transfers) are available in the sandbox for the Decoupled approach under the payment product `instant-sepa-credit-transfers`, with the same operations as the periodic payments with `sepa-credit-transfers`:
+
+| **Operation**                  | **Endpoint**                                                    |
+|--------------------------------|-----------------------------------------------------------------|
+| Initiate periodic payment      | `POST   /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers`                                                   |
+| Get periodic payment details   | `GET    /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}`                                   |
+| Get status                     | `GET    /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/status`                            |
+| Get list of authorisation IDs  | `GET    /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations`                    |
+| Get authorisation              | `GET    /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}}` |
+| Delete periodic payment        | `DELETE /sandbox/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}`                                   |
+
+The [periodic payment users](#emails-and-use-cases-for-periodic-payments) listed above behave the same way for both payment products.
+The links in the responses point to the `instant-sepa-credit-transfers` path. A `paymentId` created for one payment product is unknown to the other one.
+
 ### Get payment status
 
 As described in our PISP documentation, we currently use the `DECOUPLED` SCA flow to confirm payment initiation, which means that the normal sequence of events from a TPP perspective is:
