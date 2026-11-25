@@ -13,6 +13,7 @@
     1. [SEPA Credit Transfers](./dedicated-pisp.md#sepa-credit-transfers)
     2. [Instant SEPA Credit Transfers](./dedicated-pisp.md#instant-sepa-credit-transfers)
     3. [Periodic Payments](./dedicated-pisp.md#periodic-payments)
+    4. [Instant Periodic Payments](./dedicated-pisp.md#instant-periodic-payments)
 
 ## General information
 
@@ -48,7 +49,7 @@ Security layer: A valid QWAC Certificate for PSD2 is required to access the Berl
 | Supported SCA Approaches     | Decoupled (Oauth2 as a pre-step)              |
 | SCA Validity                 | 20 minutes                                    |
 | Supported payment schemes    | SEPA Credit Transfers, Instant SEPA Transfers |
-| Support of Periodic payments | Supported                                     |
+| Support of Periodic payments | Supported (SEPA Credit Transfers and Instant SEPA Transfers) |
 | Support of Bulk payments     | Not Supported                                 |
 | fundsAvailable               | Not Supported                                 |
 | App to app redirection       | Not supported                                 |
@@ -890,6 +891,246 @@ HTTP/1.1 202 Accepted
         },
         "scaStatus": {
             "href": "/v1/berlin-group/v1/periodic-payments/sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69/authorisations/ce172bad-18b8-47cb-9ac5-31b73f320c32"
+        }
+    }
+}
+```
+
+##### Error Response
+
+```
+HTTP/1.1 400 Bad Request
+{
+    "title": "Resource Blocked.",
+    "code": "RESOURCE_BLOCKED",
+    "detail": "There's a change already pending for this periodic payment."
+}
+```
+
+#### Get list of cancellation authorisation IDs
+
+This endpoint is currently not supported.
+
+#### Get scaStatus of cancellation authorisation
+
+This endpoint is currently not supported.
+
+### Instant Periodic Payments
+
+Instant periodic payments are standing orders whose every execution is sent as an Instant SEPA Credit Transfer.
+They work exactly like [Periodic Payments](./dedicated-pisp.md#periodic-payments) (same request body, same SCA flow,
+same statuses, same polling rules); only the payment product in the path changes:
+
+| **Operation**                       | **Endpoint**                                                                    |
+|-------------------------------------|---------------------------------------------------------------------------------|
+| Initiate periodic payment           | `POST   /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers`                                                                 |
+| Get periodic payment details        | `GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}`                                                 |
+| Get status of periodic payment      | `GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/status`                                          |
+| Get list of authorisation IDs       | `GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations`                                  |
+| Get authorisation                   | `GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}}`             |
+| Delete periodic payment             | `DELETE /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}`                                                 |
+
+> :information_source: The payment product is part of the payment. A `paymentId` created with
+> `periodic-payments/sepa-credit-transfers` cannot be read, polled or deleted through
+> `periodic-payments/instant-sepa-credit-transfers`, nor the other way around. The request is answered as for an unknown `paymentId`.
+
+> :warning: Initiation of instant periodic payments can be temporarily disabled by N26. While it is disabled, the
+> initiate request is rejected with `403 Forbidden` and the code `SERVICE_BLOCKED`. Existing instant periodic payments can still be read and deleted.
+
+#### Initiate Instant Periodic Payment
+
+The behaviour of the `debtorAccount` parameter is the same as for [Periodic Payments](./dedicated-pisp.md#initiate-periodic-payment):
+if it is excluded and the user has multiple IBANs, the user selects the account in the N26 app (the payment stays `RCVD` until then, and becomes `RJCT` if no account is selected within 5 minutes).
+
+##### Request
+
+```
+POST    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+Content-Type: application/json
+
+{
+    "debtorAccount": {
+        "iban": "DE40100100103307118608"
+    },
+    "instructedAmount": {
+        "currency": "EUR",
+        "amount": "123.50"
+    },
+    "creditorAccount": {
+        "iban": "DE73500105175658455178"
+    },
+    "creditorName": "Seller",
+    "remittanceInformationUnstructured": "Reference text",
+    "startDate": "2026-12-30",
+    "endDate": "2027-12-30",
+    "frequency": "WEEK"
+}
+```
+
+| **Name of parameter** | **Type**      | **Usage** |
+|-----------------------|---------------|-----------|
+| startDate             | ISODate       | Mandatory |
+| endDate               | ISODate       | Optional  |
+| frequency             | FrequencyCode | Mandatory |
+
+- Supported frequency codes: `WEEK`, `MNTH`, `QUTR`, `SEMI`, `YEAR`.
+- The `startDate` cannot be in the past, or more than a year in the future.
+
+##### Response
+
+```
+HTTP/1.1 201 Created
+{
+    "transactionStatus": "RCVD",
+    "paymentId": "ead303f5-8404-4b1d-96ae-167d402bbd69",
+    "_links": {
+        "self": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69"
+        },
+        "status": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69/status"
+        },
+        "scaStatus": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69/authorisations/ce172bad-18b8-47cb-9ac5-31b73f320c32"
+        }
+    }
+}
+```
+
+#### Get status of instant periodic payment
+
+The statuses describe the standing order (the rule) and not the subsequent executions. They are the same as for
+[periodic payments](./dedicated-pisp.md#get-status-of-periodic-payment): `RCVD`, `ACCP`, `RJCT` and `CANC`.
+The user confirms both the creation and the deletion in the N26 app, so this endpoint is intended to be polled by the TPP.
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/status HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`RJCT`; `ACCP`; `CANC`), the polling should stop.
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "transactionStatus": "ACCP"
+}
+```
+
+#### Get instant periodic payment details
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+`debtorAccount` is `null` until the user has selected the account in the N26 app.
+
+```
+HTTP/1.1 200 OK
+{
+  "debtorAccount": {
+       "iban": "DE40100100103307118608"
+  },
+  "debtorName": "Buyer",
+  "instructedAmount": {
+       "amount":  123.50,
+       "currency":  "EUR"
+  },
+  "creditorAccount":  {
+       "iban": "DE73500105175658455178"
+  },
+  "creditorName": "Seller",
+  "remittanceInformationUnstructured": "Reference text",
+  "transactionStatus": "ACCP",
+  "startDate": "2026-12-30",
+  "endDate": "2027-12-30",
+  "frequency": "WEEK"
+}
+```
+
+#### Get list of authorisation IDs
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "authorisationIds": [
+        "ce172bad-18b8-47cb-9ac5-31b73f320c32"
+    ]
+}
+```
+
+#### Get authorisation
+
+##### Request
+
+```
+GET    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}}/authorisations/{{authorisationId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+> ℹ️ This endpoint should not be polled more than **one time per second**. After a terminal status is reached (`FINALISED`; `FAILED`), the polling should stop.
+
+##### Response
+
+```
+HTTP/1.1 200 OK
+{
+    "scaStatus": "finalised"
+}
+```
+
+#### Delete instant periodic payment
+
+The deletion has to be confirmed by the user in the N26 app. Until then the status stays `ACCP`; once confirmed it becomes `CANC`.
+
+##### Request
+
+```
+DELETE    /v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/{{paymentId}} HTTP/1.1
+Authorization: bearer {{access_token}}
+X-Request-ID: {{Unique UUID}}
+```
+
+##### Response
+
+```
+HTTP/1.1 202 Accepted
+{
+    "transactionStatus": "ACCP",
+    "paymentId": "ead303f5-8404-4b1d-96ae-167d402bbd69",
+    "_links": {
+        "self": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69"
+        },
+        "status": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69/status"
+        },
+        "scaStatus": {
+            "href": "/v1/berlin-group/v1/periodic-payments/instant-sepa-credit-transfers/ead303f5-8404-4b1d-96ae-167d402bbd69/authorisations/ce172bad-18b8-47cb-9ac5-31b73f320c32"
         }
     }
 }
